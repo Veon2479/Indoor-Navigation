@@ -1,1 +1,1 @@
-A java based client for android
+A C# based server
