@@ -1,63 +1,140 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
-namespace TcpServer
+namespace Server
 {
-    class Server
+    public class Server
     {
         const int DEFAULT_TCP_PORT = 4444;
         const int DEFAULT_UDP_PORT = 4445;
 
-        static async Task Main(string[] args)
-        {
-            Server server = new Server();
-            await server.StartTcpListener();
+        //thread signal.  
+        public static ManualResetEvent allDoneTcp = new ManualResetEvent(false);
+        public static ManualResetEvent allDoneUdp = new ManualResetEvent(false);
 
-            //startUdpListener();
+        public static void Main(string[] args)
+        {
+            Thread tcpListener = new Thread(StartTcpListener);
+            Thread udpListener = new Thread(StartUdpListener);
+
+            tcpListener.Start();
+            udpListener.Start();
+
+            return;
         }
 
-        async Task StartTcpListener()
+        public static void StartTcpListener()
         {
             var listener = new TcpListener(IPAddress.Any, DEFAULT_TCP_PORT);
-            listener.Start();
-            Console.WriteLine("TcpListener started");
+
+            try
+            {
+                listener.Start();
+                Console.WriteLine("TcpListener started");
+
+                while (true)
+                {
+                    //set the event to nonsignaled state
+                    allDoneTcp.Reset();
+
+                    //start an asynchronous socket to listen for connections
+                    listener.BeginAcceptTcpClient(new AsyncCallback(AcceptTcpClient), listener);
+
+                    //wait until a connection is made before continuing
+                    allDoneTcp.WaitOne();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
+                listener.Stop();
+            }
+        }
+
+        public static async void AcceptTcpClient(IAsyncResult ar)
+        {
+            //signal the main thread to continue.  
+            allDoneTcp.Set();
+
+            //get the socket that handles the client request.  
+            TcpListener listener = (TcpListener)ar.AsyncState;
+            TcpClient handler = listener.EndAcceptTcpClient(ar);
+            try
+            {
+                //get user stream
+                var stream = handler.GetStream();
+
+                //receive data from user
+                using var reader = new StreamReader(stream);
+                var data = await reader.ReadLineAsync();
+                Console.WriteLine("[TCP receive] {0}", data);
+
+                //magic with data
+
+                //send answer to user
+                using var writer = new StreamWriter(stream);
+                await writer.WriteLineAsync(data);
+                await writer.FlushAsync();
+                Console.WriteLine("[TCP    send] {0}", data);
+
+                handler.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+
+        public static void StartUdpListener()
+        {
+            UdpClient listener = new UdpClient(DEFAULT_UDP_PORT);
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, DEFAULT_UDP_PORT);
+            Console.WriteLine("UdpListener started");
+
             try
             {
                 while (true)
-                    await Accept(await listener.AcceptTcpClientAsync());
+                {
+                    //set the event to nonsignaled state
+                    allDoneUdp.Reset();
+
+                    //start an asynchronous socket to listen for connections
+                    listener.BeginReceive(new AsyncCallback(AcceptUdpClient), listener);
+
+                    //wait until a connection is made before continuing
+                    allDoneUdp.WaitOne();
+                }
             }
-            finally { listener.Stop(); }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            finally
+            {
+                listener.Close();
+            }
         }
 
-        async Task Accept(TcpClient tcpClient)
+        public static void AcceptUdpClient(IAsyncResult ar)
         {
-            await Task.Yield();
-            try
-            {
-                //get stream of the client
-                var stream = tcpClient.GetStream();
+            allDoneUdp.Set();
 
-                //read data
-                using var reader = new StreamReader(stream);
-                var data = await reader.ReadLineAsync();
-                Console.WriteLine(data);
+            UdpClient listener = (UdpClient)ar.AsyncState;
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, DEFAULT_UDP_PORT);
 
-                //send answer
-                using var writer = new StreamWriter(stream);
-                await writer.WriteLineAsync($"'{data}' recieved");
-                await writer.FlushAsync();
+            byte[] data = listener.EndReceive(ar, ref endPoint);
+            
+            userPacket packet = userPacket.getStruct(data);
+            
+            Console.WriteLine("[UDP receive] {0}", packet.ToString());
 
-                //closing connection
-                tcpClient.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
+            //magic with data
         }
     }
 }
