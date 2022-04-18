@@ -9,53 +9,31 @@ namespace Server
     {
         // dev by Pablo
         // here just function prototype
-        public void CloseID(int ID) { }
+        public void CloseUserID(int ID) { }
 
         // max time of waiting 
         // 5 min
         public const long MAX_TIME = 5 * 60;
         public const long DEFAULT_TIME = -1;
 
-        // increment
-        public const int INC_MODE = 0;
-        // generating 
-        public const int GEN_MODE = 1;
-
-        public int Mode;
         public Dictionary<int, long> UserTable = new();
 
-        public IDTable(int startCount, int mode)
+        public IDTable(int startCount)
         {
-            Mode = mode;
             AddUsers(startCount);
         }
 
-        public int AddUser(long time)
+        private int AddUser(long time)
         {
             // generate new id
             int newID;
-            if (Mode == GEN_MODE)
-            {
-                StringBuilder builder = new();
-                Enumerable.Range(65, 6).Select(e => ((char)e).ToString())
-                    .Concat(Enumerable.Range(65, 6).Select(e => ((char)e).ToString()))
-                    .Concat(Enumerable.Range(0, 10).Select(e => e.ToString()))
-                    .OrderBy(e => Guid.NewGuid())
-                    .Take(8)
-                    .ToList().ForEach(e => builder.Append(e));
-
-                newID = BitConverter.ToInt32(Convert.FromHexString(builder.ToString()), 0);
-                // creating new record
-                UserTable.Add(newID, time);
-            }
-            else if (Mode == INC_MODE)
+            try
             {
                 newID = UserTable.Count;
                 // creating new record
                 UserTable.Add(newID, time);
             }
-            // if wrong mode
-            else
+            catch (Exception)
             {
                 newID = -1;
             }
@@ -69,7 +47,7 @@ namespace Server
         /// <returns>
         ///     count of created users
         /// </returns>
-        public int AddUsers(int userCount)
+        private int AddUsers(int userCount)
         {
             int count = 0;
             for (int i = 0; i < userCount; i++)
@@ -105,7 +83,7 @@ namespace Server
                     // user is not online for a long time
                     if (UserTable[key] < maxTimeNow && UserTable[key] != DEFAULT_TIME)
                     {
-                        CloseID(key);
+                        CloseUserID(key);
                         if (isFound)
                         {
                             UserTable[key] = DEFAULT_TIME;
