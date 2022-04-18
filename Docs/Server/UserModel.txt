@@ -7,11 +7,11 @@
 Типы:
 ----------------------------------------------------
         protected internal struct UserModelPositionData{
-            internal float X, Y;
+            internal double X, Y;
             internal long Time;        
         }
 		Структура, которая хранит координаты (X, Y) о 1 пользователе в указаную единицу времени (Time)
-		float X, Y - координаты
+		douglbe X, Y - координаты
 		long Time - время UNIX
 ----------------------------------------------------
         protected internal struct UserModelTempStorageEl{
@@ -52,12 +52,12 @@ Public:
 	Возвращаемое значение:
 		Всё, что и любой конструктор
 ----------------------------------------------------
-	public int AddUserID(int ID, float x, float y, long time)
+	public int AddUserID(int ID, double x, double y, long time)
 	Описание:
 		Добавляет новый ID во временное хранилище и заполняет стартовое значение
 	Параметры:
 		int ID - ID, который нужно добавить в хранилище
-		float X, Y - Координаты пользователя
+		double X, Y - Координаты пользователя
 		time - UNIX время
 	Возвражаемые значения:
 		>= 0 всё ок, иначе ошибка
@@ -65,12 +65,12 @@ Public:
 		-1: Ошибка при resize (недостаточно памяти или чего нить исчо)
 		-2: Такой ID уже занят
 ----------------------------------------------------
-	public int AppendUserData(int ID, float x, float y, int time)
+	public int AppendUserData(int ID, double x, double y, long time)
 	Описание:
 		Дописывает информацию о пользователе, если хранилище полностью заполнено, вызывается "SaveStorageEl", который хранлище ---(данные)---> Файл
 	Параметры:
 		int ID - ID, информацию о котором нужно дополнить
-		float X, Y - Координаты пользователя
+		double X, Y - Координаты пользователя
 		time - UNIX время
 	Возвражаемые значения:
 		>= 0 всё ок, иначе ошибка
