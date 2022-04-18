@@ -12,7 +12,7 @@ namespace Server
     {
         //Data about position of 1 user in at given moment
         protected internal struct UserModelPositionData{
-            internal float X, Y;
+            internal double X, Y;
             internal long Time;        
         }
 
@@ -71,7 +71,7 @@ namespace Server
         ///     <item>-2: ID is occupied</item>
         ///     </list>
         /// </returns>
-        public int AddUserID(int ID, float x, float y, long time)
+        public int AddUserID(int ID, double x, double y, long time)
         {
             //Try to reallocate memory if it nessesarry
             if (this._amountOfUsers < ID){
@@ -120,7 +120,7 @@ namespace Server
         ///     <item>-3: Error in writing to the file. See "SaveStorageEl" method  </item>
         ///     </list>
         /// </returns>
-        public int AppendUserData(int ID, float x, float y, int time)
+        public int AppendUserData(int ID, double x, double y, long time)
         {
             //Check for exesting ID
             if (ID >= this._amountOfUsers){

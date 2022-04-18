@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Configuration;
 
 namespace Server
 {
@@ -13,7 +14,7 @@ namespace Server
 
         // max time of waiting 
         // 5 min
-        public const long MAX_TIME = 5 * 60;
+        public static long MAX_TIME = int.Parse(ConfigurationManager.AppSettings.Get("MAX_ALIVE_TIME"));
         public const long DEFAULT_TIME = -1;
 
         public Dictionary<int, long> UserTable = new();
@@ -26,7 +27,7 @@ namespace Server
         /// </param>
         public IDModel(int tableCapasity)
         {
-            AddUsers(startCount);
+            AddUsers(tableCapasity);
         }
 
         private int AddUser(long time)

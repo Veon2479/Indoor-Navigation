@@ -14,9 +14,14 @@ namespace Server
         private static int DEFAULT_TCP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TCP_PORT"));
         private static int DEFAULT_UDP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_UDP_PORT"));
 
+        private static int DEFAULT_TABLE_CAPACITY = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TABLE_CAPACITY"));
+
         //thread signal.  
         private static ManualResetEvent allDoneTcp = new ManualResetEvent(false);
         private static ManualResetEvent allDoneUdp = new ManualResetEvent(false);
+
+        private static IDModel userIDModel = new IDModel(DEFAULT_TABLE_CAPACITY);
+        private static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 1000);
 
         public static void Main(string[] args)
         {
@@ -91,9 +96,15 @@ namespace Server
                 //receive data from user
                 using var reader = new StreamReader(stream);
                 var data = await reader.ReadLineAsync();
-                Console.WriteLine("[TCP receive] {0}", data);
+                byte[] request = Encoding.UTF8.GetBytes(data);
+                UserPacket packet = UserPacket.getStruct(request);
+                Console.WriteLine("[TCP receive] {0}", packet.ToString());
 
-                //magic with data
+                //try to get userID
+                packet.userID = userIDModel.GetUserID(packet.time);
+
+                //try to add user to UserModel
+                userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time);
 
                 //send answer to user
                 using var writer = new StreamWriter(stream);
@@ -139,6 +150,9 @@ namespace Server
             finally
             {
                 listener.Close();
+
+                //Force save data from temporrary storage to the file to all current using ID
+                userModel.FlushTempStorage();
             }
         }
 
@@ -161,6 +175,15 @@ namespace Server
             Console.WriteLine("[UDP receive] {0}", packet.ToString());
 
             //magic with data
+            if (userIDModel.ExistUserID(packet.userID))
+            {
+                userIDModel.UpdateUserTime(packet.userID, packet.time);
+                userModel.AppendUserData(packet.userID, packet.x, packet.y, packet.time);
+            }
+            else
+            {
+                //ignore this packet
+            }
         }
     }
 }
