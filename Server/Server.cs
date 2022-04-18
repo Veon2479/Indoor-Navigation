@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.Collections.Specialized;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -8,14 +10,23 @@ namespace Server
 {
     public class Server
     {
-        const int DEFAULT_TCP_PORT = 4444;
-        const int DEFAULT_UDP_PORT = 4445;
+        //read default settings from App.config
+        private static int DEFAULT_TCP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TCP_PORT"));
+        private static int DEFAULT_UDP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_UDP_PORT"));
 
         //thread signal.  
-        public static ManualResetEvent allDoneTcp = new ManualResetEvent(false);
-        public static ManualResetEvent allDoneUdp = new ManualResetEvent(false);
+        private static ManualResetEvent allDoneTcp = new ManualResetEvent(false);
+        private static ManualResetEvent allDoneUdp = new ManualResetEvent(false);
 
         public static void Main(string[] args)
+        {
+            Server.Start();
+        }
+
+        /// <summary>
+        /// start TcpListener & UdpListener
+        /// </summary>
+        public static int Start()
         {
             Thread tcpListener = new Thread(StartTcpListener);
             Thread udpListener = new Thread(StartUdpListener);
@@ -23,10 +34,13 @@ namespace Server
             tcpListener.Start();
             udpListener.Start();
 
-            return;
+            return 0;
         }
 
-        public static void StartTcpListener()
+        /// <summary>
+        /// create and start TcpListener
+        /// </summary>
+        private static void StartTcpListener()
         {
             var listener = new TcpListener(IPAddress.Any, DEFAULT_TCP_PORT);
 
@@ -57,12 +71,16 @@ namespace Server
             }
         }
 
-        public static async void AcceptTcpClient(IAsyncResult ar)
+        /// <summary>
+        /// asynchronous accept tcp client
+        /// </summary>
+        /// <param name="ar">async result</param>
+        private static async void AcceptTcpClient(IAsyncResult ar)
         {
-            //signal the main thread to continue.  
+            //signal the main thread to continue
             allDoneTcp.Set();
 
-            //get the socket that handles the client request.  
+            //get the socket that handles the client request
             TcpListener listener = (TcpListener)ar.AsyncState;
             TcpClient handler = listener.EndAcceptTcpClient(ar);
             try
@@ -91,7 +109,10 @@ namespace Server
             }
         }
 
-        public static void StartUdpListener()
+        /// <summary>
+        /// create and start UdpListener
+        /// </summary>
+        private static void StartUdpListener()
         {
             UdpClient listener = new UdpClient(DEFAULT_UDP_PORT);
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, DEFAULT_UDP_PORT);
@@ -121,8 +142,13 @@ namespace Server
             }
         }
 
-        public static void AcceptUdpClient(IAsyncResult ar)
+        /// <summary>
+        /// asynchronous accept udp client
+        /// </summary>
+        /// <param name="ar">async result</param>
+        private static void AcceptUdpClient(IAsyncResult ar)
         {
+            //signal the main thread to continue
             allDoneUdp.Set();
 
             UdpClient listener = (UdpClient)ar.AsyncState;
@@ -130,7 +156,7 @@ namespace Server
 
             byte[] data = listener.EndReceive(ar, ref endPoint);
             
-            userPacket packet = userPacket.getStruct(data);
+            UserPacket packet = UserPacket.getStruct(data);
             
             Console.WriteLine("[UDP receive] {0}", packet.ToString());
 
