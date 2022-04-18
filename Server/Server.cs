@@ -14,66 +14,45 @@ namespace TcpServer
 
         static async Task Main(string[] args)
         {
-            StartTcpListener();
+            Server server = new Server();
+            await server.StartTcpListener();
+
             //startUdpListener();
         }
 
-        static async void StartTcpListener()
+        async Task StartTcpListener()
         {
-            var tcpListener = new TcpListener(IPAddress.Any, DEFAULT_TCP_PORT);
-            tcpListener.Start();
-
+            var listener = new TcpListener(IPAddress.Any, DEFAULT_TCP_PORT);
+            listener.Start();
+            Console.WriteLine("TcpListener started");
             try
             {
-                await Console.Out.WriteLineAsync("Server started");
-
                 while (true)
-                {
-                    var tcpClient = await tcpListener.AcceptTcpClientAsync();
-                    await ProcessRequest(tcpClient);
-                }
+                    await Accept(await listener.AcceptTcpClientAsync());
             }
-            finally
-            {
-                tcpListener.Stop();
-                await Console.Out.WriteLineAsync("Server finished");
-            }
+            finally { listener.Stop(); }
         }
 
-        static async Task ProcessRequest(TcpClient tcpClient)
+        async Task Accept(TcpClient tcpClient)
         {
-            //yields back to the current context when awaited
             await Task.Yield();
-
-            //get stream of the client
-            var stream = tcpClient.GetStream();
-
-            //read data
-            using var reader = new StreamReader(stream);
-            var data = await reader.ReadLineAsync();
-            Console.WriteLine(data);
-
-            //send answer
-            using var writer = new StreamWriter(stream);
-            await writer.WriteLineAsync($"'{data}' recieved");
-            await writer.FlushAsync();
-
-            //closing connection
-            tcpClient.Close();
-        }
-
-        static async void StartUdpListener()
-        {
             try
             {
-                UdpClient udpClient = new UdpClient(DEFAULT_UDP_PORT);
-                IPEndPoint remotePoint = null;
+                //get stream of the client
+                var stream = tcpClient.GetStream();
 
-                byte[] bytes = udpClient.Receive(ref remotePoint);
-                string results = Encoding.UTF8.GetString(bytes);
+                //read data
+                using var reader = new StreamReader(stream);
+                var data = await reader.ReadLineAsync();
+                Console.WriteLine(data);
 
+                //send answer
+                using var writer = new StreamWriter(stream);
+                await writer.WriteLineAsync($"'{data}' recieved");
+                await writer.FlushAsync();
 
-                udpClient.Close();
+                //closing connection
+                tcpClient.Close();
             }
             catch (Exception ex)
             {
