@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Server
 {
-    public class IDTable
+    public class IDModel
     {
         // dev by Pablo
         // here just function prototype
@@ -18,7 +18,13 @@ namespace Server
 
         public Dictionary<int, long> UserTable = new();
 
-        public IDTable(int startCount)
+        /// <summary>
+        ///     class constructor
+        /// </summary>
+        /// <param name="tableCapasity">
+        ///     initial table capacity
+        /// </param>
+        public IDModel(int tableCapasity)
         {
             AddUsers(startCount);
         }
@@ -122,7 +128,7 @@ namespace Server
         /// <summary>
         /// for updating table with each new package
         /// </summary>
-        public void UpdateTable(int ID, long lastTime)
+        public void UpdateUserTime(int ID, long lastTime)
         {
             UserTable[ID] = lastTime;
         }
@@ -135,7 +141,7 @@ namespace Server
         ///     true if ID is taken
         ///     false if ID is free
         /// </returns>
-        public bool CheckUserID(int ID)
+        public bool ExistUserID(int ID)
         {
             long maxTimeNow = DateTimeOffset.Now.ToUnixTimeSeconds() - MAX_TIME;
             if (UserTable[ID] < maxTimeNow)
