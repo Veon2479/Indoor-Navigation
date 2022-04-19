@@ -37,8 +37,16 @@ namespace Server
             Thread tcpListener = new Thread(StartTcpListener);
             Thread udpListener = new Thread(StartUdpListener);
 
-            tcpListener.Start();
-            udpListener.Start();
+            try
+            {
+                tcpListener.Start();
+                udpListener.Start();
+            }
+            finally
+            {
+                //Force save data from temporrary storage to the file to all current using ID
+                userModel.FlushTempStorage();
+            }
 
             return 0;
         }
@@ -102,8 +110,12 @@ namespace Server
                 UserPacket packet = UserPacket.getStruct(request);
                 Console.WriteLine("[TCP receive] {0}", packet.ToString());
 
-                //try to get userID
-                packet.userID = userIDModel.GetUserID(packet.time);
+                //if user not authorized
+                if (!userIDModel.ExistUserID(packet.userID))
+                {
+                    //try to get userID
+                    packet.userID = userIDModel.GetUserID(packet.time);
+                }              
 
                 //try to add user to UserModel
                 userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time);
@@ -153,9 +165,6 @@ namespace Server
             finally
             {
                 listener.Close();
-
-                //Force save data from temporrary storage to the file to all current using ID
-                userModel.FlushTempStorage();
             }
         }
 
