@@ -34,4 +34,13 @@ public class Tools {
         return ByteBuffer.wrap( buffer ).getLong( 20 );
 
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static void updateInfoBuffer(byte[] buffer, int userID, double crd1, double crd2)
+    {
+        ByteBuffer.wrap( buffer ).putInt( 0, userID );
+        ByteBuffer.wrap( buffer ).putDouble( 4, crd1 );
+        ByteBuffer.wrap( buffer ).putDouble( 12, crd2 );
+        ByteBuffer.wrap( buffer ).putLong( 20, Instant.now().getEpochSecond() );
+    }
 }
