@@ -67,24 +67,30 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1: Cannot resize array (reallocate memory)</item>
-        ///     <item>-2: ID is occupied</item>
+        ///     <item>-1: Incorrect ID (ID < 0)</item>
+        ///     <item>-2: Cannot resize array (reallocate memory)</item>
+        ///     <item>-3: ID is occupied</item>
         ///     </list>
         /// </returns>
         public int AddUserID(int ID, double x, double y, long time)
         {
+            //Check for correct ID
+            if (ID < 0){
+                return -1; //Incorrect ID (ID < 0)
+            }
+
             //Try to reallocate memory if it nessesarry
             if (this._amountOfUsers < ID){
                 try{
                     _amountOfUsers *= 2;
                     Array.Resize(ref this.userModelTempStorage, _amountOfUsers);
                 }catch{
-                    return -1; //Cannot resize array
+                    return -2; //Cannot resize array
                 }
             }
 
             if (this.userModelTempStorage[ID].Count >= 0){
-                return -2; //ID is occupied
+                return -3; //ID is occupied
             }
 
             //Create file path
@@ -115,20 +121,26 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1: Out of range. ID does not exist </item>
-        ///     <item>-2: ID does not exist (it set to "Free")</item>
-        ///     <item>-3: Error in writing to the file. See "SaveStorageEl" method  </item>
+        ///     <item>-1: Incorrect ID (ID < 0)</item>
+        ///     <item>-2: Out of range. ID does not exist </item>
+        ///     <item>-3: ID does not exist (it set to "Free")</item>
+        ///     <item>-4: Error in writing to the file. See "SaveStorageEl" method  </item>
         ///     </list>
         /// </returns>
         public int AppendUserData(int ID, double x, double y, long time)
         {
+            //Check for correct ID
+            if (ID < 0){
+                return -1; //Incorrect ID (ID < 0)
+            }
+
             //Check for exesting ID
             if (ID >= this._amountOfUsers){
-                return -1; //Out of range. ID does not exist
+                return -2; //Out of range. ID does not exist
             }
             var processedID = this.userModelTempStorage;
             if (processedID[ID].Count < 0){
-                return -2; //ID does not exist
+                return -3; //ID does not exist
             }
 
             //Fill new Element
@@ -142,7 +154,7 @@ namespace Server
 
                 //Write data to file
                 if (SaveStorageEl(processedID[ID]) < 0){
-                    return -3; //See SaveStorageEl errors 
+                    return -4; //See SaveStorageEl errors 
                 }
                 processedID[ID].Count = 0;
             }
@@ -160,15 +172,20 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1: Error in writing to the file. See "SaveStorageEl" method </item>
+        ///     <item>-1: Incorrect ID (ID < 0)</item>
+        ///     <item>-2: Error in writing to the file. See "SaveStorageEl" method </item>
         ///     </list>
         /// </returns>
         public int CloseUserID(int ID)
         {
+            //Check for correct ID
+            if (ID < 0){
+                return -1; //Incorrect ID (ID < 0)
+            }
             //Forced save data to file
             var processedID = this.userModelTempStorage;
             if (SaveStorageEl(processedID[ID]) < 0){
-                return -1; //See SaveStorageEl errors 
+                return -2; //See SaveStorageEl errors 
             }
 
             //"Free" ID
@@ -189,7 +206,7 @@ namespace Server
         ///     <item>-1: Error in writing to the file. See "SaveStorageEl" method </item>
         ///     </list>
         /// </returns>
-        public int FlushTempStorage()
+        public int FlushTempStorage() 
         {
             int iError, iResult = 0;
 
