@@ -168,20 +168,24 @@ namespace Server
             UdpClient listener = (UdpClient)ar.AsyncState;
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, DEFAULT_UDP_PORT);
 
+            //receive data from cliet
             byte[] data = listener.EndReceive(ar, ref endPoint);
             
             UserPacket packet = UserPacket.getStruct(data);
             
             Console.WriteLine("[UDP receive] {0}", packet.ToString());
 
-            //magic with data
+            //userID exist
             if (userIDModel.ExistUserID(packet.userID))
             {
                 userIDModel.UpdateUserTime(packet.userID, packet.time);
                 userModel.AppendUserData(packet.userID, packet.x, packet.y, packet.time);
             }
+
+            //userID not exist
             else
             {
+                Console.WriteLine("[UDP receive] unauthorized access {0}", packet.ToString());
                 //ignore this packet
             }
         }
