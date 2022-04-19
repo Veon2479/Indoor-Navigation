@@ -43,6 +43,9 @@ public class Engine {
         if ( i < AttemptsToRegistrate )
             isAlive = true;
 
+        DataSender dataSender = new DataSender(this);
+        Thread udpSender = new Thread(dataSender);
+        udpSender.start();
         //create 2 streams - first to compute coordinates
         //second - to send them
         //but they're don't working yet
