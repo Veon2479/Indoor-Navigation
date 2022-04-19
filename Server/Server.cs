@@ -16,10 +16,11 @@ namespace Server
 
         private static int DEFAULT_TABLE_CAPACITY = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TABLE_CAPACITY"));
 
-        //thread signal.  
+        //thread signal 
         private static ManualResetEvent allDoneTcp = new ManualResetEvent(false);
         private static ManualResetEvent allDoneUdp = new ManualResetEvent(false);
 
+        //server models
         private static IDModel userIDModel = new IDModel(DEFAULT_TABLE_CAPACITY);
         private static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 1000);
 
@@ -95,8 +96,9 @@ namespace Server
 
                 //receive data from user
                 using var reader = new StreamReader(stream);
-                var data = await reader.ReadLineAsync();
-                byte[] request = Encoding.UTF8.GetBytes(data);
+                char[] buffer = new char[UserPacket.PACKET_SIZE];
+                await reader.ReadAsync(buffer, 0, UserPacket.PACKET_SIZE);
+                byte[] request = Encoding.Latin1.GetBytes(buffer);
                 UserPacket packet = UserPacket.getStruct(request);
                 Console.WriteLine("[TCP receive] {0}", packet.ToString());
 
@@ -107,10 +109,11 @@ namespace Server
                 userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time);
 
                 //send answer to user
+                byte[] answer = UserPacket.getBytes(packet);
                 using var writer = new StreamWriter(stream);
-                await writer.WriteLineAsync(data);
+                await writer.WriteLineAsync(Encoding.Latin1.GetString(answer));
                 await writer.FlushAsync();
-                Console.WriteLine("[TCP    send] {0}", data);
+                Console.WriteLine("[TCP    send] {0}", packet.ToString());
 
                 handler.Close();
             }
@@ -173,11 +176,12 @@ namespace Server
             
             UserPacket packet = UserPacket.getStruct(data);
             
-            Console.WriteLine("[UDP receive] {0}", packet.ToString());
+           
 
             //userID exist
             if (userIDModel.ExistUserID(packet.userID))
             {
+                Console.WriteLine("[UDP receive] {0}", packet.ToString());
                 userIDModel.UpdateUserTime(packet.userID, packet.time);
                 userModel.AppendUserData(packet.userID, packet.x, packet.y, packet.time);
             }
@@ -185,7 +189,7 @@ namespace Server
             //userID not exist
             else
             {
-                Console.WriteLine("[UDP receive] unauthorized access {0}", packet.ToString());
+                Console.WriteLine("[UDP unauthorized] {0}", packet.ToString());
                 //ignore this packet
             }
         }

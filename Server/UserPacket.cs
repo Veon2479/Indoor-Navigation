@@ -13,6 +13,8 @@ namespace Server
         public double y;
         public long time;
 
+        public const int PACKET_SIZE = sizeof(int) + sizeof(double) * 2 + sizeof(long);
+
         public UserPacket(int uID, double uX, double uY, long uTime)
         {
             userID = uID;
@@ -57,7 +59,7 @@ namespace Server
 
         public override string ToString()
         {
-            return $"userID: {userID}, x: {x}, y: {y}, time:{time}";
+            return $"userID: {userID}, x: {x}, y: {y}, time: {time}";
         }
     }
 }
