@@ -1,0 +1,15 @@
+class Server - запуск сервера, TcpListener и UdpListener
+	public static void Start() - запуск сервера (TcpListener и UdpListener запускаются в отдельных потоках)
+	
+	private static void StartTcpListener() - создание и запуск TcpListener, асинхронный прием соединений
+	
+	private static async void AcceptTcpClient(IASyncResult ar) - асинхронная обработка запроса клиента: регистрация userID
+	
+	private static void StartUdpListener() - создание и запуск UdpListener, асинхронный прием дейтаграмм
+	
+	private static void AcceptUdpClient(IASyncResult ar) - асинхронная обработка дейтаграммы клиента: запись UserPacket
+	
+	private static ManualResetEvent allDoneTcp - сигналы для управления потоками TCP
+	
+	private static ManualResetEvent allDoneUdp - сигналы для управления потоками UDP
+	
