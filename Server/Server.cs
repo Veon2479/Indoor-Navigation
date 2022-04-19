@@ -109,6 +109,7 @@ namespace Server
                 
                 UserPacket packet = UserPacket.getStruct(buffer);
                 Console.WriteLine("[TCP receive] {0}", packet.ToString());
+                Console.WriteLine("[TCP recieve reverse] {0}", UserPacket.getStruct(buffer, true).ToString());
 
                 //if user not authorized
                 if (!userIDModel.ExistUserID(packet.userID))
@@ -118,7 +119,7 @@ namespace Server
                 }
 
                 //try to add user to UserModel
-                Console.WriteLine("AddUserID responce: {0}", userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time));
+                userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time);
 
                 //send answer to user
                 byte[] answer = UserPacket.getBytes(packet);
@@ -191,7 +192,7 @@ namespace Server
             {
                 Console.WriteLine("[UDP receive] {0}", packet.ToString());
                 userIDModel.UpdateUserTime(packet.userID, packet.time);
-                Console.WriteLine("AppendUserData response: {0}",userModel.AppendUserData(packet.userID, packet.x, packet.y, packet.time));
+                userModel.AppendUserData(packet.userID, packet.x, packet.y, packet.time);
             }
 
             //userID not exist

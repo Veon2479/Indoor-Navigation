@@ -23,9 +23,18 @@ namespace Server
             time = uTime;
         }
 
-        public static UserPacket getStruct(byte[] data)
+        public static UserPacket getStruct(byte[] data, bool reverse = false)
         {
+            if (reverse)
+            {
+                Array.Reverse(data, 0, 4);
+                Array.Reverse(data, 4, 8);
+                Array.Reverse(data, 12, 8);
+                Array.Reverse(data, 20, 8);
+            }
+
             UserPacket packet = new UserPacket();
+
             try
             {
                 packet.userID = BitConverter.ToInt32(data, 0);
