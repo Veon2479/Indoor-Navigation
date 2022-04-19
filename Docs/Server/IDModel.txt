@@ -18,7 +18,7 @@ public IDModel(int tableCapasity)
 
 - Конструктор класса, инициализирует новый экземпляр класса с заданным начальным количеством записей таблицы.
 
-public int GetUserID(long time, UserModel userModel)
+internal int GetUserID(long time, UserModel userModel)
 
 - Возвращает первый свободный ID, ставит в соответствии ему время time.
 Анализирует всю таблицу, освобождает ID, если пользователь отправил последний пакет больше, чем MAX_TIME секунд назад. 
@@ -35,7 +35,7 @@ public void UpdateUserTime(int ID, long lastTime)
 ID:	идентификатор пользователя.
 lastTime:	время отправки пакета.
 
-public bool ExistUserID(int ID, UserModel userModel)
+internal bool ExistUserID(int ID, UserModel userModel)
 
 - Проверяет, принадлежит ли в данный момент ID какому-то пользователю.
 Если время ожидания пользователя истекло, освобождает ID и вызывает функцию UserModel.CloseUserID(int ID)
