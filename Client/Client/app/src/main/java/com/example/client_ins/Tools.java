@@ -11,9 +11,9 @@ public class Tools {
 
 
     //these values will be read from file
-    public static String serverAddr;
-    public static int serverPort;
-    public static int AttemptsToRegistrate;
+    public static String serverAddr = "10.42.0.1";
+    public static int serverPort = 50001;
+    public static int AttemptsToRegistrate = 1;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static byte[] setInfoBuffer(int userID, double crd1, double crd2)
