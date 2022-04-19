@@ -75,13 +75,14 @@ public class Engine {
                 System.out.println("Not connected!");
 
             InputStream sock_ins = clientTcp.getInputStream();
+            OutputStream sock_outs = clientTcp.getOutputStream();
             byte[] buffer = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
 
             buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
-            sock_ins.read(buffer);
-            OutputStream sock_outs;
-            sock_outs = clientTcp.getOutputStream();
+
             sock_outs.write(buffer);
+            sock_ins.read(buffer);
+
             long timeStamp = getInfoBuffer( this, buffer );
             Log.i("INFO: ", "Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
             Log.i("INFO: ", "new ID is "+UserId);
