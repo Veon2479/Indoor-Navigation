@@ -81,8 +81,11 @@ public class Engine {
             byte[] buffer = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
 
             buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
+
             sock_outs.write(buffer);
             sock_ins.read(buffer);
+
+
             long timeStamp = getInfoBuffer( this, buffer );
             System.out.println("Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
             System.out.println( "new ID is "+UserId);
