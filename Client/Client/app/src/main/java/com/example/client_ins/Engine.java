@@ -18,7 +18,7 @@ import java.util.Scanner;
 
 public class Engine {
 
-    public int UserId;
+    public int UserId = 42;
     public double Crd1, Crd2;
     public boolean isAlive = false;
 
@@ -40,9 +40,8 @@ public class Engine {
             flag = Registrate();
             i++;
         }
-        if ( i != AttemptsToRegistrate )
+        if ( i < AttemptsToRegistrate )
             isAlive = true;
-        Log.i("INFO: ", "nCannot registrate user!");
 
         //create 2 streams - first to compute coordinates
         //second - to send them
@@ -66,7 +65,9 @@ public class Engine {
         try
         {
 
-            clientTcp = new Socket(serverAddr, serverPort);
+            //clientTcp = new Socket(serverAddr, serverPort);
+            clientTcp = new Socket();
+            clientTcp.connect( new InetSocketAddress( serverAddr, serverPort ) );
             //clientTcp = new Socket();
             //clientTcp.connect(new InetSocketAddress( serverAddr, serverPort ), 500 );
             if ( clientTcp.isConnected() )
@@ -75,20 +76,21 @@ public class Engine {
                 System.out.println("Not connected!");
 
             InputStream sock_ins = clientTcp.getInputStream();
+            OutputStream sock_outs = clientTcp.getOutputStream();
+
             byte[] buffer = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
 
             buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
-            sock_ins.read(buffer);
-            OutputStream sock_outs;
-            sock_outs = clientTcp.getOutputStream();
             sock_outs.write(buffer);
+            sock_ins.read(buffer);
             long timeStamp = getInfoBuffer( this, buffer );
-            Log.i("INFO: ", "Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
-            Log.i("INFO: ", "new ID is "+UserId);
-            Log.i("INFO: ", "new crd1 is "+Crd1);
-            Log.i("INFO: ", "new crd2 is "+Crd2);
+            System.out.println("Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
+            System.out.println( "new ID is "+UserId);
+            System.out.println( "new crd1 is "+Crd1);
+            System.out.println( "new crd2 is "+Crd2);
 
-
+            sock_ins.close();
+            sock_outs.close();
         }
         catch  (Exception e)
         {

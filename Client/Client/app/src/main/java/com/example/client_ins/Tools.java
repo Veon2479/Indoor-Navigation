@@ -11,7 +11,7 @@ public class Tools {
 
 
     //these values will be read from file
-    public static String serverAddr = "10.42.0.1";
+    public static String serverAddr = "192.168.244.81";
     public static int serverPort = 50001;
     public static int AttemptsToRegistrate = 1;
 
