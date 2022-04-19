@@ -22,7 +22,7 @@ namespace Server
 
         //server models
         private static IDModel userIDModel = new IDModel(DEFAULT_TABLE_CAPACITY);
-        private static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 1000);
+        private static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 2);
 
         public static void Main(string[] args)
         {
@@ -56,7 +56,7 @@ namespace Server
         /// </summary>
         private static void StartTcpListener()
         {
-            var listener = new TcpListener(IPAddress.Any, DEFAULT_TCP_PORT);
+            TcpListener listener = new TcpListener(IPAddress.Any, DEFAULT_TCP_PORT);
 
             try
             {
@@ -81,7 +81,8 @@ namespace Server
             }
             finally
             {
-                listener.Stop();
+                //listener.Shutdown();
+
             }
         }
 
@@ -100,14 +101,13 @@ namespace Server
             try
             {
                 //get user stream
-                var stream = handler.GetStream();
+                NetworkStream stream = handler.GetStream();
 
                 //receive data from user
-                using var reader = new StreamReader(stream);
-                char[] buffer = new char[UserPacket.PACKET_SIZE];
-                await reader.ReadAsync(buffer, 0, UserPacket.PACKET_SIZE);
-                byte[] request = Encoding.Latin1.GetBytes(buffer);
-                UserPacket packet = UserPacket.getStruct(request);
+                byte[] buffer = new byte[UserPacket.PACKET_SIZE];
+                await stream.ReadAsync(buffer, 0, buffer.Length);
+                
+                UserPacket packet = UserPacket.getStruct(buffer);
                 Console.WriteLine("[TCP receive] {0}", packet.ToString());
 
                 //if user not authorized
@@ -115,16 +115,17 @@ namespace Server
                 {
                     //try to get userID
                     packet.userID = userIDModel.GetUserID(packet.time);
-                }              
+                }
 
                 //try to add user to UserModel
-                userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time);
+                Console.WriteLine("AddUserID responce: {0}", userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time));
 
                 //send answer to user
                 byte[] answer = UserPacket.getBytes(packet);
-                using var writer = new StreamWriter(stream);
-                await writer.WriteLineAsync(Encoding.Latin1.GetString(answer));
-                await writer.FlushAsync();
+                
+                await stream.WriteAsync(answer, 0, answer.Length);
+                await stream.FlushAsync();
+
                 Console.WriteLine("[TCP    send] {0}", packet.ToString());
 
                 handler.Close();
@@ -185,14 +186,12 @@ namespace Server
             
             UserPacket packet = UserPacket.getStruct(data);
             
-           
-
             //userID exist
             if (userIDModel.ExistUserID(packet.userID))
             {
                 Console.WriteLine("[UDP receive] {0}", packet.ToString());
                 userIDModel.UpdateUserTime(packet.userID, packet.time);
-                userModel.AppendUserData(packet.userID, packet.x, packet.y, packet.time);
+                Console.WriteLine("AppendUserData response: {0}",userModel.AppendUserData(packet.userID, packet.x, packet.y, packet.time));
             }
 
             //userID not exist
