@@ -8,12 +8,7 @@ namespace Server
 {
     public class IDModel
     {
-        // dev by Pablo
-        // here just function prototype
-        public void CloseUserID(int ID) { }
-
         // max time of waiting 
-        // 5 min
         public static long MAX_TIME = int.Parse(ConfigurationManager.AppSettings.Get("MAX_ALIVE_TIME"));
         public const long DEFAULT_TIME = -1;
 
@@ -75,9 +70,10 @@ namespace Server
         /// </param>
         /// <returns>
         ///     new ID for user 
+        ///     if wrong long time = -1
         ///     if error = -1 
         /// </returns>
-        public int GetUserID(long time)
+        internal int GetUserID(long time, UserModel userModel)
         {
             int ID = -1;
             bool isFound = false;
@@ -85,12 +81,18 @@ namespace Server
             {
                 // last package arrived before this time => free ID
                 long maxTimeNow = DateTimeOffset.Now.ToUnixTimeSeconds() - MAX_TIME;
+                // if [long time] is wrong
+                if (time < maxTimeNow || time > DateTimeOffset.Now.ToUnixTimeSeconds())
+                {
+                    ID = -1;
+                    isFound = true;
+                }
                 foreach (int key in UserTable.Keys)
                 {
                     // user is not online for a long time
                     if (UserTable[key] < maxTimeNow && UserTable[key] != DEFAULT_TIME)
                     {
-                        CloseUserID(key);
+                        userModel.CloseUserID(key);
                         if (isFound)
                         {
                             UserTable[key] = DEFAULT_TIME;
@@ -131,7 +133,10 @@ namespace Server
         /// </summary>
         public void UpdateUserTime(int ID, long lastTime)
         {
-            UserTable[ID] = lastTime;
+            if (UserTable.TryGetValue(ID, out long time))
+            {
+                UserTable[ID] = lastTime;
+            }
         }
 
         /// <summary>
@@ -139,17 +144,25 @@ namespace Server
         /// </summary>
         /// <param name="ID"></param>
         /// <returns>         
-        ///     true if ID is taken
-        ///     false if ID is free
+        ///     true if ID is taken, 
+        ///     false if ID is free or timeout has expired
         /// </returns>
-        public bool ExistUserID(int ID)
+        internal bool ExistUserID(int ID, UserModel userModel)
         {
             long maxTimeNow = DateTimeOffset.Now.ToUnixTimeSeconds() - MAX_TIME;
-            if (UserTable[ID] < maxTimeNow)
+            if (UserTable.TryGetValue(ID, out long time))
             {
-                UserTable[ID] = DEFAULT_TIME;
+                if (UserTable[ID] < maxTimeNow && UserTable[ID] != DEFAULT_TIME)
+                {
+                    UserTable[ID] = DEFAULT_TIME;
+                    userModel.CloseUserID(ID);
+                }
+                return UserTable[ID] != DEFAULT_TIME;
             }
-            return UserTable[ID] != DEFAULT_TIME;
+            else
+            {
+                return false;
+            }
         }
     }
 }
