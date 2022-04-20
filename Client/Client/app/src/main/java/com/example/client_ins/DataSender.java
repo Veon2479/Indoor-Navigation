@@ -3,14 +3,13 @@ package com.example.client_ins;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
+
 
 import static com.example.client_ins.Tools.*;
 
 import static java.lang.Thread.sleep;
 
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -24,13 +23,14 @@ class DataSender implements Runnable {
         this.isActive = true;
     }
 
+
     public void Disable(){
         isActive = false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void run(){
-
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAA Trying to start UDP");
         try {
             clientSocket = new DatagramSocket();
 

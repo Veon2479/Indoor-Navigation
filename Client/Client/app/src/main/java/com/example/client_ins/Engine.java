@@ -41,8 +41,7 @@ public class Engine {
             flag = Registrate();
             i++;
         }
-        if ( i < AttemptsToRegistrate )
-            isAlive = true;
+        isAlive = flag;
 
         if ( isAlive )
         {
@@ -92,10 +91,12 @@ public class Engine {
             try {
                 sock_ins.close();
                 sock_outs.close();
+                clientTcp.close();
             } catch (Exception e)
             {
                 System.out.println(e);
             }
+            System.out.println("Connection closed!");
         }
         catch  (Exception e)
         {
@@ -103,18 +104,6 @@ public class Engine {
             System.out.println("While registrate: "+e);
 
             RESULT = false;
-        }
-
-
-        try
-        {
-            if (clientTcp != null)
-                clientTcp.close();
-            System.out.println("Connection closed!");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
         }
 
 
