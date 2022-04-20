@@ -61,7 +61,7 @@ Public:
 	public int AddUserID(int ID, double x, double y, long time)
 	Описание:
 		Добавляет новый ID во временное хранилище, заполняеит первое по счёту поле хранилища переданными данными, 
-		формирует имя файла, в который будут записываться накопленные данные
+		формирует имя файла (формат: time_ID), в который будут записываться накопленные данные
 	Параметры:
 		int ID - ID, который нужно добавить в хранилище
 		double X, Y - Координаты пользователя
@@ -114,7 +114,7 @@ Private:
 	private int SaveStorageEl(UserModelTempStorageEl tempStorageEl)
 	Описаиние:
 		Сохраняет (tempStorageEl.Count) записей данных vfccbdf (tempStorageEl.AccumData) в файл с именем (tempStorageEl.FileName).
-		(tempStorageEl.Count) по оаончанию устанавливается в 0
+		(tempStorageEl.Count) по окончанию устанавливается в 0.
 	Параметры:
 		tempStorageEl - структруа, хранящая накопленные данные и информацию о файле в который необходимо записать данные
 	Возвражаемые значения:
