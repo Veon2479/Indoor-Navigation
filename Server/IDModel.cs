@@ -11,6 +11,8 @@ namespace Server
         // max time of waiting 
         public static long MAX_TIME = int.Parse(ConfigurationManager.AppSettings.Get("MAX_ALIVE_TIME"));
         public const long DEFAULT_TIME = -1;
+        public const int GET_ID_ERROR = -1;
+        public const int ADD_ID_ERROR = -1;
 
         public Dictionary<int, long> UserTable = new();
 
@@ -37,7 +39,7 @@ namespace Server
             }
             catch (Exception)
             {
-                newID = -1;
+                newID = GET_ID_ERROR;
             }
             return newID;
         }
@@ -54,7 +56,7 @@ namespace Server
             int count = 0;
             for (int i = 0; i < userCount; i++)
             {
-                if (AddUser(DEFAULT_TIME) != -1)
+                if (AddUser(DEFAULT_TIME) != ADD_ID_ERROR)
                 {
                     count++;
                 }
@@ -69,13 +71,13 @@ namespace Server
         ///     time of registration request from usen
         /// </param>
         /// <returns>
-        ///     new ID for user 
-        ///     if wrong long time = -1
-        ///     if error = -1 
+        ///     new ID for user, 
+        ///     if wrong long time = GET_ID_ERROR, 
+        ///     if error = GET_ID_ERROR, 
         /// </returns>
         internal int GetUserID(long time, UserModel userModel)
         {
-            int ID = -1;
+            int ID = GET_ID_ERROR;
             bool isFound = false;
             try
             {
@@ -84,7 +86,7 @@ namespace Server
                 // if [long time] is wrong
                 if (time < maxTimeNow || time > DateTimeOffset.Now.ToUnixTimeSeconds())
                 {
-                    ID = -1;
+                    ID = GET_ID_ERROR;
                     isFound = true;
                 }
                 foreach (int key in UserTable.Keys)
@@ -124,7 +126,7 @@ namespace Server
             }
             catch (Exception)
             {
-                return -1;
+                return GET_ID_ERROR;
             }
         }
 
