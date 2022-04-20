@@ -24,30 +24,57 @@ namespace Server
         private static IDModel userIDModel = new IDModel(DEFAULT_TABLE_CAPACITY);
         private static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 2);
 
+        //thread for listeners
+        private static Thread tcpListener = new Thread(StartTcpListener);
+        private static Thread udpListener = new Thread(StartUdpListener);
+
+        //while run == true server run
+        private static bool Run = true;
+
         public static void Main(string[] args)
         {
             Server.Start();
+
+            while (Console.ReadLine() != "stop")
+            {
+                //server is run
+            }
+
+            Server.Stop();
         }
 
         /// <summary>
-        /// start TcpListener & UdpListener
+        /// start TcpListener and UdpListener
         /// </summary>
         public static int Start()
         {
-            Thread tcpListener = new Thread(StartTcpListener);
-            Thread udpListener = new Thread(StartUdpListener);
-
             try
             {
                 tcpListener.Start();
                 udpListener.Start();
             }
-            finally
+            catch (Exception ex)
             {
-                //Force save data from temporrary storage to the file to all current using ID
-                userModel.FlushTempStorage();
+                //stop server
+                Server.Stop();
             }
 
+            return 0;
+        }
+
+        /// <summary>
+        /// stop TcpListener and UdpListener
+        /// flush temp storage 
+        /// </summary>
+        public static int Stop()
+        {
+            Server.Run = false;
+            
+            //Force save data from temporrary storage to the file to all current using ID
+            userModel.FlushTempStorage();
+
+            Console.WriteLine("Server is stopped");
+            
             return 0;
         }
 
@@ -63,7 +90,7 @@ namespace Server
                 listener.Start();
                 Console.WriteLine("TcpListener started");
 
-                while (true)
+                while (Server.Run)
                 {
                     //set the event to nonsignaled state
                     allDoneTcp.Reset();
@@ -81,8 +108,7 @@ namespace Server
             }
             finally
             {
-                //listener.Shutdown();
-
+                listener.Stop();
             }
         }
 
@@ -148,7 +174,7 @@ namespace Server
 
             try
             {
-                while (true)
+                while (Server.Run)
                 {
                     //set the event to nonsignaled state
                     allDoneUdp.Reset();
