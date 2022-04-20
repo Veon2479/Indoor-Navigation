@@ -4,7 +4,6 @@ import static com.example.client_ins.Tools.*;
 
 import android.os.Build;
 import android.os.StrictMode;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -12,13 +11,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.time.Instant;
-import java.util.Scanner;
+
 
 
 public class Engine {
 
-    public int UserId = 42;
+    public int UserId = 0;
     public double Crd1, Crd2;
     public boolean isAlive = false;
 
@@ -29,8 +30,8 @@ public class Engine {
     {
         int i = 0;
         boolean flag = false;
-        Log.i("INFO: ", "try to registrate user!");
-        System.out.println("AAAAAAAAAAAAAAAAA");
+        System.out.println( "Try to registrate user!");
+
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -43,24 +44,16 @@ public class Engine {
         if ( i < AttemptsToRegistrate )
             isAlive = true;
 
-        DataSender dataSender = new DataSender(this);
-        Thread udpSender = new Thread(dataSender);
-        udpSender.start();
-        //create 2 streams - first to compute coordinates
-        //second - to send them
-        //but they're don't working yet
+        if ( isAlive )
+        {
+            DataSender dataSender = new DataSender(this);
+            Thread udpSender = new Thread(dataSender);
+            udpSender.start();
+            //create 2 streams - first to compute coordinates
+            //second - to send them
+            //but they're don't working yet
+        }
     }
-
-    public void StartComputing()
-    {
-
-    }
-
-    public void StopComputing()
-    {
-
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean Registrate() {
@@ -68,9 +61,8 @@ public class Engine {
         try
         {
 
-            //clientTcp = new Socket(serverAddr, serverPort);
             clientTcp = new Socket();
-            clientTcp.connect( new InetSocketAddress( serverAddr, serverPort ) );
+            clientTcp.connect( new InetSocketAddress( serverAddr, serverPortTcp ) );
             //clientTcp = new Socket();
             //clientTcp.connect(new InetSocketAddress( serverAddr, serverPort ), 500 );
             if ( clientTcp.isConnected() )
@@ -83,9 +75,11 @@ public class Engine {
 
             byte[] buffer = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
 
-            buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
+            buffer = setInfoBuffer( UserId, 2.34d, 1.32e-10); //TODO: crd1 is ID of place
 
+            System.out.println("Sending data");
             sock_outs.write(buffer);
+            System.out.println("Receiving data");
             sock_ins.read(buffer);
 
 
@@ -95,8 +89,13 @@ public class Engine {
             System.out.println( "new crd1 is "+Crd1);
             System.out.println( "new crd2 is "+Crd2);
 
-            sock_ins.close();
-            sock_outs.close();
+            try {
+                sock_ins.close();
+                sock_outs.close();
+            } catch (Exception e)
+            {
+                System.out.println(e);
+            }
         }
         catch  (Exception e)
         {
@@ -111,6 +110,7 @@ public class Engine {
         {
             if (clientTcp != null)
                 clientTcp.close();
+            System.out.println("Connection closed!");
         }
         catch (IOException e)
         {

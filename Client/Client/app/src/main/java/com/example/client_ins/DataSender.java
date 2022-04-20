@@ -41,15 +41,17 @@ class DataSender implements Runnable {
             byte[] sendingDataBuffer = setInfoBuffer( mainEngine.UserId, mainEngine.Crd1, mainEngine.Crd2);
 
             // Создание UDP-пакет
-            DatagramPacket sendingPacket = new DatagramPacket(sendingDataBuffer,sendingDataBuffer.length, IPAddress, serverPort);
+            DatagramPacket sendingPacket = new DatagramPacket(sendingDataBuffer,sendingDataBuffer.length, IPAddress, serverPortUdp);
 
+            System.out.println("Ready to send udp");
             while(isActive){
                 //*Помещение данных в буфер*
+
                 updateInfoBuffer(sendingDataBuffer, mainEngine.UserId, mainEngine.Crd1, mainEngine.Crd2);
 
                 // Отправьте UDP-пакет серверу
                 clientSocket.send(sendingPacket);
-
+                System.out.println("udp sent!");
                 sleep(1000);
             }
 
