@@ -33,26 +33,28 @@ public class Tools {
 
     //these values will be read from file
 
-    
-    public static String serverAddr = "10.144.157.188";
+
+    public static String serverAddr;// = "10.144.157.188";
     //public static String serverAddr = "192.168.50.145";
 
 
-    public static int serverPortTcp = 4444;
-    public static int serverPortUdp = 4445;
-    public static int AttemptsToRegistrate = 3;
-    public static int BufferSize = 28;
-    public static int UdpPacketDelay = 1000;
+    public static int serverPortTcp;// = 4444;
+    public static int serverPortUdp;// = 4445;
+    public static int AttemptsToRegistrate;// = 3;
+    public static int BufferSize;// = 28;
+    public static int UdpPacketDelay;// = 1000;
 
-    public static void readFromFile() throws IOException, SAXException, ParserConfigurationException {
+    public static void readFromFile() throws IOException, SAXException, ParserConfigurationException, TransformerException {
         File file = new File("configClient.xml");
         if(!file.exists()) {
-            serverAddr = "192.168.50.145";
+            serverAddr = "10.144.157.188";
             serverPortTcp = 4444;
             serverPortUdp = 4445;
             AttemptsToRegistrate = 3;
-            BufferSize = 28;
+            BufferSize = ( 32 + 64 * 2 + 64) / 8;
             UdpPacketDelay = 1000;
+            writeToFile();
+
         }
         else {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -83,7 +85,7 @@ public class Tools {
         root.setAttribute("BufferSize", String.valueOf(BufferSize));
         root.setAttribute("UdpPacketDelay", String.valueOf(UdpPacketDelay));
         doc.appendChild(root);
-
+//TODO: if settings changed in program, it's need to delete old file and create new
         File file = new File("configClient.xml");
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -93,7 +95,7 @@ public class Tools {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static byte[] setInfoBuffer(int userID, double crd1, double crd2)
     {
-        byte[] result = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
+        byte[] result = new byte[ BufferSize ];
         ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );//.order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 4, crd1 );//.order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 12, crd2 );//.order(ByteOrder.LITTLE_ENDIAN);

@@ -52,7 +52,7 @@ class DataSender implements Runnable {
                 // Отправьте UDP-пакет серверу
                 clientSocket.send(sendingPacket);
                 System.out.println("udp sent!");
-                sleep(1000);
+                sleep(UdpPacketDelay);
             }
 
             // Закрытие соединения с сервером через сокет
