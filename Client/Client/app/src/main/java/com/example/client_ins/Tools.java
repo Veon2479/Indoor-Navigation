@@ -63,10 +63,11 @@ public class Tools {
             NamedNodeMap nm = node.getAttributes();
             AttemptsToRegistrate = Integer.parseInt(nm.item(0).getNodeValue());
             BufferSize = Integer.parseInt(nm.item(1).getNodeValue());
-            serverAddr = nm.item(2).getNodeValue();
-            serverPortTcp = Integer.parseInt(nm.item(3).getNodeValue());
-            serverPortUdp = Integer.parseInt(nm.item(4).getNodeValue());
-            UdpPacketDelay = Integer.parseInt(nm.item(5).getNodeValue());
+            UdpPacketDelay = Integer.parseInt(nm.item(2).getNodeValue());
+            serverAddr = nm.item(3).getNodeValue();
+            serverPortTcp = Integer.parseInt(nm.item(4).getNodeValue());
+            serverPortUdp = Integer.parseInt(nm.item(5).getNodeValue());
+
         }
     }
 
