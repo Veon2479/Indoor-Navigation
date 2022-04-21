@@ -5,15 +5,33 @@ import android.util.Xml;
 
 import androidx.annotation.RequiresApi;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public class Tools {
 
 
     //these values will be read from file
-
 
    // public static String serverAddr = "10.144.50.145";
     public static String serverAddr = "192.168.50.145";
@@ -22,6 +40,46 @@ public class Tools {
     public static int serverPortTcp = 4444;
     public static int serverPortUdp = 4445;
     public static int AttemptsToRegistrate = 1;
+
+    public static void readFromFile() throws IOException, SAXException, ParserConfigurationException {
+        File file = new File("configClient.xml");
+        if(!file.exists()) {
+            serverAddr = "192.168.50.145";
+            serverPortTcp = 4444;
+            serverPortUdp = 4445;
+            AttemptsToRegistrate = 1;
+        }
+        else {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(file);
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getElementsByTagName("root");
+            Node node = nodeList.item(0);
+            NamedNodeMap nm = node.getAttributes();
+            serverAddr = nm.item(0).getNodeValue();
+            serverPortTcp = Integer.parseInt(nm.item(1).getNodeValue());
+            serverPortUdp = Integer.parseInt(nm.item(2).getNodeValue());
+            AttemptsToRegistrate = Integer.parseInt(nm.item(3).getNodeValue());
+        }
+    }
+
+    public static void writeToFile() throws ParserConfigurationException, TransformerException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        Document doc = factory.newDocumentBuilder().newDocument();
+        Element root = doc.createElement("root");
+        root.setAttribute("serverAddr", serverAddr);
+        root.setAttribute("serverPortTcp", String.valueOf(serverPortTcp));
+        root.setAttribute("serverPortUdp", String.valueOf(serverPortUdp));
+        root.setAttribute("AttemptsToRegistrate", String.valueOf(AttemptsToRegistrate));
+        doc.appendChild(root);
+
+        File file = new File("configClient.xml");
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.transform(new DOMSource(doc), new StreamResult(file));
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static byte[] setInfoBuffer(int userID, double crd1, double crd2)
