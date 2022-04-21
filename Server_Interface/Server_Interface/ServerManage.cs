@@ -16,12 +16,12 @@ namespace Server
             view.BeginUpdate();
             view.Items.Clear();
 
-            foreach(var user in userIDModel.UserTable)
+            for(int i = 1; i < userIDModel.UserTable.Count; i++)
             {
-                if (user.Value != IDModel.DEFAULT_TIME)
+                if (userIDModel.UserTable[i] != IDModel.DEFAULT_TIME)
                 {
-                    ListViewItem lvItem = new ListViewItem(user.Key.ToString());
-                    lvItem.SubItems.Add(user.Value.ToString());
+                    ListViewItem lvItem = new ListViewItem(i.ToString());
+                    lvItem.SubItems.Add(userIDModel.UserTable[i].ToString());
                     view.Items.Add(lvItem);
                 }
             }

@@ -14,7 +14,7 @@ namespace Server
         public const int GET_ID_ERROR = -1;
         public const int ADD_ID_ERROR = -1;
 
-        public Dictionary<int, long> UserTable = new Dictionary<int, long>();
+        public List<long> UserTable = new List<long>();
 
         /// <summary>
         ///     class constructor
@@ -24,7 +24,7 @@ namespace Server
         /// </param>
         public IDModel(int tableCapasity)
         {
-            AddUsers(tableCapasity);
+            AddUsers(tableCapasity + 1);
         }
 
         private int AddUser(long time)
@@ -33,14 +33,13 @@ namespace Server
             int newID;
             try
             {
-                newID = UserTable.Count + 1;
-
                 // creating new record
-                UserTable.Add(newID, time);
+                UserTable.Add(time);
+                newID = UserTable.Count - 1;
             }
             catch (Exception)
             {
-                newID = GET_ID_ERROR;
+                newID = ADD_ID_ERROR;
             }
             return newID;
         }
@@ -90,28 +89,28 @@ namespace Server
                     ID = GET_ID_ERROR;
                     isFound = true;
                 }
-                foreach (int key in UserTable.Keys)
+                for (int i = 1; i < UserTable.Count; i++)
                 {
                     // user is not online for a long time
-                    if (UserTable[key] < maxTimeNow && UserTable[key] != DEFAULT_TIME)
+                    if (UserTable[i] < maxTimeNow && UserTable[i] != DEFAULT_TIME)
                     {
-                        userModel.CloseUserID(key);
+                        userModel.CloseUserID(i);
                         if (isFound)
                         {
-                            UserTable[key] = DEFAULT_TIME;
+                            UserTable[i] = DEFAULT_TIME;
                         }
                         else
                         {
-                            ID = key;
+                            ID = i;
                             // set new time (of new user)
                             isFound = true;
                             UserTable[ID] = time;
                         }
                     }
                     // if ID is free
-                    else if (UserTable[key] == DEFAULT_TIME && !isFound)
+                    else if (UserTable[i] == DEFAULT_TIME && !isFound)
                     {
-                        ID = key;
+                        ID = i;
                         // set new time (of new user)
                         isFound = true;
                         UserTable[ID] = time;
@@ -136,7 +135,7 @@ namespace Server
         /// </summary>
         public void UpdateUserTime(int ID, long lastTime)
         {
-            if (UserTable.TryGetValue(ID, out long time))
+            if (ID > 0 && ID < UserTable.Count)
             {
                 UserTable[ID] = lastTime;
             }
@@ -153,7 +152,7 @@ namespace Server
         internal bool ExistUserID(int ID, UserModel userModel)
         {
             long maxTimeNow = DateTimeOffset.Now.ToUnixTimeSeconds() - MAX_TIME;
-            if (UserTable.TryGetValue(ID, out long time))
+            if (ID > 0 && ID < UserTable.Count)
             {
                 if (UserTable[ID] < maxTimeNow && UserTable[ID] != DEFAULT_TIME)
                 {
