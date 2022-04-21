@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -9,46 +9,208 @@ namespace Server
 {
     internal class QRModel
     {
-        private string _xmlDocName = "";
+        private string _xmlFileName = "";
+        private const string _defaultDir = "XmlDocs";
+        private const string _defaultName = "DefaultQRData.xml";
+        List<int> _QRIDExist = new List<int>();
 
-        public QRModel(string xmlDocName)
+        public QRModel(string xmlFileName)
         {
-            _xmlDocName = xmlDocName;
-            //CheckFileContent
-            //throw new Exception();
+            _xmlFileName = xmlFileName;
+            XmlDocument xmlDocument = new XmlDocument();
+            int iResult = CheckXmlFileContent(ref xmlDocument); 
+            if (iResult == (int)CheckXmlFileContentErrorCode.READ_FILE_ERROR){
+                UseDefaultXmlDoc();
+            }else if (iResult < 0){
+                throw new Exception("Incorrect file name or file was corrupted");
+            }
         }
 
         public enum GetQRCoordErrorCode{
-            READ_FILE_ERROR = -1,
+            CORRUPTED_FILE = -1,
             QRID_INCORRECT = -2,
             PARSE_TO_DOUBLE_ERROR = -3
         }
         public int GetQRCoord(int QRID, ref double x, ref double y)
         {
             XmlDocument xmlDoc = new XmlDocument();
-            
-            //Check is this file exist
-            try{
-                xmlDoc.Load(this._xmlDocName);
-            }catch{
-                return (int)GetQRCoordErrorCode.READ_FILE_ERROR;
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0){
+                return (int)GetQRCoordErrorCode.CORRUPTED_FILE;    
             }
-            
-            XmlElement xEl = xmlDoc.DocumentElement;
+            XmlElement xmlEl = xmlDoc.DocumentElement;
             
             //Check for correct QRID
-            if (QRID < 0 || QRID > xEl.ChildNodes.Count-1){
+            if (QRID < 0 || QRID > xmlEl.ChildNodes.Count-1 || !_QRIDExist.Contains(QRID)){
                 return (int)GetQRCoordErrorCode.QRID_INCORRECT;
             }
 
-            XmlNode xNode = xEl.ChildNodes[QRID];
+            XmlNode xmlNode = xmlEl.ChildNodes[QRID];
 
             //Try to parce string to double
             try{
-                x = double.Parse(xNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture);
-                y = double.Parse(xNode.ChildNodes[1].InnerText, System.Globalization.CultureInfo.InvariantCulture);
+                x = double.Parse(xmlNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture);
+                y = double.Parse(xmlNode.ChildNodes[1].InnerText, System.Globalization.CultureInfo.InvariantCulture);
             }catch{
                 return (int)GetQRCoordErrorCode.PARSE_TO_DOUBLE_ERROR; 
+            }
+            return 0;
+        }
+
+        public enum DeleteQRRecordErrorCode{
+            CORRUPTED_FILE = -1,
+            QRID_INCORRECT = -2,
+            NAME_NOT_FOUND = -3
+        }
+        public int DeleteQRRecord(int QRID)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0){
+                return (int)DeleteQRRecordErrorCode.CORRUPTED_FILE;    
+            }
+
+            XmlElement xmlEl = xmlDoc.DocumentElement;
+
+            //Check for correct QRID
+            if (QRID < 0 || QRID > xmlEl.ChildNodes.Count-1 || !_QRIDExist.Contains(QRID)){
+                return (int)GetQRCoordErrorCode.QRID_INCORRECT;
+            }
+
+            xmlEl.RemoveChild(xmlEl.ChildNodes[QRID]);
+            xmlDoc.Save(_xmlFileName);
+            return 0;
+        }
+
+        public int DeleteQRRecord(string name)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0){
+                return (int)DeleteQRRecordErrorCode.CORRUPTED_FILE;    
+            }
+
+            XmlElement xmlEl = xmlDoc.DocumentElement;
+
+            int ID = -1;
+            Boolean find = false;
+            while (ID+1 < xmlEl.ChildNodes.Count && !find){
+                ID++;
+                if (xmlEl.ChildNodes[ID].Attributes[1].Value == name){
+                    find = true;
+                }
+            }
+
+            if (!find){
+                return (int)DeleteQRRecordErrorCode.NAME_NOT_FOUND;
+            }
+
+            xmlEl.RemoveChild(xmlEl.ChildNodes[ID]);
+            xmlDoc.Save(_xmlFileName);
+            return 0;
+        }
+
+        private enum CheckXmlFileContentErrorCode{
+            IS_EMPTY = 1,
+            READ_FILE_ERROR = -1,
+            UNKNOWN_ROOT_TAG = -2,
+            UNKNOWN_ELEMENT_LV1_TAG = -3,
+            INCORRECT_ATRIBUTES_LV1 = -4,
+            INCORRECT_NODE_LV2 = -5
+        }
+        private int CheckXmlFileContent(ref XmlDocument xmlDoc)
+        {            
+            //Check is this file exist
+            try{
+                xmlDoc.Load(_xmlFileName);
+            }catch{
+                return (int)CheckXmlFileContentErrorCode.READ_FILE_ERROR;
+            }
+            
+            XmlElement xmlEl = xmlDoc.DocumentElement;
+
+            //Check for root tag
+            if (xmlEl.Name != "QRCodes"){
+                return (int)CheckXmlFileContentErrorCode.UNKNOWN_ROOT_TAG;
+            }
+
+            //Initialize dictionnary
+            _QRIDExist.Clear();
+
+            if (xmlEl.ChildNodes.Count == 0){
+                return (int)CheckXmlFileContentErrorCode.IS_EMPTY;
+            }
+
+            //For every lvl 1 tag:
+            foreach(XmlNode xmlNode in xmlEl){
+                
+                //Check tag
+                if(xmlNode.Name != "QRCode"){
+                    return (int)CheckXmlFileContentErrorCode.UNKNOWN_ELEMENT_LV1_TAG; 
+                }
+
+
+                if(!(xmlNode.Attributes.Count == 2 &&           //Chekc amount of atributes
+                     xmlNode.Attributes[0].Name == "id" &&      //Check exist atribure "id"
+                     xmlNode.Attributes[1].Name == "name")){    //Check exist atribute "name"
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
+                }
+
+                //Check ID value
+                int QRID = 0;
+                if (!Int32.TryParse(xmlNode.Attributes[0].Value, out QRID)){
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
+                }
+                if (QRID < 0 || _QRIDExist.Contains(QRID)){
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
+                }
+                _QRIDExist.Add(QRID);
+
+                //Check amount of lvl 2 tags in lvl 1 tag
+                if (!(xmlNode.ChildNodes.Count == 2) && 
+                      xmlNode.ChildNodes[0].Name == "x" && 
+                      xmlNode.ChildNodes[1].Name == "y"){
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_NODE_LV2;
+                }
+
+                //Check "value" of lvl 2 tags
+                try{
+                    double.Parse(xmlNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture);
+                    double.Parse(xmlNode.ChildNodes[1].InnerText, System.Globalization.CultureInfo.InvariantCulture);
+                }catch{
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_NODE_LV2;
+                }
+
+            }
+            return 0;
+        }
+
+        private int UseDefaultXmlDoc()
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            //Change xmlFile name to default
+            _xmlFileName = _defaultDir + "/" + _defaultName;
+            try{
+
+                //Try to load default file
+                xmlDoc.Load(_xmlFileName);
+            }catch{ 
+
+                //Create default file if it cannot be reads
+                if (!Directory.Exists(_defaultDir)){
+                    Directory.CreateDirectory(_defaultDir);
+                }
+                XmlDeclaration XmlDec = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
+                xmlDoc.AppendChild(XmlDec);
+                XmlComment XmlCom = xmlDoc.CreateComment("QRData here");
+                xmlDoc.AppendChild(XmlCom);
+                XmlElement QRCodes = xmlDoc.CreateElement("QRCodes");
+                xmlDoc.AppendChild(QRCodes);
+                xmlDoc.Save(_xmlFileName);
             }
             return 0;
         }
