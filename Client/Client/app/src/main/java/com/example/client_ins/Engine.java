@@ -2,6 +2,7 @@ package com.example.client_ins;
 
 import static com.example.client_ins.Tools.*;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.StrictMode;
 
@@ -48,6 +49,8 @@ public class Engine {
             DataSender dataSender = new DataSender(this);
             Thread udpSender = new Thread(dataSender);
             udpSender.start();
+
+
             //create 2 streams - first to compute coordinates
             //second - to send them
             //but they're don't working yet

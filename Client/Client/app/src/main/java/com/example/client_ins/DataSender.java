@@ -14,7 +14,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 class DataSender implements Runnable {
-    Engine mainEngine;
+    private Engine mainEngine;
     private boolean isActive;
     private DatagramSocket clientSocket;
 
@@ -24,13 +24,13 @@ class DataSender implements Runnable {
     }
 
 
-    public void Disable(){
-        isActive = false;
-    }
+//    public void Disable(){
+//        isActive = false;
+//    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void run(){
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAA Trying to start UDP");
+        System.out.println("Trying to start UDP");
         try {
             clientSocket = new DatagramSocket();
 
