@@ -33,7 +33,7 @@ namespace Server
             int newID;
             try
             {
-                newID = UserTable.Count;
+                newID = UserTable.Count + 1;
                 // creating new record
                 UserTable.Add(newID, time);
             }
