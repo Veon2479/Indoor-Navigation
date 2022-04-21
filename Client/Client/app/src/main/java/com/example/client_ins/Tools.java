@@ -39,7 +39,9 @@ public class Tools {
 
     public static int serverPortTcp = 4444;
     public static int serverPortUdp = 4445;
-    public static int AttemptsToRegistrate = 1;
+    public static int AttemptsToRegistrate = 3;
+    public static int BufferSize = 28;
+    public static int UdpPacketDelay = 1000;
 
     public static void readFromFile() throws IOException, SAXException, ParserConfigurationException {
         File file = new File("configClient.xml");
@@ -47,7 +49,9 @@ public class Tools {
             serverAddr = "192.168.50.145";
             serverPortTcp = 4444;
             serverPortUdp = 4445;
-            AttemptsToRegistrate = 1;
+            AttemptsToRegistrate = 3;
+            BufferSize = 28;
+            UdpPacketDelay = 1000;
         }
         else {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -61,6 +65,8 @@ public class Tools {
             serverPortTcp = Integer.parseInt(nm.item(1).getNodeValue());
             serverPortUdp = Integer.parseInt(nm.item(2).getNodeValue());
             AttemptsToRegistrate = Integer.parseInt(nm.item(3).getNodeValue());
+            BufferSize = Integer.parseInt(nm.item(4).getNodeValue());
+            UdpPacketDelay = Integer.parseInt(nm.item(5).getNodeValue());
         }
     }
 
@@ -73,6 +79,8 @@ public class Tools {
         root.setAttribute("serverPortTcp", String.valueOf(serverPortTcp));
         root.setAttribute("serverPortUdp", String.valueOf(serverPortUdp));
         root.setAttribute("AttemptsToRegistrate", String.valueOf(AttemptsToRegistrate));
+        root.setAttribute("BufferSize", String.valueOf(BufferSize));
+        root.setAttribute("UdpPacketDelay", String.valueOf(UdpPacketDelay));
         doc.appendChild(root);
 
         File file = new File("configClient.xml");
