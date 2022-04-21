@@ -28,6 +28,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+
 public class Tools {
 
 
@@ -35,7 +36,6 @@ public class Tools {
 
    // public static String serverAddr = "10.144.50.145";
     public static String serverAddr = "192.168.50.145";
-
 
     public static int serverPortTcp = 4444;
     public static int serverPortUdp = 4445;
@@ -61,11 +61,11 @@ public class Tools {
             NodeList nodeList = doc.getElementsByTagName("root");
             Node node = nodeList.item(0);
             NamedNodeMap nm = node.getAttributes();
-            serverAddr = nm.item(0).getNodeValue();
-            serverPortTcp = Integer.parseInt(nm.item(1).getNodeValue());
-            serverPortUdp = Integer.parseInt(nm.item(2).getNodeValue());
-            AttemptsToRegistrate = Integer.parseInt(nm.item(3).getNodeValue());
-            BufferSize = Integer.parseInt(nm.item(4).getNodeValue());
+            AttemptsToRegistrate = Integer.parseInt(nm.item(0).getNodeValue());
+            BufferSize = Integer.parseInt(nm.item(1).getNodeValue());
+            serverAddr = nm.item(2).getNodeValue();
+            serverPortTcp = Integer.parseInt(nm.item(3).getNodeValue());
+            serverPortUdp = Integer.parseInt(nm.item(4).getNodeValue());
             UdpPacketDelay = Integer.parseInt(nm.item(5).getNodeValue());
         }
     }
