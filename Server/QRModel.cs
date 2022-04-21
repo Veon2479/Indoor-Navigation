@@ -42,7 +42,7 @@ namespace Server
             XmlElement xmlEl = xmlDoc.DocumentElement;
             
             //Check for correct QRID
-            if (QRID < 0 || QRID > xmlEl.ChildNodes.Count-1 || !_QRIDExist.Contains(QRID)){
+            if (QRID < 0 || !_QRIDExist.Contains(QRID)){
                 return (int)GetQRCoordErrorCode.QRID_INCORRECT;
             }
 
@@ -75,8 +75,8 @@ namespace Server
             XmlElement xmlEl = xmlDoc.DocumentElement;
 
             //Check for correct QRID
-            if (QRID < 0 || QRID > xmlEl.ChildNodes.Count-1 || !_QRIDExist.Contains(QRID)){
-                return (int)GetQRCoordErrorCode.QRID_INCORRECT;
+            if (QRID < 0 || !_QRIDExist.Contains(QRID)){
+                return (int)DeleteQRRecordErrorCode.QRID_INCORRECT;
             }
 
             xmlEl.RemoveChild(xmlEl.ChildNodes[QRID]);
@@ -109,6 +109,65 @@ namespace Server
             }
 
             xmlEl.RemoveChild(xmlEl.ChildNodes[ID]);
+            xmlDoc.Save(_xmlFileName);
+            return 0;
+        }
+
+        public enum AddQRRecordErrorCode{
+            INCORRECT_PARAMETER = -1,
+            CORRUPTED_FILE = -2,
+            QRID_INCORRECT = -3,
+            NAME_OCCUPIED = -2
+        }
+        public int AddQRRecord(string QRID, string name, string x, string y)
+        {
+            int iQRID = 0;
+            try{
+                iQRID = Int32.Parse(QRID);
+                double.Parse(x, System.Globalization.CultureInfo.InvariantCulture);
+                double.Parse(y, System.Globalization.CultureInfo.InvariantCulture);
+            }catch{
+                return (int)AddQRRecordErrorCode.INCORRECT_PARAMETER;
+            }
+
+            XmlDocument xmlDoc = new XmlDocument();
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0){
+                return (int)DeleteQRRecordErrorCode.CORRUPTED_FILE;    
+            }
+            
+            //Check for correct QRID
+            if (iQRID < 0 || _QRIDExist.Contains(iQRID)){
+                return (int)AddQRRecordErrorCode.QRID_INCORRECT;
+            }
+            
+            XmlElement xmlRoot = xmlDoc.DocumentElement;
+
+            //Check for existing name
+            Boolean isExist = false;
+            int i = 0;
+            while (i < xmlRoot.ChildNodes.Count && !isExist){
+                if (xmlRoot.ChildNodes[i].Attributes[1].Value == name){
+                    isExist = true;
+                }
+                i++;
+            }
+            if (isExist){
+                return (int)AddQRRecordErrorCode.NAME_OCCUPIED;
+            }
+
+            
+            XmlElement QRCode = xmlDoc.CreateElement("QRCode");
+            QRCode.SetAttribute("id", QRID);
+            QRCode.SetAttribute("name", name);
+            XmlElement xmlX = xmlDoc.CreateElement("x");
+            xmlX.InnerText = x;
+            XmlElement xmlY = xmlDoc.CreateElement("y");
+            xmlY.InnerText = y;
+            QRCode.AppendChild(xmlX);
+            QRCode.AppendChild(xmlY);
+            xmlRoot.AppendChild(QRCode);
             xmlDoc.Save(_xmlFileName);
             return 0;
         }
