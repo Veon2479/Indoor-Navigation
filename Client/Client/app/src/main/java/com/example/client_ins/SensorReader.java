@@ -33,16 +33,17 @@ public class SensorReader implements Runnable{
                 switch(sensorEvent.sensor.getType())
                 {
                     case Sensor.TYPE_ROTATION_VECTOR:
-                        math.rotVecX = sensorEvent.values[0];
-                        math.rotVecY = sensorEvent.values[1];
-                        math.rotVecZ = sensorEvent.values[2];
+                        math.rotQuat.x = sensorEvent.values[0];
+                        math.rotQuat.y = sensorEvent.values[1];
+                        math.rotQuat.z = sensorEvent.values[2];
+                        math.rotQuat.w = sensorEvent.values[3];
                         break;
 
                     case Sensor.TYPE_LINEAR_ACCELERATION:
-                        math.linAccX = sensorEvent.values[0];
-                        math.linAccY = sensorEvent.values[1];
-                        math.linAccZ = sensorEvent.values[2];
-
+                        math.linAccQuat.x = sensorEvent.values[0];
+                        math.linAccQuat.y = sensorEvent.values[1];
+                        math.linAccQuat.z = sensorEvent.values[2];
+                    math.UpdateGlobalAcc();
                 }
             }
 
