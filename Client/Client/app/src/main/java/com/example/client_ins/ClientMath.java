@@ -79,6 +79,9 @@ public class ClientMath implements Runnable{
 
     private double z = 0;
 
+    private double time;
+    private double deltaTime;
+
     public void UpdateGlobalAcc()
     {
         tempQuat.x = rotQuat.x;
@@ -96,7 +99,7 @@ public class ClientMath implements Runnable{
         accZ = linAccQuat.z;
     }
 
-    void PhysicsProc(double deltaTime){
+    void PhysicsProc(){
         mainEngine.Crd1 += velX * deltaTime + accX * deltaTime * deltaTime / 2;
         mainEngine.Crd2 += velY * deltaTime + accY * deltaTime * deltaTime / 2;
         z += velZ * deltaTime + accZ * deltaTime * deltaTime / 2;
@@ -114,9 +117,12 @@ public class ClientMath implements Runnable{
 
     public void run()
     {
+        time = System.nanoTime();
         while(isActive)
         {
-            PhysicsProc(0.01);
+            deltaTime = System.nanoTime() / 1000000000 - time;
+            time += deltaTime;
+            PhysicsProc();
         }
     }
 }
