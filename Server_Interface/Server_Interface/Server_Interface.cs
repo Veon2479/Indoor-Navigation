@@ -17,6 +17,10 @@ namespace Server
         {
             InitializeComponent();
             BlockSettingsControls();
+
+            //set up server settings
+            CheckForIllegalCrossThreadCalls = false;
+            SetUpServer();
         }
 
         private void BlockSettingsControls()
@@ -181,6 +185,50 @@ namespace Server
                 //UpdatePointText();
                 //UpdateRealValuesText();
             }
-        }     
+        }
+
+        //start the server
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            ServerManage.StartServer(ref tmrListUpdate);
+        }
+
+        //stop the server
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            ServerManage.StopServer(ref tmrListUpdate);
+        }
+
+        //flush the server temp storage
+        private void btnFlush_Click(object sender, EventArgs e)
+        {
+            Server.Flush();
+        }
+
+        //print log message
+        private void LogMessage(string msg)
+        {
+            txtbLog.AppendText(msg + "\r\n");
+        }
+
+        //subsctibe to log messages
+        public void SetUpServer()
+        {
+            Server.LogMessage = LogMessage;
+        }
+
+        //close main form and stop server
+        private void frmServer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Server.Stop();
+        }
+
+        //updating online user list
+        private void tmrListUpdate_Tick(object sender, EventArgs e)
+        {
+            if (!Server.Run)
+                return;
+            ServerManage.UpdateOnlineUsers(ref lvOnline, Server.userIDModel);
+        }
     }
 }
