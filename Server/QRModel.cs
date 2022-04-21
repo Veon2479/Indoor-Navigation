@@ -79,7 +79,7 @@ namespace Server
                 return (int)DeleteQRRecordErrorCode.QRID_INCORRECT;
             }
 
-            xmlEl.RemoveChild(xmlEl.ChildNodes[QRID]);
+            xmlEl.RemoveChild(xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)]);
             xmlDoc.Save(_xmlFileName);
             return 0;
         }
@@ -95,6 +95,7 @@ namespace Server
 
             XmlElement xmlEl = xmlDoc.DocumentElement;
 
+            //Check is name exist
             int ID = -1;
             Boolean find = false;
             while (ID+1 < xmlEl.ChildNodes.Count && !find){
@@ -134,7 +135,7 @@ namespace Server
 
             //Check for correct file content
             if (CheckXmlFileContent(ref xmlDoc) < 0){
-                return (int)DeleteQRRecordErrorCode.CORRUPTED_FILE;    
+                return (int)AddQRRecordErrorCode.CORRUPTED_FILE;    
             }
             
             //Check for correct QRID
@@ -172,6 +173,64 @@ namespace Server
             return 0;
         }
 
+        public enum ChangeQRRecordErrorCode{
+            CORRUPTED_FILE = -1,
+            QRID_INCORRECT = -2,
+            NAME_INCORRECT = -3
+        }
+        public int ChangeQRRecord(int QRID, double x, double y)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0){
+                return (int)ChangeQRRecordErrorCode.CORRUPTED_FILE;    
+            }
+            
+            //Check for correct QRID
+            if (QRID < 0 || !_QRIDExist.Contains(QRID)){
+                return (int)ChangeQRRecordErrorCode.QRID_INCORRECT;
+            }
+
+            XmlElement xmlRoot = xmlDoc.DocumentElement;
+            XmlNode QRCode = xmlRoot.ChildNodes[_QRIDExist.IndexOf(QRID)]; 
+            QRCode.ChildNodes[0].InnerText = x.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            QRCode.ChildNodes[1].InnerText = y.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            xmlDoc.Save(_xmlFileName);
+            return 0;
+        }
+
+        public int ChangeQRRecord(string name, double x, double y)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0){
+                return (int)ChangeQRRecordErrorCode.CORRUPTED_FILE;    
+            }
+
+            XmlElement xmlEl = xmlDoc.DocumentElement;
+
+            //Check is name exist
+            int ID = -1;
+            Boolean find = false;
+            while (ID+1 < xmlEl.ChildNodes.Count && !find){
+                ID++;
+                if (xmlEl.ChildNodes[ID].Attributes[1].Value == name){
+                    find = true;
+                }
+            }
+            if (!find){
+                return (int)ChangeQRRecordErrorCode.NAME_INCORRECT;
+            }
+
+            XmlElement xmlRoot = xmlDoc.DocumentElement;
+            XmlNode QRCode = xmlRoot.ChildNodes[ID]; 
+            QRCode.ChildNodes[0].InnerText = x.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            QRCode.ChildNodes[1].InnerText = y.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            xmlDoc.Save(_xmlFileName);
+            return 0;
+        }
         private enum CheckXmlFileContentErrorCode{
             IS_EMPTY = 1,
             READ_FILE_ERROR = -1,
