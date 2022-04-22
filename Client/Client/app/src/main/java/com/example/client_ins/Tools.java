@@ -43,15 +43,17 @@ public class Tools {
     public static int BufferSize = 28;
     public static int UdpPacketDelay = 1000;
 
-    public static void readFromFile() throws IOException, SAXException, ParserConfigurationException {
+    public static void readFromFile() throws IOException, SAXException, ParserConfigurationException, TransformerException {
         File file = new File("configClient.xml");
         if(!file.exists()) {
-            serverAddr = "192.168.50.145";
+          //  serverAddr = "10.144.157.188"; ip of thiamath
+            serverAddr = "10.144.58.144";   //ip of omnissiah
             serverPortTcp = 4444;
             serverPortUdp = 4445;
             AttemptsToRegistrate = 3;
             BufferSize = 28;
             UdpPacketDelay = 1000;
+            writeToFile();
         }
         else {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -61,12 +63,15 @@ public class Tools {
             NodeList nodeList = doc.getElementsByTagName("root");
             Node node = nodeList.item(0);
             NamedNodeMap nm = node.getAttributes();
+
             AttemptsToRegistrate = Integer.parseInt(nm.item(0).getNodeValue());
             BufferSize = Integer.parseInt(nm.item(1).getNodeValue());
             UdpPacketDelay = Integer.parseInt(nm.item(2).getNodeValue());
             serverAddr = nm.item(3).getNodeValue();
             serverPortTcp = Integer.parseInt(nm.item(4).getNodeValue());
             serverPortUdp = Integer.parseInt(nm.item(5).getNodeValue());
+
+            System.out.println("Setting read successfully");
 
         }
     }
@@ -88,6 +93,8 @@ public class Tools {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.transform(new DOMSource(doc), new StreamResult(file));
+
+        System.out.println("Setting wrote Successfully");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

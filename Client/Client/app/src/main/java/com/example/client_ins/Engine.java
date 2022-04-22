@@ -7,6 +7,8 @@ import android.os.StrictMode;
 
 import androidx.annotation.RequiresApi;
 
+import org.xml.sax.SAXException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 
+import javax.xml.parsers.ParserConfigurationException;
 
 
 public class Engine {
@@ -28,30 +31,51 @@ public class Engine {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Engine()
     {
-        int i = 0;
         boolean flag = false;
-        System.out.println( "Try to registrate user!");
-
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        while ( i < AttemptsToRegistrate && ! flag )
-        {
-            flag = Registrate();
-            i++;
+        try {
+            System.out.println("Initializing program state");
+            readFromFile();
+        } catch (Exception e) {
+            System.out.println("FATAL ERROR while reading settings file, aborting..");
+            flag = true;
         }
-        isAlive = flag;
-
-        if ( isAlive )
+        if (!flag)
         {
-            DataSender dataSender = new DataSender(this);
-            Thread udpSender = new Thread(dataSender);
-            udpSender.start();
-            //create 2 streams - first to compute coordinates
-            //second - to send them
-            //but they're don't working yet
+            System.out.println("serverAddr is "+serverAddr);
+            System.out.println("serverPortTcp is "+serverPortTcp);
+            System.out.println("serverPortUdp is "+serverPortUdp);
+            System.out.println("AttemptsToRegistrate is "+AttemptsToRegistrate);
+            System.out.println("BufferSize is "+BufferSize);
+            System.out.println("UdpPacketDelay is "+UdpPacketDelay);
+
+            int i = 0;
+            System.out.println("Try to registrate user!");
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            while (i < AttemptsToRegistrate && !flag) {
+                System.out.println("Trying to registrate");
+                flag = Registrate();
+                if (!flag)
+                    UserId = 0;
+                i++;
+            }
+            isAlive = flag;
+
+            if (isAlive) {
+                System.out.println("Registration was successful");
+                DataSender dataSender = new DataSender(this);
+                Thread udpSender = new Thread(dataSender);
+                udpSender.start();
+
+                //create 2 streams - first to compute coordinates
+                //second - to send them
+                //but they're don't working yet
+            } else {
+                System.out.println("Failed to registrate");
+            }
         }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -72,9 +96,9 @@ public class Engine {
             InputStream sock_ins = clientTcp.getInputStream();
             OutputStream sock_outs = clientTcp.getOutputStream();
 
-            byte[] buffer = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
 
-            buffer = setInfoBuffer( UserId, 2.34d, 1.32e-10); //TODO: crd1 is ID of place
+            byte[] buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
+
 
             System.out.println("Sending data");
             sock_outs.write(buffer);
