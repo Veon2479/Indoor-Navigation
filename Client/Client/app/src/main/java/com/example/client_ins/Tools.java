@@ -43,11 +43,11 @@ public class Tools {
     public static int BufferSize = 28;
     public static int UdpPacketDelay = 1000;
 
-    public void readFromFile() throws IOException {
-        File path = getFilesDir();
-        File file = new File(path, "configClient.txt");
+    public static void readFromFile() throws IOException, SAXException, ParserConfigurationException, TransformerException {
+        File file = new File("configClient.xml");
         if(!file.exists()) {
-            serverAddr = "192.168.50.145";
+          //  serverAddr = "10.144.157.188"; ip of thiamath
+            serverAddr = "10.144.58.144";   //ip of omnissiah
             serverPortTcp = 4444;
             serverPortUdp = 4445;
             AttemptsToRegistrate = 3;
@@ -56,30 +56,45 @@ public class Tools {
             writeToFile();
         }
         else {
-            Scanner in = new Scanner(new FileInputStream(file));
-            serverAddr = in.nextLine();
-            AttemptsToRegistrate = Integer.parseInt(in.nextLine());
-            BufferSize = Integer.parseInt(in.nextLine());
-            UdpPacketDelay = Integer.parseInt(in.nextLine());
-            serverPortTcp = Integer.parseInt(in.nextLine());
-            serverPortUdp = Integer.parseInt(in.nextLine());
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(file);
+            doc.getDocumentElement().normalize();
+            NodeList nodeList = doc.getElementsByTagName("root");
+            Node node = nodeList.item(0);
+            NamedNodeMap nm = node.getAttributes();
+
+            AttemptsToRegistrate = Integer.parseInt(nm.item(0).getNodeValue());
+            BufferSize = Integer.parseInt(nm.item(1).getNodeValue());
+            UdpPacketDelay = Integer.parseInt(nm.item(2).getNodeValue());
+            serverAddr = nm.item(3).getNodeValue();
+            serverPortTcp = Integer.parseInt(nm.item(4).getNodeValue());
+            serverPortUdp = Integer.parseInt(nm.item(5).getNodeValue());
+
+            System.out.println("Setting read successfully");
+
         }
     }
 
-    public void writeToFile() throws IOException {
-        File path = getFilesDir();
-        File file = new File(path, "configClient.txt");
-        if(!file.exists()) {
-            file.createNewFile();
-        }
-        OutputStreamWriter fl = new OutputStreamWriter(new FileOutputStream(file));
-        fl.write(serverAddr+"\n");
-        fl.write(serverPortTcp+"\n");
-        fl.write(serverPortUdp+"\n");
-        fl.write(AttemptsToRegistrate+"\n");
-        fl.write(BufferSize+"\n");
-        fl.write(UdpPacketDelay+"\n");
-        fl.close();
+    public static void writeToFile() throws ParserConfigurationException, TransformerException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        Document doc = factory.newDocumentBuilder().newDocument();
+        Element root = doc.createElement("root");
+        root.setAttribute("serverAddr", serverAddr);
+        root.setAttribute("serverPortTcp", String.valueOf(serverPortTcp));
+        root.setAttribute("serverPortUdp", String.valueOf(serverPortUdp));
+        root.setAttribute("AttemptsToRegistrate", String.valueOf(AttemptsToRegistrate));
+        root.setAttribute("BufferSize", String.valueOf(BufferSize));
+        root.setAttribute("UdpPacketDelay", String.valueOf(UdpPacketDelay));
+        doc.appendChild(root);
+
+        File file = new File("configClient.xml");
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.transform(new DOMSource(doc), new StreamResult(file));
+
+        System.out.println("Setting wrote Successfully");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
