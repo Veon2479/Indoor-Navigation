@@ -8,12 +8,16 @@ class Quaternion{
     public double z;
     public double w;
 
+    public double Norm(){
+        return x*x + y*y + z*z + w*w;
+    }
+
     public void Normalize(){
         double l = Math.sqrt(x*x + y*y + z*z + w*w);
-        x /= l;
-        y /= l;
-        z /= l;
-        w /= l;
+        this.x /= l;
+        this.y /= l;
+        this.z /= l;
+        this.w /= l;
     }
 
     public void Mul(Quaternion q){
@@ -22,22 +26,24 @@ class Quaternion{
         double tz = w*q.z + x*q.y - y*q.x + z*q.w;
         double tw = w*q.w - x*q.x - y*q.y - z*q.z;
 
-        x = tx;
-        y = ty;
-        z = tz;
-        w = tw;
+        this.x = tx;
+        this.y = ty;
+        this.z = tz;
+        this.w = tw;
     }
 
     public void MulWithInverted(Quaternion q){
-        double tx = - w*q.x + x*q.w - y*q.z + z*q.y;
-        double ty = - w*q.y + x*q.z + y*q.w - z*q.x;
-        double tz = - w*q.z - x*q.y + y*q.x + z*q.w;
-        double tw = w*q.w + x*q.x + y*q.y + z*q.z;
+        double l = q.Norm();
 
-        x = tx;
-        y = ty;
-        z = tz;
-        w = tw;
+        double tx = (- w*q.x + x*q.w - y*q.z + z*q.y) / l;
+        double ty = (- w*q.y + x*q.z + y*q.w - z*q.x) / l;
+        double tz = (- w*q.z - x*q.y + y*q.x + z*q.w) / l;
+        double tw = (w*q.w + x*q.x + y*q.y + z*q.z) / l;
+
+        this.x = tx;
+        this.y = ty;
+        this.z = tz;
+        this.w = tw;
     }
 
     public void MulVec(Quaternion q){
@@ -46,36 +52,44 @@ class Quaternion{
         double tz = w*q.z + x*q.y - y*q.x;
         double tw = - x*q.x - y*q.y - z*q.z;
 
-        x = tx;
-        y = ty;
-        z = tz;
-        w = tw;
+        this.x = tx;
+        this.y = ty;
+        this.z = tz;
+        this.w = tw;
     }
 
     public void Invert(){
-        x = -x;
-        y = -y;
-        z = -z;
+        double l = Norm();
+
+        this.x = -x / l;
+        this.y = -y / l;
+        this.z = -z / l;
+        this.w /= l;
     }
 }
 
 public class ClientMath implements Runnable{
 
-    boolean isActive;
+    boolean isActive = true;
     Engine mainEngine;
+
+    public ClientMath(Engine engine) {
+        this.mainEngine = engine;
+        linAccQuat.w = 0;
+    }
 
     public Quaternion tempQuat = new Quaternion();
     public Quaternion rotQuat = new Quaternion();
 
     public Quaternion linAccQuat = new Quaternion();
 
-    private double accX = 0;
-    private double accY = 0;
-    private double accZ = 0;
+    public double accX = 0;
+    public double accY = 0;
+    public double accZ = 0;
 
-    private double velX = 0;
-    private double velY = 0;
-    private double velZ = 0;
+    public double velX = 0;
+    public double velY = 0;
+    public double velZ = 0;
 
     private double z = 0;
 
@@ -86,17 +100,17 @@ public class ClientMath implements Runnable{
     {
         tempQuat.x = rotQuat.x;
         tempQuat.y = rotQuat.y;
-        tempQuat.w = rotQuat.z;
-        tempQuat.z = rotQuat.w;
+        tempQuat.z = rotQuat.z;
+        tempQuat.w = rotQuat.w;
 
-        tempQuat.Invert();
-        tempQuat.MulVec(linAccQuat);
-        tempQuat.Mul(rotQuat);
-        //tempQuat.MulWithInverted(rotQuat);
+        //tempQuat.Invert();
+        //tempQuat.MulVec(linAccQuat);
+        tempQuat.Mul(linAccQuat);
+        tempQuat.MulWithInverted(rotQuat);
 
-        accX = linAccQuat.x;
-        accY = linAccQuat.y;
-        accZ = linAccQuat.z;
+        accX = tempQuat.x;
+        accY = tempQuat.y;
+        accZ = tempQuat.z;
     }
 
     void PhysicsProc(){
@@ -107,12 +121,6 @@ public class ClientMath implements Runnable{
         velX += accX * deltaTime;
         velY += accY * deltaTime;
         velZ += accZ * deltaTime;
-    }
-
-    public void Math(Engine engine)
-    {
-        this.mainEngine = engine;
-        linAccQuat.w = 0;
     }
 
     public void run()
