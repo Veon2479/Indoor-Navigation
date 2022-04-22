@@ -71,6 +71,7 @@ class Quaternion{
 public class ClientMath implements Runnable{
 
     boolean isActive = true;
+    public boolean fPhysics = true;
     Engine mainEngine;
 
     public ClientMath(Engine engine) {
@@ -123,14 +124,19 @@ public class ClientMath implements Runnable{
         velZ += accZ * deltaTime;
     }
 
+    public void Disable(){
+        isActive = false;
+    }
+
     public void run()
     {
         time = System.nanoTime();
         while(isActive)
         {
-            deltaTime = System.nanoTime() / 1000000000 - time;
+            deltaTime = ((float)System.nanoTime()) / 1000000000 - time;
             time += deltaTime;
-            PhysicsProc();
+            if(fPhysics)
+                PhysicsProc();
         }
     }
 }

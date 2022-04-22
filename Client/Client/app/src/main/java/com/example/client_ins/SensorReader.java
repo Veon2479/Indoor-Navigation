@@ -7,11 +7,10 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.content.Context.*;
 
-public class SensorReader implements Runnable{
+public class SensorReader{
     Context mContext;
     Engine mainEngine;
     ClientMath math;
-    private boolean isActive;
 
     private SensorManager sensorManager;
     private Sensor sensorLinearAcceleration;
@@ -19,7 +18,6 @@ public class SensorReader implements Runnable{
 
     public SensorReader(Engine engine, Context mContext, ClientMath math){
         this.mainEngine = engine;
-        this.isActive = true;
         this.mContext = mContext;
         this.math = math;
 
@@ -55,17 +53,5 @@ public class SensorReader implements Runnable{
 
         sensorManager.registerListener(sensorListener, sensorRotation, SensorManager.SENSOR_DELAY_FASTEST);
         sensorManager.registerListener(sensorListener, sensorLinearAcceleration, SensorManager.SENSOR_DELAY_FASTEST);
-    }
-
-    public void Disable(){
-        isActive = false;
-    }
-
-    public void run()
-    {
-        while (isActive)
-        {
-
-        }
     }
 }

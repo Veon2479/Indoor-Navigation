@@ -17,5 +17,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Engine engine = new Engine();
+
+        DataSender dataSender = new DataSender(engine);
+        Thread udpSender = new Thread(dataSender);
+        udpSender.start();
     }
 }

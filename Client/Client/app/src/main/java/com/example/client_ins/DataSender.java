@@ -19,6 +19,8 @@ class DataSender implements Runnable {
     private boolean isActive;
     private DatagramSocket clientSocket;
 
+    public boolean fSend = true;
+
     public DataSender(Engine engine){
         this.mainEngine = engine;
         this.isActive = true;
@@ -44,13 +46,16 @@ class DataSender implements Runnable {
             DatagramPacket sendingPacket = new DatagramPacket(sendingDataBuffer,sendingDataBuffer.length, IPAddress, serverPort);
 
             while(isActive){
-                //*Помещение данных в буфер*
-                updateInfoBuffer(sendingDataBuffer, mainEngine.UserId, mainEngine.Crd1, mainEngine.Crd2);
+                if(fSend)
+                {
+                    //*Помещение данных в буфер*
+                    updateInfoBuffer(sendingDataBuffer, mainEngine.UserId, mainEngine.Crd1, mainEngine.Crd2);
 
-                // Отправьте UDP-пакет серверу
-                clientSocket.send(sendingPacket);
+                    // Отправьте UDP-пакет серверу
+                    clientSocket.send(sendingPacket);
 
-                sleep(1000);
+                    sleep(1000);
+                }
             }
 
             // Закрытие соединения с сервером через сокет
