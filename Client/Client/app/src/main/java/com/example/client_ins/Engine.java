@@ -52,29 +52,29 @@ public class Engine {
             int i = 0;
             System.out.println("Try to registrate user!");
 
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            while (i < AttemptsToRegistrate && !flag) {
-                System.out.println("Trying to registrate");
-                flag = Registrate();
-                if (!flag)
-                    UserId = 0;
-                i++;
-            }
-            isAlive = flag;
-
-            if (isAlive) {
-                System.out.println("Registration was successful");
-                DataSender dataSender = new DataSender(this);
-                Thread udpSender = new Thread(dataSender);
-                udpSender.start();
-
-                //create 2 streams - first to compute coordinates
-                //second - to send them
-                //but they're don't working yet
-            } else {
-                System.out.println("Failed to registrate");
-            }
+//            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//            StrictMode.setThreadPolicy(policy);
+//            while (i < AttemptsToRegistrate && !flag) {
+//                System.out.println("Trying to registrate");
+//                flag = Registrate();
+//                if (!flag)
+//                    UserId = 0;
+//                i++;
+//            }
+//            isAlive = flag;
+//
+//            if (isAlive) {
+//                System.out.println("Registration was successful");
+//                DataSender dataSender = new DataSender(this);
+//                Thread udpSender = new Thread(dataSender);
+//                udpSender.start();
+//
+//                //create 2 streams - first to compute coordinates
+//                //second - to send them
+//                //but they're don't working yet
+//            } else {
+//                System.out.println("Failed to registrate");
+//            }
         }
 
     }
