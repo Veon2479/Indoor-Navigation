@@ -149,7 +149,7 @@ namespace Server
         /// <summary>
         ///     Deler QR record from xlm file according recived record name
         /// </summary>
-        /// <param name="QRname">Name of record in xml file</param>
+        /// <param name="QRName">Name of record in xml file</param>
         /// <returns>        
         ///     <list type="table">
         ///         <listheader>
@@ -161,7 +161,7 @@ namespace Server
         ///     <item>-3 (NAME_NOT_FOUND): Record name not found</item>
         ///     </list>
         /// </returns>
-        public int DeleteQRRecord(string QRname)
+        public int DeleteQRRecord(string QRName)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
@@ -177,7 +177,7 @@ namespace Server
             Boolean find = false;
             while (ID+1 < xmlEl.ChildNodes.Count && !find){
                 ID++;
-                if (xmlEl.ChildNodes[ID].Attributes[1].Value == QRname){
+                if (xmlEl.ChildNodes[ID].Attributes[1].Value == QRName){
                     find = true;
                 }
             }
@@ -201,7 +201,7 @@ namespace Server
         ///     Add QR recrod in xml file
         /// </summary>
         /// <param name="QRID">ID of QR record to add</param>
-        /// <param name="QRname">Name of QR record to add</param>
+        /// <param name="QRName">Name of QR record to add</param>
         /// <param name="x">Coordinate x</param>
         /// <param name="y">Coordinate y</param>
         /// <returns>
@@ -217,7 +217,7 @@ namespace Server
         ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
         ///     </list>
         /// </returns>
-        public int AddQRRecord(string QRID, string QRname, string x, string y)
+        public int AddQRRecord(string QRID, string QRName, string x, string y)
         {
             //Check for correct input parametrs
             try{
@@ -256,7 +256,7 @@ namespace Server
             Boolean isExist = false;
             int i = 0;
             while (i < xmlRoot.ChildNodes.Count && !isExist){
-                if (xmlRoot.ChildNodes[i].Attributes[1].Value == QRname){
+                if (xmlRoot.ChildNodes[i].Attributes[1].Value == QRName){
                     isExist = true;
                 }
                 i++;
@@ -268,7 +268,7 @@ namespace Server
             //Create new xml element, fill it, save changes
             XmlElement QRCode = xmlDoc.CreateElement("QRCode");
             QRCode.SetAttribute("id", iQRID.ToString());
-            QRCode.SetAttribute("name", QRname);
+            QRCode.SetAttribute("name", QRName);
             XmlElement xmlX = xmlDoc.CreateElement("x");
             xmlX.InnerText = x;
             XmlElement xmlY = xmlDoc.CreateElement("y");
@@ -284,7 +284,7 @@ namespace Server
         public enum ChangeQRRecordErrorCode{
             CORRUPTED_FILE = -1,
             QRID_INCORRECT = -2,
-            NAME_INCORRECT = -3
+            NAME_NOT_FOUND = -3
         }
         
         /// <summary>
@@ -329,7 +329,7 @@ namespace Server
         /// <summary>
         ///     Change QR record in xml file according received QR record name
         /// </summary>
-        /// <param name="QRname">Name of QR recrod</param>
+        /// <param name="QRName">Name of QR recrod</param>
         /// <param name="x">Coordinate x</param>
         /// <param name="y">Coordinate y</param>
         /// <returns>
@@ -340,10 +340,10 @@ namespace Server
         ///             </term>
         ///         </listheader>
         ///     <item>-1 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
-        ///     <item>-3 (NAME_INCORRECT): Incorrect QR name, or does not exist</item>
+        ///     <item>-3 (NAME_NOT_FOUND): Incorrect QR name, or does not exist</item>
         ///     </list>
         ///</returns>
-        public int ChangeQRRecord(string QRname, double x, double y)
+        public int ChangeQRRecord(string QRName, double x, double y)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
@@ -359,12 +359,12 @@ namespace Server
             Boolean find = false;
             while (ID+1 < xmlEl.ChildNodes.Count && !find){
                 ID++;
-                if (xmlEl.ChildNodes[ID].Attributes[1].Value == QRname){
+                if (xmlEl.ChildNodes[ID].Attributes[1].Value == QRName){
                     find = true;
                 }
             }
             if (!find){
-                return (int)ChangeQRRecordErrorCode.NAME_INCORRECT;
+                return (int)ChangeQRRecordErrorCode.NAME_NOT_FOUND;
             }
 
             //Get chosen xml element, change it data, save changes
@@ -437,8 +437,27 @@ namespace Server
             UNKNOWN_ROOT_TAG = -2,
             UNKNOWN_ELEMENT_LV1_TAG = -3,
             INCORRECT_ATRIBUTES_LV1 = -4,
-            INCORRECT_NODE_LV2 = -5
+            INCORRECT_ELEMENT_LV2 = -5
         }
+        /// <summary>
+        ///     Check xml file for incrrect content
+        /// </summary>
+        /// <param name="xmlDoc">Xml document to open xml file</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <itme> 1 (IS_EMPTY): xml document is empty</itme>
+        ///     <item>-1 (READ_FILE_ERROR): Error on read file (cannot find, incorrect name, cannot read, incorrect directory...)</item>
+        ///     <item>-2 (UNKNOWN_ROOT_TAG): Xml file contain unknown root tag (Known root tags: "QRCodes")</item>
+        ///     <item>-3 (UNKNOWN_ELEMENT_LV1_TAG): Xml file contain unknown element tag on lvl 1 (Known lvl 1 tags: "QRCode")</item>
+        ///     <item>-4 (INCORRECT_ATRIBUTES_LV1): Xml file contain incorrect atributes on lvl 1 (Correct artributes: "id", "name")</item>
+        ///     <item>-5 (INCORRECT_ELEMENT_LV2): Xml file contain incorrect element on lvl 2 (Correct lvl 2 tags: "x", "y"; Correct lvl 2 innrer text type: double)</item>
+        ///     </list>
+        /// </returns>
         private int CheckXmlFileContent(ref XmlDocument xmlDoc)
         {            
             //Check is this file exist
@@ -462,6 +481,9 @@ namespace Server
                 return (int)CheckXmlFileContentErrorCode.IS_EMPTY;
             }
 
+            //List for check unuque attribute name
+            List<string> QRNameList = new List<string>();
+
             //For every lvl 1 tag:
             foreach(XmlNode xmlNode in xmlEl){
                 
@@ -469,7 +491,6 @@ namespace Server
                 if(xmlNode.Name != "QRCode"){
                     return (int)CheckXmlFileContentErrorCode.UNKNOWN_ELEMENT_LV1_TAG; 
                 }
-
 
                 if(!(xmlNode.Attributes.Count == 2 &&           //Chekc amount of atributes
                      xmlNode.Attributes[0].Name == "id" &&      //Check exist atribure "id"
@@ -487,11 +508,17 @@ namespace Server
                 }
                 _QRIDExist.Add(QRID);
 
+                //Check unique name
+                if (QRNameList.Contains(xmlNode.Attributes[1].Value)){
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
+                }
+                QRNameList.Add(xmlNode.Attributes[1].Value);
+
                 //Check amount of lvl 2 tags in lvl 1 tag
                 if (!(xmlNode.ChildNodes.Count == 2) && 
                       xmlNode.ChildNodes[0].Name == "x" && 
                       xmlNode.ChildNodes[1].Name == "y"){
-                    return (int)CheckXmlFileContentErrorCode.INCORRECT_NODE_LV2;
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_ELEMENT_LV2;
                 }
 
                 //Check "value" of lvl 2 tags
@@ -499,13 +526,25 @@ namespace Server
                     double.Parse(xmlNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture);
                     double.Parse(xmlNode.ChildNodes[1].InnerText, System.Globalization.CultureInfo.InvariantCulture);
                 }catch{
-                    return (int)CheckXmlFileContentErrorCode.INCORRECT_NODE_LV2;
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_ELEMENT_LV2;
                 }
 
             }
             return 0;
         }
 
+        /// <summary>
+        ///     Change _xmlFileName to default value and check it for errors
+        /// </summary>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     </list>
+        /// </returns>
         private int UseDefaultXmlDoc()
         {
             XmlDocument xmlDoc = new XmlDocument();
