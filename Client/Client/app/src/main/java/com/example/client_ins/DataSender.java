@@ -3,6 +3,8 @@ package com.example.client_ins;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.time.Instant;
+
 import static com.example.client_ins.Tools.*;
 import static java.lang.Thread.sleep;
 import android.os.Build;
@@ -46,8 +48,8 @@ class DataSender implements Runnable {
 
                 // Отправьте UDP-пакет серверу
                 clientSocket.send(sendingPacket);
-                System.out.println("udp sent!");
-                sleep(1000);
+                System.out.println("udp sent at "+ Instant.now().getEpochSecond());
+                sleep(UdpPacketDelay);
             }
 
             // Закрытие соединения с сервером через сокет
