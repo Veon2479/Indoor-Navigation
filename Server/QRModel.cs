@@ -9,6 +9,7 @@ namespace Server
 {
     internal class QRModel
     {
+        //Struct that contain information about one record in xml file
         public struct QRModelXmlContent{
             public string QRID;
             public string QRName;
@@ -16,20 +17,41 @@ namespace Server
             public string Y;
         }
 
+        //Name of xml file to work with
         private string _xmlFileName = "";
-        private const string _defaultDir = "XmlDocs";
-        private const string _defaultName = "DefaultQRData.xml";
+
+        //Default directory that contains 
+        protected const string _defaultDir = "XmlDocs";
+        
+        //Default xml file name
+        protected const string _defaultName = "DefaultQRData.xml";
+        
+        //List that contain exicting QRID
         List<int> _QRIDExist = new List<int>();
 
+        /// <summary>
+        ///     Open and check xml file. If file does not exist use standart file in standart directory
+        /// </summary>
+        /// <param name="xmlFileName">Name of xml file to work with</param>
+        /// <exception cref="Exception">Xml file incorrect or was corrupted</exception>
         public QRModel(string xmlFileName)
         {
             _xmlFileName = xmlFileName;
             XmlDocument xmlDocument = new XmlDocument();
+
+            //Check xml document
             int iResult = CheckXmlFileContent(ref xmlDocument); 
             if (iResult == (int)CheckXmlFileContentErrorCode.READ_FILE_ERROR){
+                
+                //Change xml document to default
                 UseDefaultXmlDoc();
+
+                //Check default xml document 
+                if (CheckXmlFileContent(ref xmlDocument) < 0){
+                    throw new Exception("Incorrect default file or file was corrupted");    
+            }
             }else if (iResult < 0){
-                throw new Exception("Incorrect file name or file was corrupted");
+                throw new Exception("Incorrect file or file was corrupted");
             }
         }
 
@@ -38,6 +60,24 @@ namespace Server
             QRID_INCORRECT = -2,
             PARSE_TO_DOUBLE_ERROR = -3
         }
+        /// <summary>
+        ///     Return QR Coordiates according recived QRID
+        /// </summary>
+        /// <param name="QRID">ID of QR record in xml file</param>
+        /// <param name="x">Coordinate x</param>
+        /// <param name="y">Coordinate y</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
+        ///     <item>-2 (QRID_INCORRECT): No this ID in xml file</item>
+        ///     <item>-3 (PARSE_TO_DOUBLE_ERROR): Error in parcing data from xml table to double</item>
+        ///     </list>
+        /// </returns>
         public int GetQRCoord(int QRID, ref double x, ref double y)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -70,6 +110,21 @@ namespace Server
             QRID_INCORRECT = -2,
             NAME_NOT_FOUND = -3
         }
+        /// <summary>
+        ///     Delet QR Record from xml file according recived QRID
+        /// </summary>
+        /// <param name="QRID">ID of QR record in xml file</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
+        ///     <item>-2 (QRID_INCORRECT): No this ID in xml file</item>
+        ///     </list>
+        /// </returns>
         public int DeleteQRRecord(int QRID)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -86,11 +141,26 @@ namespace Server
                 return (int)DeleteQRRecordErrorCode.QRID_INCORRECT;
             }
 
+            //Delete record, save changes
             xmlEl.RemoveChild(xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)]);
             xmlDoc.Save(_xmlFileName);
             return 0;
         }
-
+        /// <summary>
+        ///     Deler QR record from xlm file according recived record name
+        /// </summary>
+        /// <param name="QRname">Name of record in xml file</param>
+        /// <returns>        
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
+        ///     <item>-3 (NAME_NOT_FOUND): Record name not found</item>
+        ///     </list>
+        /// </returns>
         public int DeleteQRRecord(string QRname)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -111,11 +181,11 @@ namespace Server
                     find = true;
                 }
             }
-
             if (!find){
                 return (int)DeleteQRRecordErrorCode.NAME_NOT_FOUND;
             }
 
+            //Delete record, save changes
             xmlEl.RemoveChild(xmlEl.ChildNodes[ID]);
             xmlDoc.Save(_xmlFileName);
             return 0;
@@ -125,13 +195,32 @@ namespace Server
             INCORRECT_PARAMETER = -1,
             CORRUPTED_FILE = -2,
             QRID_INCORRECT = -3,
-            NAME_OCCUPIED = -2
+            NAME_OCCUPIED = -4
         }
+        /// <summary>
+        ///     Add QR recrod in xml file
+        /// </summary>
+        /// <param name="QRID">ID of QR record to add</param>
+        /// <param name="QRname">Name of QR record to add</param>
+        /// <param name="x">Coordinate x</param>
+        /// <param name="y">Coordinate y</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (INCORRECT_PARAMET): Incorrect QRID or x or y</item>
+        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-3 (QRID_INCORRECT): QR ID incerrect (QRID < 0) or alredy exist</item>
+        ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
+        ///     </list>
+        /// </returns>
         public int AddQRRecord(string QRID, string QRname, string x, string y)
         {
-            int iQRID = 0;
+            //Check for correct input parametrs
             try{
-                iQRID = Int32.Parse(QRID);
                 double.Parse(x, System.Globalization.CultureInfo.InvariantCulture);
                 double.Parse(y, System.Globalization.CultureInfo.InvariantCulture);
             }catch{
@@ -145,6 +234,17 @@ namespace Server
                 return (int)AddQRRecordErrorCode.CORRUPTED_FILE;    
             }
             
+            //if QRID is empty then generate it 
+            int iQRID = -1;
+            if (!Int32.TryParse(QRID, out iQRID)){
+                if (QRID == ""){
+                    iQRID = 0;
+                    while(_QRIDExist.Contains(iQRID)){
+                        iQRID++;
+                    }
+                }
+            }
+
             //Check for correct QRID
             if (iQRID < 0 || _QRIDExist.Contains(iQRID)){
                 return (int)AddQRRecordErrorCode.QRID_INCORRECT;
@@ -165,9 +265,9 @@ namespace Server
                 return (int)AddQRRecordErrorCode.NAME_OCCUPIED;
             }
 
-            
+            //Create new xml element, fill it, save changes
             XmlElement QRCode = xmlDoc.CreateElement("QRCode");
-            QRCode.SetAttribute("id", QRID);
+            QRCode.SetAttribute("id", iQRID.ToString());
             QRCode.SetAttribute("name", QRname);
             XmlElement xmlX = xmlDoc.CreateElement("x");
             xmlX.InnerText = x;
@@ -177,6 +277,7 @@ namespace Server
             QRCode.AppendChild(xmlY);
             xmlRoot.AppendChild(QRCode);
             xmlDoc.Save(_xmlFileName);
+
             return 0;
         }
 
@@ -185,6 +286,24 @@ namespace Server
             QRID_INCORRECT = -2,
             NAME_INCORRECT = -3
         }
+        
+        /// <summary>
+        ///     Chade QR record in xml file according received QRID
+        /// </summary>
+        /// <param name="QRID">ID of QR record in xml file</param>
+        /// <param name="x">Coordinate x</param>
+        /// <param name="y">Coordinate y</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-2 (INCORRECT_PARAMET): Incorrect QRID or x or y</item>
+        ///     </list>
+        /// </returns>
         public int ChangeQRRecord(int QRID, double x, double y)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -199,6 +318,7 @@ namespace Server
                 return (int)ChangeQRRecordErrorCode.QRID_INCORRECT;
             }
 
+            //Get chosen xml element, change it data, save changes
             XmlElement xmlRoot = xmlDoc.DocumentElement;
             XmlNode QRCode = xmlRoot.ChildNodes[_QRIDExist.IndexOf(QRID)]; 
             QRCode.ChildNodes[0].InnerText = x.ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -206,6 +326,23 @@ namespace Server
             xmlDoc.Save(_xmlFileName);
             return 0;
         }
+        /// <summary>
+        ///     Change QR record in xml file according received QR record name
+        /// </summary>
+        /// <param name="QRname">Name of QR recrod</param>
+        /// <param name="x">Coordinate x</param>
+        /// <param name="y">Coordinate y</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-3 (NAME_INCORRECT): Incorrect QR name, or does not exist</item>
+        ///     </list>
+        ///</returns>
         public int ChangeQRRecord(string QRname, double x, double y)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -230,6 +367,7 @@ namespace Server
                 return (int)ChangeQRRecordErrorCode.NAME_INCORRECT;
             }
 
+            //Get chosen xml element, change it data, save changes
             XmlElement xmlRoot = xmlDoc.DocumentElement;
             XmlNode QRCode = xmlRoot.ChildNodes[ID]; 
             QRCode.ChildNodes[0].InnerText = x.ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -242,6 +380,21 @@ namespace Server
             CORRUPTED_FILE = -1,
             PARCE_TO_DOUBLE_ERROR = -2
         }
+        /// <summary>
+        ///     Return array of records, that contain data from xml file
+        /// </summary>
+        /// <param name="xmlContent">Array to fill it with data</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-2 (PARSE_TO_DOUBLE_ERROR): Error in parcing data from xml table to double</item>
+        ///     </list>
+        /// </returns>
         public int GetQRRecordList(ref QRModelXmlContent[] xmlContent)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -261,11 +414,14 @@ namespace Server
                 Array.Resize(ref xmlContent, xmlRoot.ChildNodes.Count);
             }
 
-            //Get array
             for (int i = 0; i < xmlRoot.ChildNodes.Count; i++){
                 XmlNode xmlNode = xmlRoot.ChildNodes[i];
+                
+                //Get atributes QRID, QRName
                 xmlContent[i].QRID = xmlNode.Attributes[0].Value;
                 xmlContent[i].QRName = xmlNode.Attributes[1].Value;
+                
+                //Get Coordinate x and y
                 try{
                     xmlContent[i].X = double.Parse(xmlNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture).ToString();
                     xmlContent[i].Y = double.Parse(xmlNode.ChildNodes[1].InnerText, System.Globalization.CultureInfo.InvariantCulture).ToString();
@@ -362,10 +518,12 @@ namespace Server
                 xmlDoc.Load(_xmlFileName);
             }catch{ 
 
-                //Create default file if it cannot be reads
+                //Check is default directory exist
                 if (!Directory.Exists(_defaultDir)){
                     Directory.CreateDirectory(_defaultDir);
                 }
+
+                //Create and save default file if it cannot be reads
                 XmlDeclaration XmlDec = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
                 xmlDoc.AppendChild(XmlDec);
                 XmlComment XmlCom = xmlDoc.CreateComment("QRData here");
