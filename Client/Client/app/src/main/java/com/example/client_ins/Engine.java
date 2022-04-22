@@ -25,7 +25,7 @@ public class Engine {
             readFromFile(context);
 
         } catch (Exception e) {
-            System.out.println("FATAL ERROR while reading settings file, aborting..");
+            System.out.println("FATAL ERROR while reading settings file: "+e);
             flag = true;
         }
         if (!flag)
@@ -102,7 +102,7 @@ public class Engine {
                 clientTcp.close();
             } catch (Exception e)
             {
-                System.out.println(e);
+                System.out.println("Exception while registration: "+e);
             }
             System.out.println("Connection closed!");
         }
