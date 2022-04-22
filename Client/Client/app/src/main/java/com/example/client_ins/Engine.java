@@ -2,6 +2,7 @@ package com.example.client_ins;
 
 import static com.example.client_ins.Tools.*;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
 
@@ -29,12 +30,12 @@ public class Engine {
     private Socket clientTcp;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Engine()
+    public Engine(Context context)
     {
         boolean flag = false;
         try {
             System.out.println("Initializing program state");
-            readFromFile();
+            readFromFile(context);
         } catch (Exception e) {
             System.out.println("FATAL ERROR while reading settings file, aborting..");
             flag = true;
