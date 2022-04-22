@@ -11,12 +11,12 @@ namespace Server
     {
         private static string UnixToDate(long Time, string ConvertFormat)
         {
-            DateTime ConvertedUnixTime = DateTimeOffset.FromUnixTimeSeconds(Time).DateTime;
+            DateTime ConvertedUnixTime = DateTimeOffset.FromUnixTimeSeconds(Time).DateTime.ToLocalTime();
             return ConvertedUnixTime.ToString(ConvertFormat);
         }
 
         //update online users
-        public static void UpdateOnlineUsers(ref ListView view, IDModel userIDModel)
+        public static void UpdateOnlineUsersView(ref ListView view, IDModel userIDModel)
         {
             view.BeginUpdate();
             view.Items.Clear();
@@ -30,14 +30,12 @@ namespace Server
                     view.Items.Add(lvItem);
                 }
             }
-
             view.EndUpdate();
         }
 
         //start the server
         public static void StartServer(ref Timer timer)
         {
-
             timer.Start();
             Server.Start();
         }
@@ -47,6 +45,13 @@ namespace Server
         {
             Server.Stop();
             timer.Stop();
+        }
+
+        //set up server
+        public static void SetUpServer(Server.LogMessageDelegate log)
+        {
+            Server.LogMessage = log;
+            Server.qrModel = new QRModel();
         }
     }
 }

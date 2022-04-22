@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--QRData here-->
+<QRCodes>
+  <QRCode id="1" name="PrimeHall">
+    <x>12.4</x>
+    <y>15.5</y>
+  </QRCode>
+  <QRCode id="2" name="PrimeHall1">
+    <x>3</x>
+    <y>4</y>
+  </QRCode>
+  <QRCode id="3" name="PrimeHall2">
+    <x>3</x>
+    <y>4</y>
+  </QRCode>
+</QRCodes>
