@@ -1,5 +1,33 @@
 class Server - запуск сервера, TcpListener и UdpListener
-	public static void Start() - запуск сервера (TcpListener и UdpListener запускаются в отдельных потоках)
+
+Ипользует:
+	IDModel: tostyk - модель ID пользователей
+	UserModel: 4Freak - модель пользователей
+	UserPacket: KJI0YH - преобразование присылаемого/отправляемого пакета
+
+Поля:
+		private static int DEFAULT_TCP_PORT - стандартный порт TCP
+        private static int DEFAULT_UDP_PORT - стандартный порт UDP
+
+        private static int DEFAULT_TABLE_CAPACITY - стандартная размерность таблицы пользователей
+
+        private static ManualResetEvent allDoneTcp - сигналы для управления потоком TcpListener
+        private static ManualResetEvent allDoneUdp - сигналы для управления потоком UdpListener
+
+        private static IDModel userIDModel - модель ID пользователей 
+        private static UserModel userModel -модель пользователей
+
+        private static Thread tcpListener - поток TcpListener
+        private static Thread udpListener - поток UdpListener
+
+		private static bool Run - состояние работы сервера
+
+
+Методы: 
+
+	public static int Start() - запуск сервера (TcpListener и UdpListener запускаются в отдельных потоках)
+
+	publixt static int Stop() - останавливает сервер, очищает буфер пользователей
 	
 	private static void StartTcpListener() - создание и запуск TcpListener, асинхронный прием соединений
 	
@@ -9,7 +37,5 @@ class Server - запуск сервера, TcpListener и UdpListener
 	
 	private static void AcceptUdpClient(IASyncResult ar) - асинхронная обработка дейтаграммы клиента: запись UserPacket
 	
-	private static ManualResetEvent allDoneTcp - сигналы для управления потоками TCP
 	
-	private static ManualResetEvent allDoneUdp - сигналы для управления потоками UDP
 	
