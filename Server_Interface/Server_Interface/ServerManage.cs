@@ -9,6 +9,11 @@ namespace Server
 {
     internal class ServerManage
     {
+        private static string UnixToDate(long Time, string ConvertFormat)
+        {
+            DateTime ConvertedUnixTime = DateTimeOffset.FromUnixTimeSeconds(Time).DateTime;
+            return ConvertedUnixTime.ToString(ConvertFormat);
+        }
 
         //update online users
         public static void UpdateOnlineUsers(ref ListView view, IDModel userIDModel)
@@ -21,7 +26,7 @@ namespace Server
                 if (userIDModel.UserTable[i] != IDModel.DEFAULT_TIME)
                 {
                     ListViewItem lvItem = new ListViewItem(i.ToString());
-                    lvItem.SubItems.Add(userIDModel.UserTable[i].ToString());
+                    lvItem.SubItems.Add(UnixToDate(userIDModel.UserTable[i], "dd:MM:yyyy HH:mm:ss"));
                     view.Items.Add(lvItem);
                 }
             }

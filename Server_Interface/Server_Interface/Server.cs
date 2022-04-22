@@ -193,7 +193,7 @@ namespace Server
                 await stream.FlushAsync();
 
                 Console.WriteLine("[TCP    send] {0}", packet.ToString());
-                LogMessage($"[TCP     send] {packet.ToString()}");
+                LogMessage($"[TCP    send] {packet.ToString()}");
             }
 
             catch (Exception e)

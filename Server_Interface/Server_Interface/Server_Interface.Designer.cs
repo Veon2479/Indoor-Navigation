@@ -331,7 +331,7 @@ namespace Server
             // txtbLog
             // 
             this.txtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtbLog.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.txtbLog.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.txtbLog.Location = new System.Drawing.Point(3, 3);
             this.txtbLog.Multiline = true;
             this.txtbLog.Name = "txtbLog";
@@ -374,7 +374,6 @@ namespace Server
             // 
             // lastOnline
             // 
-            this.lastOnline.DisplayIndex = 1;
             this.lastOnline.Text = "Last Online";
             this.lastOnline.Width = 200;
             // 
