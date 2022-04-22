@@ -1,0 +1,6 @@
+D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.csproj.SuggestedBindingRedirects.cache
+D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.Properties.Resources.resources
+D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.ServerForm.resources
+D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.csproj.GenerateResource.cache
+D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
