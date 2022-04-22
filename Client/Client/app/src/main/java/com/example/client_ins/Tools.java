@@ -1,9 +1,12 @@
 package com.example.client_ins;
 
+import android.content.Context;
 import android.os.Build;
+import android.os.Environment;
 import android.util.Xml;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,10 +16,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
+import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,8 +50,8 @@ public class Tools {
     public static int BufferSize = 28;
     public static int UdpPacketDelay = 1000;
 
-    public void readFromFile() throws IOException {
-        File path = getFilesDir();
+    public static void readFromFile(Context context) throws IOException {
+        File path = context.getFilesDir();
         File file = new File(path, "configClient.txt");
         if(!file.exists()) {
             serverAddr = "192.168.50.145";
@@ -53,7 +60,7 @@ public class Tools {
             AttemptsToRegistrate = 3;
             BufferSize = 28;
             UdpPacketDelay = 1000;
-            writeToFile();
+            writeToFile(context);
         }
         else {
             Scanner in = new Scanner(new FileInputStream(file));
@@ -66,8 +73,8 @@ public class Tools {
         }
     }
 
-    public void writeToFile() throws IOException {
-        File path = getFilesDir();
+    public static void writeToFile(Context context) throws IOException {
+        File path = context.getFilesDir();
         File file = new File(path, "configClient.txt");
         if(!file.exists()) {
             file.createNewFile();
