@@ -16,8 +16,6 @@ public class Engine {
     public double Crd1, Crd2;
     public boolean isAlive = false;
 
-    private Socket clientTcp;
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Engine(Context context)
     {
@@ -75,7 +73,7 @@ public class Engine {
         try
         {
 
-            clientTcp = new Socket();
+            Socket clientTcp = new Socket();
             clientTcp.connect( new InetSocketAddress( serverAddr, serverPortTcp ) );
             if ( clientTcp.isConnected() )
                 System.out.println("Connected!");
@@ -85,7 +83,7 @@ public class Engine {
             InputStream sock_ins = clientTcp.getInputStream();
             OutputStream sock_outs = clientTcp.getOutputStream();
 
-            byte[] buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
+            byte[] buffer = setInfoBufferWithLongs( UserId, 0, 0); //TODO: par1 is ID of qr of place
 
             System.out.println("Sending data");
             sock_outs.write(buffer);

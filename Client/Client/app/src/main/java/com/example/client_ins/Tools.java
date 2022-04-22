@@ -71,10 +71,21 @@ public class Tools {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static byte[] setInfoBuffer(int userID, double crd1, double crd2)
     {
-        byte[] result = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
+        byte[] result = new byte[ BufferSize ];
         ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );//.order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 4, crd1 );//.order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 12, crd2 );//.order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );//.order(ByteOrder.LITTLE_ENDIAN);
+        return result;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static byte[] setInfoBufferWithLongs(int userID, long par1, long par2) //par1 is QR id
+    {
+        byte[] result = new byte[ BufferSize ];
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );//.order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 4, par1 );//.order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 12, par2 );//.order(ByteOrder.LITTLE_ENDIAN);
         ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );//.order(ByteOrder.LITTLE_ENDIAN);
         return result;
     }

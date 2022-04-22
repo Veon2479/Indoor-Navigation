@@ -12,7 +12,6 @@ import androidx.annotation.RequiresApi;
 class DataSender implements Runnable {
     Engine mainEngine;
     private boolean isActive;
-    private DatagramSocket clientSocket;
 
     public DataSender(Engine engine){
         this.mainEngine = engine;
@@ -28,7 +27,7 @@ class DataSender implements Runnable {
     public void run(){
         System.out.println("Trying to start UDP");
         try {
-            clientSocket = new DatagramSocket();
+            DatagramSocket clientSocket = new DatagramSocket();
 
             // Получение IP-адреса сервера
             InetAddress IPAddress = InetAddress.getByName(serverAddr);
