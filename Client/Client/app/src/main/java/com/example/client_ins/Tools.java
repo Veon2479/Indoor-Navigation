@@ -37,9 +37,23 @@ public class Tools {
     public static void readFromFile(Context context) throws Exception {
         File path = context.getFilesDir();
 
-        //File file = new File(path, "configClient.txt");
-        if(!new File( path.getPath() + SettingFile ).exists()) {
-           // serverAddr = "10.144.157.188";
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(new File(path.getPath() + SettingFile));
+            doc.normalizeDocument();
+
+            Element root = doc.getDocumentElement();
+            System.out.println("Trying to read values");
+            serverAddr = root.getElementsByTagName("serverAddr").item(0).getTextContent();
+            AttemptsToRegistrate = Integer.parseInt(root.getElementsByTagName("AttemptsToRegistrate").item(0).getTextContent());
+            BufferSize = Integer.parseInt(root.getElementsByTagName("BufferSize").item(0).getTextContent());
+            UdpPacketDelay = Integer.parseInt(root.getElementsByTagName("UdpPacketDelay").item(0).getTextContent());
+            serverPortTcp = Integer.parseInt(root.getElementsByTagName("ServerPortTcp").item(0).getTextContent());
+            serverPortUdp = Integer.parseInt(root.getElementsByTagName("ServerPortUdp").item(0).getTextContent());
+        }
+        catch (Exception e)
+        {
+            // serverAddr = "10.144.157.188";
             serverAddr = "192.168.50.145";
             serverPortTcp = 4444;
             serverPortUdp = 4445;
@@ -48,24 +62,8 @@ public class Tools {
             UdpPacketDelay = 1000;
             writeToFile(context);
         }
-        else {
-
-              DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-              Document doc = builder.parse(new File( path.getPath() + SettingFile ));
-              doc.normalizeDocument();
-
-              Element root = doc.getDocumentElement();
-              System.out.println("Trying to read values");
-              serverAddr = root.getElementsByTagName("serverAddr").item(0).getTextContent();
-              AttemptsToRegistrate = Integer.parseInt( root.getElementsByTagName("AttemptsToRegistrate").item(0).getTextContent() );
-              BufferSize = Integer.parseInt( root.getElementsByTagName("BufferSize").item(0).getTextContent() );
-              UdpPacketDelay = Integer.parseInt( root.getElementsByTagName("UdpPacketDelay").item(0).getTextContent() );
-              serverPortTcp = Integer.parseInt( root.getElementsByTagName("ServerPortTcp").item(0).getTextContent() );
-              serverPortUdp = Integer.parseInt( root.getElementsByTagName("ServerPortUdp").item(0).getTextContent() );
 
 
-
-        }
     }
 
 
