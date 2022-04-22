@@ -2,19 +2,7 @@ package com.example.client_ins;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Environment;
-import android.util.Xml;
-
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,35 +13,24 @@ import java.nio.ByteOrder;
 import java.time.Instant;
 import java.util.Scanner;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-
 public class Tools {
 
 
     //these values will be read from file
 
-   // public static String serverAddr = "10.144.50.145";
-    public static String serverAddr = "192.168.50.145";
-
-    public static int serverPortTcp = 4444;
-    public static int serverPortUdp = 4445;
-    public static int AttemptsToRegistrate = 3;
-    public static int BufferSize = 28;
-    public static int UdpPacketDelay = 1000;
+    public static String serverAddr;
+    public static int serverPortTcp;
+    public static int serverPortUdp;
+    public static int AttemptsToRegistrate;
+    public static int BufferSize;
+    public static int UdpPacketDelay;
 
     public static void readFromFile(Context context) throws IOException {
         File path = context.getFilesDir();
+
         File file = new File(path, "configClient.txt");
         if(!file.exists()) {
+           // serverAddr = "10.144.157.188";
             serverAddr = "192.168.50.145";
             serverPortTcp = 4444;
             serverPortUdp = 4445;
@@ -73,8 +50,10 @@ public class Tools {
         }
     }
 
+
     public static void writeToFile(Context context) throws IOException {
         File path = context.getFilesDir();
+
         File file = new File(path, "configClient.txt");
         if(!file.exists()) {
             file.createNewFile();

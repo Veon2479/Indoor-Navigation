@@ -1,25 +1,14 @@
 package com.example.client_ins;
 
 import static com.example.client_ins.Tools.*;
-
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
-
 import androidx.annotation.RequiresApi;
-
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.time.Instant;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 
 public class Engine {
 
@@ -36,6 +25,7 @@ public class Engine {
         try {
             System.out.println("Initializing program state");
             readFromFile(context);
+
         } catch (Exception e) {
             System.out.println("FATAL ERROR while reading settings file, aborting..");
             flag = true;
@@ -87,8 +77,6 @@ public class Engine {
 
             clientTcp = new Socket();
             clientTcp.connect( new InetSocketAddress( serverAddr, serverPortTcp ) );
-            //clientTcp = new Socket();
-            //clientTcp.connect(new InetSocketAddress( serverAddr, serverPort ), 500 );
             if ( clientTcp.isConnected() )
                 System.out.println("Connected!");
             else
@@ -97,15 +85,12 @@ public class Engine {
             InputStream sock_ins = clientTcp.getInputStream();
             OutputStream sock_outs = clientTcp.getOutputStream();
 
-
             byte[] buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
-
 
             System.out.println("Sending data");
             sock_outs.write(buffer);
             System.out.println("Receiving data");
             sock_ins.read(buffer);
-
 
             long timeStamp = getInfoBuffer( this, buffer );
             System.out.println("Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
@@ -125,9 +110,7 @@ public class Engine {
         }
         catch  (Exception e)
         {
-          //  e.printStackTrace();
             System.out.println("While registrate: "+e);
-
             RESULT = false;
         }
 

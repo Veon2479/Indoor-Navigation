@@ -3,12 +3,8 @@ package com.example.client_ins;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-
-
 import static com.example.client_ins.Tools.*;
-
 import static java.lang.Thread.sleep;
-
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -30,7 +26,7 @@ class DataSender implements Runnable {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void run(){
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAA Trying to start UDP");
+        System.out.println("Trying to start UDP");
         try {
             clientSocket = new DatagramSocket();
 
