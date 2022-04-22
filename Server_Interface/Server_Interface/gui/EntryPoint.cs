@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Server
 {
-    static class Program
+    static class EntryPoint
     {
         /// <summary>
         /// Главная точка входа для приложения.
