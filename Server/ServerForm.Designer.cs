@@ -61,9 +61,35 @@ namespace Server
             this.btnFlush = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
-            this.tbHeatMap = new System.Windows.Forms.TabPage();
             this.tbQRLocation = new System.Windows.Forms.TabPage();
+            this.pnlQRLocation = new System.Windows.Forms.Panel();
+            this.lblQRy = new System.Windows.Forms.Label();
+            this.lblQRx = new System.Windows.Forms.Label();
+            this.lblQRName = new System.Windows.Forms.Label();
+            this.lblQRID = new System.Windows.Forms.Label();
+            this.tbQRName = new System.Windows.Forms.TextBox();
+            this.tbQRx = new System.Windows.Forms.TextBox();
+            this.tbQRy = new System.Windows.Forms.TextBox();
+            this.tbQRID = new System.Windows.Forms.TextBox();
+            this.btnDeleteQR = new System.Windows.Forms.Button();
+            this.btnEditQR = new System.Windows.Forms.Button();
+            this.btnAddQR = new System.Windows.Forms.Button();
+            this.btnCreateQRConf = new System.Windows.Forms.Button();
+            this.btnOpenQRConf = new System.Windows.Forms.Button();
+            this.tbHeatMap = new System.Windows.Forms.TabPage();
             this.tmrListUpdate = new System.Windows.Forms.Timer(this.components);
+            this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
+            this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.tcQRLocation = new System.Windows.Forms.TabControl();
+            this.tbQRMap = new System.Windows.Forms.TabPage();
+            this.tbError = new System.Windows.Forms.TextBox();
+            this.tbQRList = new System.Windows.Forms.TabPage();
+            this.lvQRList = new System.Windows.Forms.ListView();
+            this.colQRID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colQRName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colX = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colY = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -75,6 +101,11 @@ namespace Server
             this.tbLog.SuspendLayout();
             this.tbOnline.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.tbQRLocation.SuspendLayout();
+            this.pnlQRLocation.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.tcQRLocation.SuspendLayout();
+            this.tbQRList.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -283,8 +314,8 @@ namespace Server
             // 
             this.tcMain.Controls.Add(tbSettings);
             this.tcMain.Controls.Add(this.tbManage);
-            this.tcMain.Controls.Add(this.tbHeatMap);
             this.tcMain.Controls.Add(this.tbQRLocation);
+            this.tcMain.Controls.Add(this.tbHeatMap);
             this.tcMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcMain.Location = new System.Drawing.Point(0, 0);
             this.tcMain.Margin = new System.Windows.Forms.Padding(4);
@@ -418,6 +449,152 @@ namespace Server
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
+            // tbQRLocation
+            // 
+            this.tbQRLocation.Controls.Add(this.panel2);
+            this.tbQRLocation.Controls.Add(this.pnlQRLocation);
+            this.tbQRLocation.Location = new System.Drawing.Point(4, 25);
+            this.tbQRLocation.Name = "tbQRLocation";
+            this.tbQRLocation.Size = new System.Drawing.Size(1496, 840);
+            this.tbQRLocation.TabIndex = 3;
+            this.tbQRLocation.Text = "QR location";
+            this.tbQRLocation.UseVisualStyleBackColor = true;
+            // 
+            // pnlQRLocation
+            // 
+            this.pnlQRLocation.Controls.Add(this.lblQRy);
+            this.pnlQRLocation.Controls.Add(this.lblQRx);
+            this.pnlQRLocation.Controls.Add(this.lblQRName);
+            this.pnlQRLocation.Controls.Add(this.lblQRID);
+            this.pnlQRLocation.Controls.Add(this.tbQRName);
+            this.pnlQRLocation.Controls.Add(this.tbQRx);
+            this.pnlQRLocation.Controls.Add(this.tbQRy);
+            this.pnlQRLocation.Controls.Add(this.tbQRID);
+            this.pnlQRLocation.Controls.Add(this.btnDeleteQR);
+            this.pnlQRLocation.Controls.Add(this.btnEditQR);
+            this.pnlQRLocation.Controls.Add(this.btnAddQR);
+            this.pnlQRLocation.Controls.Add(this.btnCreateQRConf);
+            this.pnlQRLocation.Controls.Add(this.btnOpenQRConf);
+            this.pnlQRLocation.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlQRLocation.Location = new System.Drawing.Point(0, 0);
+            this.pnlQRLocation.Name = "pnlQRLocation";
+            this.pnlQRLocation.Size = new System.Drawing.Size(300, 840);
+            this.pnlQRLocation.TabIndex = 0;
+            // 
+            // lblQRy
+            // 
+            this.lblQRy.AutoSize = true;
+            this.lblQRy.Location = new System.Drawing.Point(148, 169);
+            this.lblQRy.Name = "lblQRy";
+            this.lblQRy.Size = new System.Drawing.Size(39, 16);
+            this.lblQRy.TabIndex = 12;
+            this.lblQRy.Text = "QR Y";
+            // 
+            // lblQRx
+            // 
+            this.lblQRx.AutoSize = true;
+            this.lblQRx.Location = new System.Drawing.Point(21, 169);
+            this.lblQRx.Name = "lblQRx";
+            this.lblQRx.Size = new System.Drawing.Size(38, 16);
+            this.lblQRx.TabIndex = 11;
+            this.lblQRx.Text = "QR X";
+            // 
+            // lblQRName
+            // 
+            this.lblQRName.AutoSize = true;
+            this.lblQRName.Location = new System.Drawing.Point(148, 107);
+            this.lblQRName.Name = "lblQRName";
+            this.lblQRName.Size = new System.Drawing.Size(67, 16);
+            this.lblQRName.TabIndex = 10;
+            this.lblQRName.Text = "QR Name";
+            // 
+            // lblQRID
+            // 
+            this.lblQRID.AutoSize = true;
+            this.lblQRID.Location = new System.Drawing.Point(21, 107);
+            this.lblQRID.Name = "lblQRID";
+            this.lblQRID.Size = new System.Drawing.Size(43, 16);
+            this.lblQRID.TabIndex = 9;
+            this.lblQRID.Text = "QR ID";
+            // 
+            // tbQRName
+            // 
+            this.tbQRName.Location = new System.Drawing.Point(151, 126);
+            this.tbQRName.Name = "tbQRName";
+            this.tbQRName.Size = new System.Drawing.Size(120, 22);
+            this.tbQRName.TabIndex = 8;
+            // 
+            // tbQRx
+            // 
+            this.tbQRx.Location = new System.Drawing.Point(24, 188);
+            this.tbQRx.Name = "tbQRx";
+            this.tbQRx.Size = new System.Drawing.Size(120, 22);
+            this.tbQRx.TabIndex = 7;
+            // 
+            // tbQRy
+            // 
+            this.tbQRy.Location = new System.Drawing.Point(151, 188);
+            this.tbQRy.Name = "tbQRy";
+            this.tbQRy.Size = new System.Drawing.Size(120, 22);
+            this.tbQRy.TabIndex = 6;
+            // 
+            // tbQRID
+            // 
+            this.tbQRID.Location = new System.Drawing.Point(24, 126);
+            this.tbQRID.Name = "tbQRID";
+            this.tbQRID.Size = new System.Drawing.Size(120, 22);
+            this.tbQRID.TabIndex = 5;
+            // 
+            // btnDeleteQR
+            // 
+            this.btnDeleteQR.Location = new System.Drawing.Point(24, 304);
+            this.btnDeleteQR.Name = "btnDeleteQR";
+            this.btnDeleteQR.Size = new System.Drawing.Size(247, 28);
+            this.btnDeleteQR.TabIndex = 4;
+            this.btnDeleteQR.Text = "Delete QR";
+            this.btnDeleteQR.UseVisualStyleBackColor = true;
+            this.btnDeleteQR.Click += new System.EventHandler(this.btnDeleteQR_Click);
+            // 
+            // btnEditQR
+            // 
+            this.btnEditQR.Location = new System.Drawing.Point(24, 270);
+            this.btnEditQR.Name = "btnEditQR";
+            this.btnEditQR.Size = new System.Drawing.Size(247, 28);
+            this.btnEditQR.TabIndex = 3;
+            this.btnEditQR.Text = "Edit QR";
+            this.btnEditQR.UseVisualStyleBackColor = true;
+            this.btnEditQR.Click += new System.EventHandler(this.btnEditQR_Click);
+            // 
+            // btnAddQR
+            // 
+            this.btnAddQR.Location = new System.Drawing.Point(24, 236);
+            this.btnAddQR.Name = "btnAddQR";
+            this.btnAddQR.Size = new System.Drawing.Size(247, 28);
+            this.btnAddQR.TabIndex = 2;
+            this.btnAddQR.Text = "Add QR";
+            this.btnAddQR.UseVisualStyleBackColor = true;
+            this.btnAddQR.Click += new System.EventHandler(this.btnAddQR_Click);
+            // 
+            // btnCreateQRConf
+            // 
+            this.btnCreateQRConf.Location = new System.Drawing.Point(24, 59);
+            this.btnCreateQRConf.Name = "btnCreateQRConf";
+            this.btnCreateQRConf.Size = new System.Drawing.Size(247, 28);
+            this.btnCreateQRConf.TabIndex = 1;
+            this.btnCreateQRConf.Text = "Create QR config";
+            this.btnCreateQRConf.UseVisualStyleBackColor = true;
+            this.btnCreateQRConf.Click += new System.EventHandler(this.btnCreateQRConf_Click);
+            // 
+            // btnOpenQRConf
+            // 
+            this.btnOpenQRConf.Location = new System.Drawing.Point(24, 25);
+            this.btnOpenQRConf.Name = "btnOpenQRConf";
+            this.btnOpenQRConf.Size = new System.Drawing.Size(247, 28);
+            this.btnOpenQRConf.TabIndex = 0;
+            this.btnOpenQRConf.Text = "Open QR config";
+            this.btnOpenQRConf.UseVisualStyleBackColor = true;
+            this.btnOpenQRConf.Click += new System.EventHandler(this.btnOpenQRConf_Click);
+            // 
             // tbHeatMap
             // 
             this.tbHeatMap.Location = new System.Drawing.Point(4, 25);
@@ -427,19 +604,101 @@ namespace Server
             this.tbHeatMap.Text = "Heat Map";
             this.tbHeatMap.UseVisualStyleBackColor = true;
             // 
-            // tbQRLocation
-            // 
-            this.tbQRLocation.Location = new System.Drawing.Point(4, 25);
-            this.tbQRLocation.Name = "tbQRLocation";
-            this.tbQRLocation.Size = new System.Drawing.Size(1496, 840);
-            this.tbQRLocation.TabIndex = 3;
-            this.tbQRLocation.Text = "QR location";
-            this.tbQRLocation.UseVisualStyleBackColor = true;
-            // 
             // tmrListUpdate
             // 
             this.tmrListUpdate.Interval = 1000;
             this.tmrListUpdate.Tick += new System.EventHandler(this.tmrListUpdate_Tick);
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.tbError);
+            this.panel2.Controls.Add(this.tcQRLocation);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(300, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1196, 840);
+            this.panel2.TabIndex = 2;
+            // 
+            // tcQRLocation
+            // 
+            this.tcQRLocation.Controls.Add(this.tbQRMap);
+            this.tcQRLocation.Controls.Add(this.tbQRList);
+            this.tcQRLocation.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tcQRLocation.Location = new System.Drawing.Point(0, 0);
+            this.tcQRLocation.Name = "tcQRLocation";
+            this.tcQRLocation.SelectedIndex = 0;
+            this.tcQRLocation.Size = new System.Drawing.Size(1196, 840);
+            this.tcQRLocation.TabIndex = 2;
+            // 
+            // tbQRMap
+            // 
+            this.tbQRMap.Location = new System.Drawing.Point(4, 25);
+            this.tbQRMap.Name = "tbQRMap";
+            this.tbQRMap.Padding = new System.Windows.Forms.Padding(3);
+            this.tbQRMap.Size = new System.Drawing.Size(1188, 811);
+            this.tbQRMap.TabIndex = 0;
+            this.tbQRMap.Text = "Map";
+            this.tbQRMap.UseVisualStyleBackColor = true;
+            // 
+            // tbError
+            // 
+            this.tbError.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbError.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tbError.Location = new System.Drawing.Point(0, 818);
+            this.tbError.Name = "tbError";
+            this.tbError.Size = new System.Drawing.Size(1196, 22);
+            this.tbError.TabIndex = 1;
+            // 
+            // tbQRList
+            // 
+            this.tbQRList.Controls.Add(this.lvQRList);
+            this.tbQRList.Location = new System.Drawing.Point(4, 25);
+            this.tbQRList.Name = "tbQRList";
+            this.tbQRList.Padding = new System.Windows.Forms.Padding(3);
+            this.tbQRList.Size = new System.Drawing.Size(1188, 811);
+            this.tbQRList.TabIndex = 1;
+            this.tbQRList.Text = "QR List";
+            this.tbQRList.UseVisualStyleBackColor = true;
+            // 
+            // lvQRList
+            // 
+            this.lvQRList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colQRID,
+            this.colQRName,
+            this.colX,
+            this.colY});
+            this.lvQRList.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lvQRList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvQRList.FullRowSelect = true;
+            this.lvQRList.GridLines = true;
+            this.lvQRList.HideSelection = false;
+            this.lvQRList.Location = new System.Drawing.Point(3, 3);
+            this.lvQRList.Name = "lvQRList";
+            this.lvQRList.Size = new System.Drawing.Size(1182, 805);
+            this.lvQRList.TabIndex = 0;
+            this.lvQRList.UseCompatibleStateImageBehavior = false;
+            this.lvQRList.View = System.Windows.Forms.View.Details;
+            this.lvQRList.SelectedIndexChanged += new System.EventHandler(this.lvQRList_SelectedIndexChanged);
+            // 
+            // colQRID
+            // 
+            this.colQRID.Text = "QR ID";
+            this.colQRID.Width = 100;
+            // 
+            // colQRName
+            // 
+            this.colQRName.Text = "QR Name";
+            this.colQRName.Width = 300;
+            // 
+            // colX
+            // 
+            this.colX.Text = "X";
+            this.colX.Width = 100;
+            // 
+            // colY
+            // 
+            this.colY.Text = "Y";
+            this.colY.Width = 100;
             // 
             // frmServer
             // 
@@ -464,6 +723,13 @@ namespace Server
             this.tbLog.PerformLayout();
             this.tbOnline.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.tbQRLocation.ResumeLayout(false);
+            this.pnlQRLocation.ResumeLayout(false);
+            this.pnlQRLocation.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            this.tcQRLocation.ResumeLayout(false);
+            this.tbQRList.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -503,6 +769,32 @@ namespace Server
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Timer tmrListUpdate;
+        private System.Windows.Forms.Panel pnlQRLocation;
+        private System.Windows.Forms.Button btnDeleteQR;
+        private System.Windows.Forms.Button btnEditQR;
+        private System.Windows.Forms.Button btnAddQR;
+        private System.Windows.Forms.Button btnCreateQRConf;
+        private System.Windows.Forms.Button btnOpenQRConf;
+        private System.Windows.Forms.OpenFileDialog dlgOpenFile;
+        private System.Windows.Forms.SaveFileDialog dlgSaveFile;
+        private System.Windows.Forms.TextBox tbQRName;
+        private System.Windows.Forms.TextBox tbQRx;
+        private System.Windows.Forms.TextBox tbQRy;
+        private System.Windows.Forms.TextBox tbQRID;
+        private System.Windows.Forms.Label lblQRy;
+        private System.Windows.Forms.Label lblQRx;
+        private System.Windows.Forms.Label lblQRName;
+        private System.Windows.Forms.Label lblQRID;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.TabControl tcQRLocation;
+        private System.Windows.Forms.TabPage tbQRMap;
+        private System.Windows.Forms.TextBox tbError;
+        private System.Windows.Forms.TabPage tbQRList;
+        private System.Windows.Forms.ListView lvQRList;
+        private System.Windows.Forms.ColumnHeader colQRID;
+        private System.Windows.Forms.ColumnHeader colQRName;
+        private System.Windows.Forms.ColumnHeader colX;
+        private System.Windows.Forms.ColumnHeader colY;
     }
 }
 

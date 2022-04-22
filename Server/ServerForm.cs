@@ -20,7 +20,8 @@ namespace Server
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
-            SetUpServer();
+            ServerManage.SetUpServer(LogMessage);
+            
         }
 
         private void BlockSettingsControls()
@@ -211,12 +212,6 @@ namespace Server
             txtbLog.AppendText(msg + "\r\n");
         }
 
-        //subsctibe to log messages
-        public void SetUpServer()
-        {
-            Server.LogMessage = LogMessage;
-        }
-
         //close main form and stop server
         private void frmServer_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -228,7 +223,63 @@ namespace Server
         {
             if (!Server.Run)
                 return;
-            ServerManage.UpdateOnlineUsers(ref lvOnline, Server.userIDModel);
+            ServerManage.UpdateOnlineUsersView(ref lvOnline, Server.userIDModel);
+        }
+
+        //open QR config file
+        private void btnOpenQRConf_Click(object sender, EventArgs e)
+        {
+            if (dlgOpenFile.ShowDialog() == DialogResult.Cancel)
+                return;
+            QRLocation.OpenQRConfig(dlgOpenFile.FileName, ref lvQRList);
+        }
+
+        //create new QR config file
+        private void btnCreateQRConf_Click(object sender, EventArgs e)
+        {
+            if (dlgSaveFile.ShowDialog() == DialogResult.Cancel)
+                return;
+            QRLocation.OpenQRConfig(dlgSaveFile.FileName, ref lvQRList);
+        }
+
+        //add QR into a config file
+        private void btnAddQR_Click(object sender, EventArgs e)
+        {
+            string Result = QRLocation.AddQR(tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList);
+            tbError.Text = Result;
+        }
+
+        //edit QR in a config file
+        private void btnEditQR_Click(object sender, EventArgs e)
+        {
+            if (selectedItem == null)
+                return;
+            //string Result = QRLocation.EditQR();
+            //tbError.Text = Result;
+        }
+
+        //delete QR from a config file
+        private void btnDeleteQR_Click(object sender, EventArgs e)
+        {
+            if (selectedItem == null)
+                return;
+            //string Result = QRLocation.DeleteQR();
+            //tbError.Text = Result;
+        }
+
+        //on select item in QR list
+        ListView.SelectedListViewItemCollection selectedItem = null;
+        private void lvQRList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedItem = lvQRList.SelectedItems.Count> 0 ? lvQRList.SelectedItems : null;
+
+            if (selectedItem != null)
+            {
+                tbQRID.Text = selectedItem[0].Text;
+                tbQRName.Text = selectedItem[0].SubItems[1].Text;
+                tbQRx.Text = selectedItem[0].SubItems[2].Text;
+                tbQRy.Text = selectedItem[0].SubItems[3].Text;
+            }
         }
     }
 }
