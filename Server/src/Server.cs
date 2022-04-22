@@ -19,7 +19,7 @@ namespace Server
 
         //logs
         public delegate void LogMessageDelegate(string msg);
-        public static LogMessageDelegate LogMessage { get; set; }
+        public static LogMessageDelegate LogMessage { get; set; } = null;
 
         //thread signal 
         private static ManualResetEvent allDoneTcp = new ManualResetEvent(false);
@@ -29,6 +29,7 @@ namespace Server
         //server models
         internal static IDModel userIDModel = new IDModel(DEFAULT_TABLE_CAPACITY);
         private static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 2);
+        internal static QRModel qrModel = null;
 
         //thread for listeners
         private static Task tcpListener;
@@ -172,28 +173,31 @@ namespace Server
                 byte[] buffer = new byte[UserPacket.PACKET_SIZE];
                 await stream.ReadAsync(buffer, 0, buffer.Length);
 
-                UserPacket packet = UserPacket.getStruct(buffer);
-                Console.WriteLine("[TCP receive] {0}", packet.ToString());
-                LogMessage($"[TCP receive] {packet.ToString()}");
+                RegPacket regPacket= RegPacket.getStruct(buffer);
+                Console.WriteLine("[TCP receive] {0}", regPacket.ToString());
+                LogMessage($"[TCP receive] {regPacket.ToString()}");
 
                 //if user not authorized
-                if (!userIDModel.ExistUserID(packet.userID, userModel))
+                UserPacket userPacket = new UserPacket();
+                if (!userIDModel.ExistUserID(regPacket.userID, userModel))
                 {
                     //try to get userID
-                    packet.userID = userIDModel.GetUserID(packet.time, userModel);
+                    userPacket.userID = userIDModel.GetUserID(regPacket.time, userModel);
+                    userPacket.time = regPacket.time;
+                    Server.qrModel.GetQRCoord((int)regPacket.QRID, ref userPacket.x, ref userPacket.y);                    
                 }
 
                 //try to add user to UserModel
-                userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time);
+                userModel.AddUserID(userPacket.userID, userPacket.x, userPacket.y, userPacket.time);
 
                 //send answer to user
-                byte[] answer = UserPacket.getBytes(packet);
+                byte[] answer = UserPacket.getBytes(userPacket);
 
                 await stream.WriteAsync(answer, 0, answer.Length);
                 await stream.FlushAsync();
 
-                Console.WriteLine("[TCP    send] {0}", packet.ToString());
-                LogMessage($"[TCP    send] {packet.ToString()}");
+                Console.WriteLine("[TCP    send] {0}", userPacket.ToString());
+                LogMessage($"[TCP    send] {userPacket.ToString()}");
             }
 
             catch (Exception e)
