@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //new Engine(getApplicationContext());
+        new Engine(getApplicationContext());
         text3 = findViewById(R.id.text3);
         text3.setText("Yes1\nYes2\nYes3\nYes4\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\n");
 

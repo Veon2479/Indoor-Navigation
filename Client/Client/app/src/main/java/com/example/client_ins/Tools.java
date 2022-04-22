@@ -65,11 +65,11 @@ public class Tools {
         else {
             Scanner in = new Scanner(new FileInputStream(file));
             serverAddr = in.nextLine();
+            serverPortTcp = Integer.parseInt(in.nextLine());
+            serverPortUdp = Integer.parseInt(in.nextLine());
             AttemptsToRegistrate = Integer.parseInt(in.nextLine());
             BufferSize = Integer.parseInt(in.nextLine());
             UdpPacketDelay = Integer.parseInt(in.nextLine());
-            serverPortTcp = Integer.parseInt(in.nextLine());
-            serverPortUdp = Integer.parseInt(in.nextLine());
         }
     }
 
