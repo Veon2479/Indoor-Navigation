@@ -100,7 +100,6 @@ public class Engine {
 
             byte[] buffer = setInfoBuffer( UserId, 0, 0); //TODO: crd1 is ID of place
 
-
             System.out.println("Sending data");
             sock_outs.write(buffer);
             System.out.println("Receiving data");
