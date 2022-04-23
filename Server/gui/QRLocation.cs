@@ -4,14 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace Server
 {
     internal class QRLocation
     {
 
+        public static bool adding { get; set; } = false;
+        private static Bitmap QRMap = null;
+
+        //drawing settings
+        private static int QRPointRadius = 5;
+
         //update list view of QR location
-        public static void UpdateQRView(ref ListView view, QRModel qrModel)
+        public static void UpdateQRView(QRModel qrModel, ref ListView view, PictureBox pb)
         {
             view.BeginUpdate();
             view.Items.Clear();
@@ -31,10 +38,11 @@ namespace Server
             }
 
             view.EndUpdate();
+            QRLocation.PaintQRMap(pb);
         }
 
         //open config file
-        public static void OpenQRConfig(string filename, ref ListView view)
+        public static void OpenQRConfig(string filename, ref ListView view, PictureBox pb)
         {
             if (Server.Run)
                 return;
@@ -43,19 +51,26 @@ namespace Server
             Server.qrModel = new QRModel(filename);
 
             //update view
-            QRLocation.UpdateQRView(ref view, Server.qrModel);
+            QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
+            QRLocation.PaintQRMap(pb);
         }
 
         //add QR to config file
-        public static string AddQR(string QRID, string Name, string x, string y, ref ListView view)
+        public static int AddQR(string QRID, string Name, string x, string y, ref ListView view, PictureBox pb)
         {
             if (Server.Run)
-                return "The server is running. File modification is not possible";
+                //return "The server is running. File modification is not possible";
+                return -1;
 
             //add QRRecord into a file
             int addResult = Server.qrModel.AddQRRecord(QRID, Name, x, y);
 
-            switch ((QRModel.AddQRRecordErrorCode)addResult)
+            if (addResult == 0)
+            {
+                QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
+            }
+
+            /*switch ((QRModel.AddQRRecordErrorCode)addResult)
             {
                 case QRModel.AddQRRecordErrorCode.INCORRECT_PARAMETER:
                     return "Incorrect QR ID or QR X or QR Y";
@@ -71,11 +86,12 @@ namespace Server
                         QRLocation.UpdateQRView(ref view, Server.qrModel);
                         return "QR added";
                     }
-            }
+            }*/
+            return addResult;
         }
 
         //edit QR in config file
-        public static string EditQR(string oldQRID, string QRID, string QRName, string x, string y, ref ListView view)
+        public static string EditQR(string oldQRID, string QRID, string QRName, string x, string y, ref ListView view, PictureBox pb)
         {
             if (Server.Run)
                 return "The server is running. File modification is not possible";
@@ -98,14 +114,14 @@ namespace Server
                 default:
                     {
                         //update view
-                        QRLocation.UpdateQRView(ref view, Server.qrModel);
+                        QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
                         return "QR edited";
                     }
             }
         }
 
         //delete QR from config file
-        public static string DeleteQR(string QRID, ref ListView view)
+        public static string DeleteQR(string QRID, ref ListView view, PictureBox pb)
         {
             if (Server.Run)
                 return "The server is running. File modification is not possible";
@@ -123,9 +139,57 @@ namespace Server
                 default:
                     {
                         //update view
-                        QRLocation.UpdateQRView(ref view, Server.qrModel);
+                        QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
                         return "QR deleted";
                     }
+            }
+        }
+
+        //paint QR Map
+        public static void PaintQRMap(PictureBox pb)
+        {
+            //paint map
+            if (SettingsModel.bitmap == null)
+                return;
+
+            QRMap = (Bitmap)SettingsModel.bitmap.Clone();
+            pb.Image = QRMap;
+
+            //paint dash rectangle
+            Graphics g = Graphics.FromImage(pb.Image);
+            g.DrawRectangle(SettingsModel.pen, new Rectangle(
+                Math.Min(SettingsModel.PointX1, SettingsModel.PointX2),
+                Math.Min(SettingsModel.PointY1, SettingsModel.PointY2),
+                Math.Abs(SettingsModel.PointX2 - SettingsModel.PointX1),
+                Math.Abs(SettingsModel.PointY2 - SettingsModel.PointY1)));
+
+            //draw existing points
+            DrawPoints(pb);
+        }
+
+        //draw QR point on QR map
+        public static void DrawQRPoint(PictureBox pb, Color color, double x, double y)
+        {
+            //pb.Image = (Bitmap)QRMap.Clone();
+            Graphics g = Graphics.FromImage(pb.Image);
+            g.FillEllipse(new SolidBrush(color), (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
+            QRMap = (Bitmap)pb.Image.Clone();
+            pb.Image = QRMap;
+        }
+
+        //draw existing points
+        public static void DrawPoints(PictureBox pb)
+        {
+            QRModel.QRModelXmlContent[] content = null;
+            Server.qrModel.GetQRRecordList(ref content);
+            if (content == null)
+                return;
+
+            foreach (var point in content)
+            {
+                double x = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
+                double y = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
+                DrawQRPoint(pb, Color.Green, x, y);
             }
         }
     }

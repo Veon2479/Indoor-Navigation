@@ -48,11 +48,11 @@ namespace Server
         }
 
         //set up server
-        public static void SetUpServer(Server.LogMessageDelegate log, ref ListView QRView)
+        public static void SetUpServer(Server.LogMessageDelegate log, ref ListView QRView, PictureBox pb)
         {
             Server.LogMessage = log;
             Server.qrModel = new QRModel();
-            QRLocation.UpdateQRView(ref QRView, Server.qrModel);
+            QRLocation.UpdateQRView(Server.qrModel, ref QRView, pb);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Server
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
-            ServerManage.SetUpServer(LogMessage, ref lvQRList);
+            ServerManage.SetUpServer(LogMessage, ref lvQRList, pbQRLocation);
         }
 
         // blocking settings controls except for the btnDownloadImage
@@ -244,7 +244,7 @@ namespace Server
         {
             if (dlgOpenFile.ShowDialog() == DialogResult.Cancel)
                 return;
-            QRLocation.OpenQRConfig(dlgOpenFile.FileName, ref lvQRList);
+            QRLocation.OpenQRConfig(dlgOpenFile.FileName, ref lvQRList, pbQRLocation);
         }
 
         //create new QR config file
@@ -252,14 +252,19 @@ namespace Server
         {
             if (dlgSaveFile.ShowDialog() == DialogResult.Cancel)
                 return;
-            QRLocation.OpenQRConfig(dlgSaveFile.FileName, ref lvQRList);
+            QRLocation.OpenQRConfig(dlgSaveFile.FileName, ref lvQRList, pbQRLocation);
         }
 
         //add QR into a config file
         private void btnAddQR_Click(object sender, EventArgs e)
         {
-            string Result = QRLocation.AddQR(tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList);
-            tbError.Text = Result;
+            int Result = QRLocation.AddQR(tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+            if (Result == 0)
+            {
+                QRLocation.DrawQRPoint(pbQRLocation, Color.Green, int.Parse(tbQRx.Text), int.Parse(tbQRy.Text));
+                QRLocation.adding = false;
+            }
+
         }
 
         //edit QR in a config file
@@ -267,7 +272,7 @@ namespace Server
         {
             if (selectedItem.Count == 0)
                 return;
-            string Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList);
+            string Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
         }
 
@@ -276,7 +281,7 @@ namespace Server
         {
             if (selectedItem.Count == 0)
                 return;
-            string Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList);
+            string Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
         }
 
@@ -293,6 +298,28 @@ namespace Server
                 tbQRx.Text = selectedItem[0].SubItems[2].Text;
                 tbQRy.Text = selectedItem[0].SubItems[3].Text;
             }
+        }
+
+        private void pbQRLocation_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (!QRLocation.adding)
+            {
+                tbQRx.Text = e.X.ToString();
+                tbQRy.Text = e.Y.ToString();
+            }
+        }
+
+        //repaint QR location map
+        private void tcMain_Selected(object sender, TabControlEventArgs e)
+        {
+            QRLocation.PaintQRMap(pbQRLocation);
+        }
+
+        //add QR point
+        private void pbQRLocation_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            QRLocation.DrawQRPoint(pbQRLocation, Color.Red, e.X, e.Y);
+            QRLocation.adding = true;
         }
     }
 }
