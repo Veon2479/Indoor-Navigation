@@ -9,16 +9,16 @@
     <x>10.1</x>
     <y>11.2</y>
   </QRCode>
-  <QRCode id="2" name="Galery">
-    <x>-5.8</x>
+  <QRCode id="6" name="Galery5">
+    <x>-5,84</x>
+    <y>13,4</y>
+  </QRCode>
+  <QRCode id="3" name="Galery2">
+    <x>-58.4</x>
     <y>13.4</y>
   </QRCode>
-  <QRCode id="3" name="Exhibition">
-    <x>0</x>
-    <y>-11.2</y>
-  </QRCode>
-  <QRCode id="4" name="ыавп">
-    <x>4</x>
-    <y>4</y>
+  <QRCode id="2" name="Galery">
+    <x>-58.4</x>
+    <y>13.4</y>
   </QRCode>
 </QRCodes>

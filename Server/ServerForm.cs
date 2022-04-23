@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -237,7 +237,6 @@ namespace Server
             if (!Server.Run)
                 return;
             ServerManage.UpdateOnlineUsersView(ref lvOnline, Server.userIDModel);
-        }
 
         //open QR config file
         private void btnOpenQRConf_Click(object sender, EventArgs e)
@@ -265,19 +264,19 @@ namespace Server
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
-            if (selectedItem == null)
+            if (selectedItem.Count == 0)
                 return;
-            //string Result = QRLocation.EditQR();
-            //tbError.Text = Result;
+            string Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList);
+            tbError.Text = Result;
         }
 
         //delete QR from a config file
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
-            if (selectedItem == null)
+            if (selectedItem.Count == 0)
                 return;
-            //string Result = QRLocation.DeleteQR();
-            //tbError.Text = Result;
+            string Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList);
+            tbError.Text = Result;
         }
 
         //on select item in QR list
