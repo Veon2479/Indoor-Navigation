@@ -20,7 +20,7 @@ namespace Server
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
-            ServerManage.SetUpServer(LogMessage);
+            ServerManage.SetUpServer(LogMessage, ref lvQRList);
             
         }
 
