@@ -16,7 +16,13 @@ namespace Server
         public frmServer()
         {
             InitializeComponent();
-            BlockSettingsControls();
+
+            if (SettingsModel.DownloadSettings(pbMapImage) != 0)
+            {
+                BlockSettingsControls();
+            }
+            UpdatePointText();
+            UpdateRealValuesText();
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
@@ -60,65 +66,77 @@ namespace Server
                 {
                     return;
                 }
-                // возможно стоит копировать картинку куда-то к себе на сервер
-                // не работают фильтры
                 //openFileDialog.Filter = "Image files (*.jpg,*.jpeg,*.jpe,*.jfif,*.png)|*.jpg;*.jpeg;*.jpe;*.jfif;*.png";
-                SettingsModel.InitSettings();
-                ErrorMessageView(SettingsModel.SaveImage(openFileDialog.FileName));
+                MessageView(SettingsModel.DownloadImage(pbMapImage, openFileDialog.FileName));
+
             }
             //bitmap = new Bitmap(MapImageFilename);
-            if (0 == ErrorMessageView(SettingsModel.FramePointsView(pbMapImage)))
+            if (0 == MessageView(SettingsModel.FramePointsView(pbMapImage)))
             {
                 UnblockSettingsControls();
                 UpdatePointText();
             }
         }
 
-        private int ErrorMessageView(int errorCode)
+        private int MessageView(int errorCode)
         {
-            if (errorCode == SettingsModel.IMAGE_DOWNLOAD_ERROR)
+            switch (errorCode)
             {
-                MessageBox.Show("Ошибка", "Не удалось загрузить изображение", MessageBoxButtons.OK);
-                return SettingsModel.IMAGE_DOWNLOAD_ERROR;
+                case SettingsModel.IMAGE_DOWNLOAD_ERROR:
+                    {
+                        MessageBox.Show("Image loading error", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.DROW_FRAME_POINTS_ERROR:
+                    {
+                        MessageBox.Show("Error drawing additional elements", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.DOWNLOAD_USER_SETTINGS_ERROR:
+                    {
+                        MessageBox.Show("Error loading user settings", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.USER_SETTINGS_SAVED_SUCCESSFULLY:
+                    {
+                        MessageBox.Show("Settings saved successfully", "Message", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.SAVE_USER_SETTINGS_ERROR:
+                    {
+                        MessageBox.Show("Error saving user settings", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
             }
-            else if (errorCode == SettingsModel.DROW_FRAME_POINTS_ERROR)
-            {
-                MessageBox.Show("Ошибка", "Не удалось отрисовать дополнительные элементы изображения", MessageBoxButtons.OK);
-                return SettingsModel.DROW_FRAME_POINTS_ERROR;
-            }
-            else if (errorCode == SettingsModel.IMAGE_SAVE_ERROR)
-            {
-                MessageBox.Show("Ошибка", "Не удалось осохранить изображение", MessageBoxButtons.OK);
-                return SettingsModel.IMAGE_SAVE_ERROR;
-            }
-            else return 0;
+            return errorCode;
         }
+
         private void tbCoordinateX1_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateX1.Text, out SettingsModel.PointX1))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
         private void tbCoordinateX2_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateX2.Text, out SettingsModel.PointX2))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
         private void tbCoordinateY1_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateY1.Text, out SettingsModel.PointY1))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
         private void tbCoordinateY2_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateY2.Text, out SettingsModel.PointY2))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
 
@@ -143,7 +161,7 @@ namespace Server
 
         private void btnSave_Click(object sender, EventArgs e)
         {
-
+            MessageView(SettingsModel.SaveSettings());
         }
 
         private void tbRealLength_TextChanged(object sender, EventArgs e)
@@ -159,22 +177,9 @@ namespace Server
             }
         }
 
-        private void tbRealWidth_TextChanged(object sender, EventArgs e)
-        {
-            if (tbRealWidth.Focused)
-            {
-                double realWidth = SettingsModel.RealWidth;
-                if (double.TryParse(tbRealWidth.Text, out realWidth))
-                {
-                    SettingsModel.SetRealLength(realWidth);
-                }
-                tbRealLength.Text = SettingsModel.RealLength.ToString("N3");
-            }
-        }
-
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
         {
-            SettingsModel.SelectFramePoint(pbMapImage, e.X, e.Y);
+            SettingsModel.SelectFramePoint(e.X, e.Y);
             UpdatePointText();
             UpdateRealValuesText();
         }
@@ -183,8 +188,8 @@ namespace Server
         {
             if (SettingsModel.MoveFramePoint(pbMapImage, e.X, e.Y) != SettingsModel.NO_POINT)
             {
-                //UpdatePointText();
-                //UpdateRealValuesText();
+                UpdatePointText();
+                UpdateRealValuesText();
             }
         }
 

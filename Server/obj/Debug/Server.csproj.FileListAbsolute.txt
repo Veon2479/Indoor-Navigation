@@ -9,3 +9,13 @@ D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.frmServer
 D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.exe
 D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\obj\Debug\Server.pdb
 D:\BSUIR\4 sem\Digital twins\Indoor-Navigation\Server\bin\Debug\Server.exe.config
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\obj\Debug\Server.Properties.Resources.resources
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\obj\Debug\Server.frmServer.resources
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\obj\Debug\Server.csproj.GenerateResource.cache
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\obj\Debug\Server.exe
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\obj\Debug\Server.pdb
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\bin\Debug\Server.exe.config
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\bin\Debug\Server.exe
+C:\Users\user\Desktop\4_сем\Хакатон\Indoor-Navigation\Server\bin\Debug\Server.pdb
