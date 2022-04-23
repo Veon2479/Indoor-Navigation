@@ -12,26 +12,17 @@ import androidx.annotation.RequiresApi;
 public class ClientService extends Service {
 
     private Engine engine;
-    private Context context;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    public ClientService(Context sContext)
+    public ClientService(Engine sEngine)
     {
-        super();
-        context = sContext;
-        engine = new Engine(context);
-    }
-
-    public Engine getEngine()
-    {
-        return engine;
+        engine = sEngine;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
 
-        //Engine engine = new Engine(context);
+        System.out.println("Background service is starting!");
 
         DataSender dataSender = new DataSender(engine);
         Thread udpSender = new Thread(dataSender);

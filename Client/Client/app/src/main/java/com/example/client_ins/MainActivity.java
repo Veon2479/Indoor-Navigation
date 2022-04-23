@@ -37,11 +37,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Engine engine = new Engine(getApplicationContext());
-        ClientService clientService = new ClientService(getApplicationContext());
-        engine = clientService.getEngine();
-        if (engine == null)
-            System.out.println("Failed to create engine");
+        Engine engine = new Engine(getApplicationContext());
+        System.out.println("Calling background service to start");
+        ClientService clientService = new ClientService(engine);
+        startForegroundService( new Intent(this, ClientService.class));
+
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
