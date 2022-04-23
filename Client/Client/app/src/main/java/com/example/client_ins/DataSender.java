@@ -15,6 +15,8 @@ class DataSender implements Runnable {
     Engine mainEngine;
     private boolean isActive;
 
+    public boolean fSend = true;
+
     public DataSender(Engine engine){
         this.mainEngine = engine;
         this.isActive = true;
@@ -42,14 +44,18 @@ class DataSender implements Runnable {
 
             System.out.println("Ready to send udp");
             while(isActive){
-                //*Помещение данных в буфер*
 
-                updateInfoBuffer(sendingDataBuffer, mainEngine.UserId, mainEngine.Crd1, mainEngine.Crd2);
+                if(fSend)
+                {
+                    //*Помещение данных в буфер*
+                    updateInfoBuffer(sendingDataBuffer, mainEngine.UserId, mainEngine.Crd1, mainEngine.Crd2);
 
-                // Отправьте UDP-пакет серверу
-                clientSocket.send(sendingPacket);
-                System.out.println("udp sent at "+ Instant.now().getEpochSecond());
-                sleep(UdpPacketDelay);
+                    // Отправьте UDP-пакет серверу
+                    clientSocket.send(sendingPacket);
+                    System.out.println("udp sent at "+ Instant.now().getEpochSecond());
+                    sleep(UdpPacketDelay);
+                }
+
             }
 
             // Закрытие соединения с сервером через сокет

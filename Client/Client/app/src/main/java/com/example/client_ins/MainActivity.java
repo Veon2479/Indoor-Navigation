@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Engine engine = new Engine(getApplicationContext());
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
@@ -79,5 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
         textScroll.setText("Yes1\nYes2\nYes3\nYes4\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\n");
         //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
+
     }
 }

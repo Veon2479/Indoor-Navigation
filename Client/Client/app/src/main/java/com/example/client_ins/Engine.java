@@ -28,6 +28,7 @@ public class Engine {
             System.out.println( "FATAL ERROR while reading settings file: " + e );
             flag = true;
         }
+
         if (!flag)
         {
             System.out.println("serverAddr is "+serverAddr);
@@ -37,8 +38,7 @@ public class Engine {
             System.out.println("BufferSize is "+BufferSize);
             System.out.println("UdpPacketDelay is "+UdpPacketDelay);
 
-            int i = 0;
-            System.out.println("Try to registrate user!");
+
 
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -66,6 +66,7 @@ public class Engine {
             DataSender dataSender = new DataSender(this);
             Thread udpSender = new Thread(dataSender);
             udpSender.start();
+      
 
             //create 2 streams - first to compute coordinates
             //second - to send them
