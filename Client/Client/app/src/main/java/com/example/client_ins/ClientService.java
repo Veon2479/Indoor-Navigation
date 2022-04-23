@@ -16,6 +16,7 @@ public class ClientService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
+        engine = new Engine(getBaseContext());
 
         System.out.println("Background service is starting!");
 

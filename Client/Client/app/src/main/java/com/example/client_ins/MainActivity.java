@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         Engine engine = new Engine(getApplicationContext());
         System.out.println("Calling background service to start");
-        ClientService clientService = new ClientService(engine);
+        //ClientService clientService = new ClientService(engine);
         startForegroundService( new Intent(this, ClientService.class));
 
         text1 = findViewById(R.id.text1);
