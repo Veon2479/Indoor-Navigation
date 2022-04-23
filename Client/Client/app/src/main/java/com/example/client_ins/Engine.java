@@ -5,6 +5,7 @@ import static com.example.client_ins.Tools.*;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
@@ -34,8 +35,10 @@ public class Engine {
     {
         boolean flag = false;
         try {
+            MainActivity.textScroll.append("Initializing program state"+"\r\n");
             System.out.println("Initializing program state");
             readFromFile(context);
+
         } catch (Exception e) {
             System.out.println("FATAL ERROR while reading settings file, aborting..");
             flag = true;

@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     TextView text1;
     TextView text2;
     TextView text3;
-    TextView textScroll;
+    public static TextView textScroll;
 
     Button button1;
     Button button2;
@@ -31,12 +31,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Engine engine = new Engine(getApplicationContext());
+
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
         textScroll = findViewById(R.id.textScroll);
-
+        textScroll.setText("\rLog started!\r\n");
+        Engine engine = new Engine(getApplicationContext());
         editText1 = findViewById(R.id.editTextTextPersonName1);
         editText2 = findViewById(R.id.editTextTextPersonName2);
 
@@ -65,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
         text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
         text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
         text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
+        MainActivity.textScroll.append("Log ended!"+"\n");
 
-        textScroll.setText("Yes1\nYes2\nYes3\nYes4\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\n");
         //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
     }
 }
