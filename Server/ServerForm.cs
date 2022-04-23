@@ -30,6 +30,7 @@ namespace Server
             
         }
 
+        // blocking settings controls except for the btnDownloadImage
         private void BlockSettingsControls()
         {
             foreach (Control control in pSettings.Controls)
@@ -38,6 +39,8 @@ namespace Server
             }
             btnDownloadImage.Enabled = true;
         }
+
+        // unblocking settings controls except for the tbRealWidth
         private void UnblockSettingsControls()
         {
             foreach (Control control in pSettings.Controls)
@@ -46,11 +49,15 @@ namespace Server
             }
             tbRealWidth.Enabled = false;
         }
+
+        // update tbRealLength and tbRealWidth with current values of RealLength and RealWidth
         private void UpdateRealValuesText()
         {
             tbRealLength.Text = SettingsModel.RealLength.ToString("N3");
             tbRealWidth.Text = SettingsModel.RealWidth.ToString("N3");
         }
+
+        // update coordinate text with current values of points coordinates
         private void UpdatePointText()
         {
             tbCoordinateX1.Text = SettingsModel.PointX1.ToString();
@@ -58,6 +65,9 @@ namespace Server
             tbCoordinateY1.Text = SettingsModel.PointY1.ToString();
             tbCoordinateY2.Text = SettingsModel.PointY2.ToString();
         }
+        
+        // downloading map image from file, 
+        // preparing controls for work
         private void btnDownloadImage_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -68,9 +78,7 @@ namespace Server
                 }
                 //openFileDialog.Filter = "Image files (*.jpg,*.jpeg,*.jpe,*.jfif,*.png)|*.jpg;*.jpeg;*.jpe;*.jfif;*.png";
                 MessageView(SettingsModel.DownloadImage(pbMapImage, openFileDialog.FileName));
-
             }
-            //bitmap = new Bitmap(MapImageFilename);
             if (0 == MessageView(SettingsModel.FramePointsView(pbMapImage)))
             {
                 UnblockSettingsControls();
@@ -78,31 +86,32 @@ namespace Server
             }
         }
 
+        //  display message according to message or error code
         private int MessageView(int errorCode)
         {
             switch (errorCode)
             {
-                case SettingsModel.IMAGE_DOWNLOAD_ERROR:
+                case SettingsModel.MESSAGE.IMAGE_DOWNLOAD_ERROR:
                     {
                         MessageBox.Show("Image loading error", "Error", MessageBoxButtons.OK);
                     }
                     break;
-                case SettingsModel.DROW_FRAME_POINTS_ERROR:
+                case SettingsModel.MESSAGE.DROW_FRAME_POINTS_ERROR:
                     {
                         MessageBox.Show("Error drawing additional elements", "Error", MessageBoxButtons.OK);
                     }
                     break;
-                case SettingsModel.DOWNLOAD_USER_SETTINGS_ERROR:
+                case SettingsModel.MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR:
                     {
                         MessageBox.Show("Error loading user settings", "Error", MessageBoxButtons.OK);
                     }
                     break;
-                case SettingsModel.USER_SETTINGS_SAVED_SUCCESSFULLY:
+                case SettingsModel.MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY:
                     {
                         MessageBox.Show("Settings saved successfully", "Message", MessageBoxButtons.OK);
                     }
                     break;
-                case SettingsModel.SAVE_USER_SETTINGS_ERROR:
+                case SettingsModel.MESSAGE.SAVE_USER_SETTINGS_ERROR:
                     {
                         MessageBox.Show("Error saving user settings", "Error", MessageBoxButtons.OK);
                     }
@@ -111,6 +120,7 @@ namespace Server
             return errorCode;
         }
 
+        // changing coordinate value and redrowing frame according to changed coordinate
         private void tbCoordinateX1_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateX1.Text, out SettingsModel.PointX1))
@@ -140,6 +150,7 @@ namespace Server
             }
         }
 
+        // entering valid characters in text fields
         private void tbCoordinate_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsNumber(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != Convert.ToChar(8))
@@ -147,7 +158,6 @@ namespace Server
                 e.Handled = true;
             }
         }
-
         private void tbRealValue_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsNumber(e.KeyChar) 
@@ -159,24 +169,22 @@ namespace Server
             }
         }
 
+        // save current settings to file 
         private void btnSave_Click(object sender, EventArgs e)
         {
             MessageView(SettingsModel.SaveSettings());
         }
 
+        // changing real length and changing real width according to new value of real length
         private void tbRealLength_TextChanged(object sender, EventArgs e)
         {
             if (tbRealLength.Focused)
             {
-                double realLength = SettingsModel.RealLength;
-                if (double.TryParse(tbRealLength.Text, out realLength))
-                {
-                    SettingsModel.SetRealLength(realLength);
-                }
-                tbRealWidth.Text = SettingsModel.RealWidth.ToString("N3");
+                tbRealWidth.Text = SettingsModel.RealLengthChanged(tbRealLength.Text);
             }
         }
-
+        
+        // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
         {
             SettingsModel.SelectFramePoint(e.X, e.Y);
@@ -184,12 +192,13 @@ namespace Server
             UpdateRealValuesText();
         }
 
+        // moving frame point
         private void pbMapImage_MouseMove(object sender, MouseEventArgs e)
         {
             if (SettingsModel.MoveFramePoint(pbMapImage, e.X, e.Y) != SettingsModel.NO_POINT)
             {
-                UpdatePointText();
-                UpdateRealValuesText();
+                //UpdatePointText();
+                //UpdateRealValuesText();
             }
         }
 
