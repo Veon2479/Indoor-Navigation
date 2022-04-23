@@ -13,11 +13,6 @@ public class ClientService extends Service {
 
     private Engine engine;
 
-    public ClientService(Engine sEngine)
-    {
-        engine = sEngine;
-    }
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
