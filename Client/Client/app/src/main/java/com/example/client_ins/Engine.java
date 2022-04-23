@@ -83,7 +83,9 @@ public class Engine {
             InputStream sock_ins = clientTcp.getInputStream();
             OutputStream sock_outs = clientTcp.getOutputStream();
 
+
             byte[] buffer = setInfoBufferWithLongs( UserId, 0, 0); //TODO: par1 is ID of qr of place
+
 
             System.out.println("Sending data");
             sock_outs.write(buffer);

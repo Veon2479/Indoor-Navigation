@@ -53,8 +53,7 @@ public class Tools {
         }
         catch (Exception e)
         {
-            // serverAddr = "10.144.157.188";
-            serverAddr = "192.168.50.145";
+            serverAddr = "10.144.52.41";
             serverPortTcp = 4444;
             serverPortUdp = 4445;
             AttemptsToRegistrate = 3;
@@ -62,7 +61,15 @@ public class Tools {
             UdpPacketDelay = 1000;
             writeToFile(context);
         }
-
+        else {
+            Scanner in = new Scanner(new FileInputStream(file));
+            serverAddr = in.nextLine();
+            serverPortTcp = Integer.parseInt(in.nextLine());
+            serverPortUdp = Integer.parseInt(in.nextLine());
+            AttemptsToRegistrate = Integer.parseInt(in.nextLine());
+            BufferSize = Integer.parseInt(in.nextLine());
+            UdpPacketDelay = Integer.parseInt(in.nextLine());
+        }
 
     }
 
