@@ -3,15 +3,12 @@ package com.example.client_ins;
 import android.content.Context;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -36,6 +33,7 @@ public class Tools {
 
     public static void readFromFile(Context context) throws Exception {
         File path = context.getFilesDir();
+        System.out.println("Path is: " + path.getPath() );
 
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -60,15 +58,6 @@ public class Tools {
             BufferSize = 28;
             UdpPacketDelay = 1000;
             writeToFile(context);
-        }
-        else {
-            Scanner in = new Scanner(new FileInputStream(file));
-            serverAddr = in.nextLine();
-            serverPortTcp = Integer.parseInt(in.nextLine());
-            serverPortUdp = Integer.parseInt(in.nextLine());
-            AttemptsToRegistrate = Integer.parseInt(in.nextLine());
-            BufferSize = Integer.parseInt(in.nextLine());
-            UdpPacketDelay = Integer.parseInt(in.nextLine());
         }
 
     }
@@ -118,10 +107,10 @@ public class Tools {
     public static byte[] setInfoBuffer(int userID, double crd1, double crd2)
     {
         byte[] result = new byte[ BufferSize ];
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 4, crd1 );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 12, crd2 );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );//.order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 4, crd1 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 12, crd2 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );
         return result;
     }
 
@@ -129,10 +118,10 @@ public class Tools {
     public static byte[] setInfoBufferWithLongs(int userID, long par1, long par2) //par1 is QR id
     {
         byte[] result = new byte[ BufferSize ];
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 4, par1 );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 12, par2 );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );//.order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 4, par1 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 12, par2 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );
         return result;
     }
 

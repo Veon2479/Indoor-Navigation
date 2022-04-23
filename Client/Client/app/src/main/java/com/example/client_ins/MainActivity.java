@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     EditText editText1;
     EditText editText2;
 
-    double x=0,y=0,z=0; //correct when it possible
+    double x=0, y=0, z=0; //correct when it possible
     double accX = 0, accY = 0, accZ = 0;
     double angleX = 0, angleY = 0, angleZ = 0;
     @RequiresApi(api = Build.VERSION_CODES.O)

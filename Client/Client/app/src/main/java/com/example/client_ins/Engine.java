@@ -21,11 +21,11 @@ public class Engine {
     {
         boolean flag = false;
         try {
-            System.out.println("Initializing program state");
-            readFromFile(context);
+            System.out.println( "Initializing program state" );
+            readFromFile( context );
 
         } catch (Exception e) {
-            System.out.println("FATAL ERROR while reading settings file: "+e);
+            System.out.println( "FATAL ERROR while reading settings file: " + e );
             flag = true;
         }
         if (!flag)
@@ -44,7 +44,7 @@ public class Engine {
             StrictMode.setThreadPolicy(policy);
             while (i < AttemptsToRegistrate && !flag) {
                 System.out.println("Trying to registrate");
-                flag = Registrate();
+                //flag = Registrate();
                 if (!flag)
                     UserId = 0;
                 i++;
@@ -104,13 +104,13 @@ public class Engine {
                 clientTcp.close();
             } catch (Exception e)
             {
-                System.out.println("Exception while registration: "+e);
+                System.out.println("Exception while registration: " + e );
             }
             System.out.println("Connection closed!");
         }
         catch  (Exception e)
         {
-            System.out.println("While registrate: "+e);
+            System.out.println("While registrate: " + e );
             RESULT = false;
         }
 
