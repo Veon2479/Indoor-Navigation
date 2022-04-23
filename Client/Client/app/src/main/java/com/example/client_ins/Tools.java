@@ -2,6 +2,8 @@ package com.example.client_ins;
 
 import android.content.Context;
 import android.os.Build;
+import android.text.Editable;
+
 import androidx.annotation.RequiresApi;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

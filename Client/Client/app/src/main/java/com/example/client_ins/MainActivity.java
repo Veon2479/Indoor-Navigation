@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import static com.example.client_ins.Tools.*;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -17,11 +18,11 @@ public class MainActivity extends AppCompatActivity {
     TextView text3;
     TextView textScroll;
 
-    Button button1;
-    Button button2;
+    Button buttonStart;
+    Button buttonStop;
 
-    EditText editText1;
-    EditText editText2;
+    EditText editTextQrID;
+    EditText editTextServerAddr;
 
     double x=0, y=0, z=0; //correct when it possible
     double accX = 0, accY = 0, accZ = 0;
@@ -37,22 +38,31 @@ public class MainActivity extends AppCompatActivity {
         text3 = findViewById(R.id.text3);
         textScroll = findViewById(R.id.textScroll);
 
-        editText1 = findViewById(R.id.editTextTextPersonName1);
-        editText2 = findViewById(R.id.editTextTextPersonName2);
+        editTextQrID = findViewById(R.id.editTextTextPersonName1);
+        editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
+
+        editTextQrID.setText("0");
+        editTextServerAddr.setText(serverAddr);
 
         //editText1.getText(); //взять текст из первой строки
         //editText2.getText(); //взять текст из второй строки
 
-        button1 = findViewById(R.id.button);
-        button1.setOnClickListener(new View.OnClickListener() {
+        buttonStart = findViewById(R.id.button);
+        buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //add method for first button
+                serverAddr = editTextServerAddr.getText().toString();
+                try {
+                    writeToFile(getApplicationContext());
+                } catch (Exception e) {
+                    System.out.println("Failed to change settings file: " + e );
+                }
+                engine.startTracking();
             }
         });
 
-        button2 = findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
+        buttonStop = findViewById(R.id.button2);
+        buttonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //add method for second button
@@ -61,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         x = engine.Crd1;
         y = engine.Crd2;
+
 
         text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
         text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
