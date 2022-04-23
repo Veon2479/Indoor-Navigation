@@ -27,7 +27,6 @@ namespace Server
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
             ServerManage.SetUpServer(LogMessage);
-            
         }
 
         // blocking settings controls except for the btnDownloadImage
@@ -72,11 +71,11 @@ namespace Server
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
+                openFileDialog.Filter = "Image files (*.jpg,*.jpeg,*.jpe,*.bmp,*.png)|*.jpg;*.jpeg;*.jpe;*.bmp;*.png|All files (*.*)|*.*";
                 if (openFileDialog.ShowDialog() == DialogResult.Cancel)
                 {
                     return;
                 }
-                //openFileDialog.Filter = "Image files (*.jpg,*.jpeg,*.jpe,*.jfif,*.png)|*.jpg;*.jpeg;*.jpe;*.jfif;*.png";
                 MessageView(SettingsModel.DownloadImage(pbMapImage, openFileDialog.FileName));
             }
             if (0 == MessageView(SettingsModel.FramePointsView(pbMapImage)))
