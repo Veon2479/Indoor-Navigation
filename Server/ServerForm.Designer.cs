@@ -223,18 +223,18 @@ namespace Server
             this.lblRealLength.AutoSize = true;
             this.lblRealLength.Location = new System.Drawing.Point(12, 111);
             this.lblRealLength.Name = "lblRealLength";
-            this.lblRealLength.Size = new System.Drawing.Size(150, 26);
+            this.lblRealLength.Size = new System.Drawing.Size(132, 26);
             this.lblRealLength.TabIndex = 16;
-            this.lblRealLength.Text = "Длина отмеченной области \r\n(в метрах):";
+            this.lblRealLength.Text = "Length of the marked area\r\n(in meters):";
             // 
             // lblRealWidth
             // 
             this.lblRealWidth.AutoSize = true;
             this.lblRealWidth.Location = new System.Drawing.Point(12, 174);
             this.lblRealWidth.Name = "lblRealWidth";
-            this.lblRealWidth.Size = new System.Drawing.Size(153, 26);
+            this.lblRealWidth.Size = new System.Drawing.Size(127, 26);
             this.lblRealWidth.TabIndex = 14;
-            this.lblRealWidth.Text = "Ширина отмеченной области\r\n(в метрах):";
+            this.lblRealWidth.Text = "Width of the marked area\r\n(in meters):";
             // 
             // btnSave
             // 
@@ -242,7 +242,7 @@ namespace Server
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(195, 25);
             this.btnSave.TabIndex = 13;
-            this.btnSave.Text = "Сохранить";
+            this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
@@ -288,7 +288,7 @@ namespace Server
             this.btnDownloadImage.Name = "btnDownloadImage";
             this.btnDownloadImage.Size = new System.Drawing.Size(195, 25);
             this.btnDownloadImage.TabIndex = 0;
-            this.btnDownloadImage.Text = "Загрузить карту помещения";
+            this.btnDownloadImage.Text = "Download a room map";
             this.btnDownloadImage.UseVisualStyleBackColor = true;
             this.btnDownloadImage.Click += new System.EventHandler(this.btnDownloadImage_Click);
             // 
