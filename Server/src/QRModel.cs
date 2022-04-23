@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -210,7 +211,7 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1 (INCORRECT_PARAMET): Incorrect QRID or x or y</item>
+        ///     <item>-1 (INCORRECT_PARAMET): Incorrect one of received parameters</item>
         ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
         ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (0 > QRID) or alredy exist</item>
         ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
@@ -221,6 +222,8 @@ namespace Server
             //Check for correct input parametrs
             try
             {
+                x = x.Replace(',', '.');
+                y = y.Replace(',', '.');
                 double.Parse(x, System.Globalization.CultureInfo.InvariantCulture);
                 double.Parse(y, System.Globalization.CultureInfo.InvariantCulture);
             }
@@ -274,6 +277,9 @@ namespace Server
             {
                 return (int)AddQRRecordErrorCode.NAME_OCCUPIED;
             }
+            if (Int32.TryParse(QRName, out i)){
+                return (int)AddQRRecordErrorCode.INCORRECT_PARAMETER;
+            }
 
             //Create new xml element, fill it, save changes
             XmlElement QRCode = xmlDoc.CreateElement("QRCode");
@@ -314,7 +320,7 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1 (INCORRECT_PARAMET): Incorrect QRID or x or y</item>
+        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
         ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
         ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (0 > QRID) or alredy exist</item>
         ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
@@ -472,10 +478,10 @@ namespace Server
                     return (int)CheckXmlFileContentErrorCode.UNKNOWN_ELEMENT_LV1_TAG;
                 }
 
-                if (!(xmlNode.Attributes.Count == 2 &&           //Chekc amount of atributes
+                if (!(xmlNode.Attributes.Count == 2 &&          //Chekc amount of atributes
                      xmlNode.Attributes[0].Name == "id" &&      //Check exist atribure "id"
-                     xmlNode.Attributes[1].Name == "name"))
-                {    //Check exist atribute "name"
+                     xmlNode.Attributes[1].Name == "name"))     //Check exist atribute "name"
+                {    
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
                 }
 
@@ -503,11 +509,13 @@ namespace Server
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
                 }
                 QRNameList.Add(xmlNode.Attributes[1].Value);
-
-                //Check amount of lvl 2 tags in lvl 1 tag
-                if (!(xmlNode.ChildNodes.Count == 2) &&
+                
+                //Check amount of lvl 2 tags in lvl 1 
+                if (!(xmlNode.ChildNodes.Count == 2 &&
                       xmlNode.ChildNodes[0].Name == "x" &&
-                      xmlNode.ChildNodes[1].Name == "y")
+                      xmlNode.ChildNodes[1].Name == "y" &&
+                      !xmlNode.ChildNodes[0].InnerText.Contains(',') &&
+                      !xmlNode.ChildNodes[1].InnerText.Contains(',')))
                 {
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ELEMENT_LV2;
                 }
