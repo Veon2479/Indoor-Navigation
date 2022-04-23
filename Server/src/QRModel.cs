@@ -31,7 +31,7 @@ namespace Server
         List<int> _QRIDExist = new List<int>();
 
         /// <summary>
-        ///     Open and check xml file. If file does not exist use standart file in standart directory
+        ///     Open and check xml file. If file does not exist create it. Else use standart file in standart directory
         /// </summary>
         /// <param name="xmlFileName">Name of xml file to work with</param>
         /// <exception cref="Exception">Xml file incorrect or was corrupted</exception>
@@ -107,7 +107,7 @@ namespace Server
                 return (int)GetQRCoordErrorCode.QRID_INCORRECT;
             }
 
-            XmlNode xmlNode = xmlEl.ChildNodes[QRID];
+            XmlNode xmlNode = xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)];
 
             //Try to parce string to double
             try
@@ -129,9 +129,9 @@ namespace Server
             NAME_NOT_FOUND = -3
         }
         /// <summary>
-        ///     Delet QR Record from xml file according recived QRID
+        ///     Delet QR Record from xml file according recived QRID or QRName
         /// </summary>
-        /// <param name="QRID">ID of QR record in xml file</param>
+        /// <param name="QRID_QRName">ID or Name of QR record in xml file</param>
         /// <returns>
         ///     <list type="table">
         ///         <listheader>
@@ -141,11 +141,12 @@ namespace Server
         ///         </listheader>
         ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
         ///     <item>-2 (QRID_INCORRECT): No this ID in xml file</item>
+        ///     <item>-3 (NAME_NOT_FOUD): No this Name in xml file</item>
         ///     </list>
         /// </returns>
-        public int DeleteQRRecord(int QRID)
+        public int DeleteQRRecord(string QRID_QRName)
         {
-            XmlDocument xmlDoc = new XmlDocument();
+             XmlDocument xmlDoc = new XmlDocument();
 
             //Check for correct file content
             if (CheckXmlFileContent(ref xmlDoc) < 0)
@@ -155,64 +156,37 @@ namespace Server
 
             XmlElement xmlEl = xmlDoc.DocumentElement;
 
-            //Check for correct QRID
-            if (QRID < 0 || !_QRIDExist.Contains(QRID))
-            {
-                return (int)DeleteQRRecordErrorCode.QRID_INCORRECT;
+            //Check contains of QRID_QRName
+            int QRID = -1;
+            if (Int32.TryParse(QRID_QRName, out QRID)){
+            
+                //QRID_QRName contain id
+                //Check if QRID exists if QRID correct
+                if (QRID < 0 || !_QRIDExist.Contains(QRID)){
+                    return (int)DeleteQRRecordErrorCode.QRID_INCORRECT;
+                }
+            }else{
+            
+                //QRID_QRName contain name
+                //Check is xml file contain Name
+                foreach (XmlNode xmlNode in xmlEl.ChildNodes){
+                    if (xmlNode.Attributes[1].Value == QRID_QRName){
+                        if (!Int32.TryParse(xmlNode.Attributes[0].Value, out QRID)){
+                            return (int)DeleteQRRecordErrorCode.QRID_INCORRECT;
+                        }
+                    }
+                }
+
+                //QRID == -1 => not changed => QRName not found
+                if (QRID == -1){
+                    return (int)DeleteQRRecordErrorCode.NAME_NOT_FOUND;
+                }
             }
 
             //Delete record, save changes
             xmlEl.RemoveChild(xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)]);
             xmlDoc.Save(_xmlFileName);
-            return 0;
-        }
-        /// <summary>
-        ///     Deler QR record from xlm file according recived record name
-        /// </summary>
-        /// <param name="QRName">Name of record in xml file</param>
-        /// <returns>        
-        ///     <list type="table">
-        ///         <listheader>
-        ///             <term>
-        ///                 >= 0 - no errors, else - error
-        ///             </term>
-        ///         </listheader>
-        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
-        ///     <item>-3 (NAME_NOT_FOUND): Record name not found</item>
-        ///     </list>
-        /// </returns>
-        public int DeleteQRRecord(string QRName)
-        {
-            XmlDocument xmlDoc = new XmlDocument();
-
-            //Check for correct file content
-            if (CheckXmlFileContent(ref xmlDoc) < 0)
-            {
-                return (int)DeleteQRRecordErrorCode.CORRUPTED_FILE;
-            }
-
-            XmlElement xmlEl = xmlDoc.DocumentElement;
-
-            //Check is name exist
-            int ID = -1;
-            Boolean find = false;
-            while (ID + 1 < xmlEl.ChildNodes.Count && !find)
-            {
-                ID++;
-                if (xmlEl.ChildNodes[ID].Attributes[1].Value == QRName)
-                {
-                    find = true;
-                }
-            }
-            if (!find)
-            {
-                return (int)DeleteQRRecordErrorCode.NAME_NOT_FOUND;
-            }
-
-            //Delete record, save changes
-            xmlEl.RemoveChild(xmlEl.ChildNodes[ID]);
-            xmlDoc.Save(_xmlFileName);
-            return 0;
+            return QRID;
         }
 
         public enum AddQRRecordErrorCode
@@ -238,7 +212,7 @@ namespace Server
         ///         </listheader>
         ///     <item>-1 (INCORRECT_PARAMET): Incorrect QRID or x or y</item>
         ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
-        ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (QRID < 0) or alredy exist</item>
+        ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (0 > QRID) or alredy exist</item>
         ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
         ///     </list>
         /// </returns>
@@ -319,17 +293,20 @@ namespace Server
 
         public enum ChangeQRRecordErrorCode
         {
-            CORRUPTED_FILE = -1,
-            QRID_INCORRECT = -2,
-            NAME_NOT_FOUND = -3
+            INCORRECT_PARAMETR = -1,
+            CORRUPTED_FILE = -2,
+            QRID_INCORRECT = -3,
+            NAME_IS_OCCUPIED = -4,
+            NAME_NOT_FOUND = -5
         }
-
         /// <summary>
-        ///     Chade QR record in xml file according received QRID
+        ///     Chade QR record in xml file according received ID or Name
         /// </summary>
-        /// <param name="QRID">ID of QR record in xml file</param>
-        /// <param name="x">Coordinate x</param>
-        /// <param name="y">Coordinate y</param>
+        /// <param name="oldQRID_oldName">ID of QR record in xml file</param>
+        /// <param name="newQRID">New QR ID to change</param>
+        /// <param name="newQRName">New QR name to change</param>
+        /// <param name="newX">Coordinate x</param>
+        /// <param name="newY">Coordinate y</param>
         /// <returns>
         ///     <list type="table">
         ///         <listheader>
@@ -337,85 +314,29 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
-        ///     <item>-2 (INCORRECT_PARAMET): Incorrect QRID or x or y</item>
+        ///     <item>-1 (INCORRECT_PARAMET): Incorrect QRID or x or y</item>
+        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (0 > QRID) or alredy exist</item>
+        ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
+        ///     <item>-5 (NAME_NOT_FOUND): name of QR record is not exists</item>
         ///     </list>
         /// </returns>
-        public int ChangeQRRecord(int QRID, double x, double y)
+        public int ChangeQRRecord(string oldQRID_oldName, string newQRID, string newQRName, string newX, string newY)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
-            //Check for correct file content
-            if (CheckXmlFileContent(ref xmlDoc) < 0)
-            {
-                return (int)ChangeQRRecordErrorCode.CORRUPTED_FILE;
+            //Try to delete old QR record
+            int QRID = DeleteQRRecord(oldQRID_oldName);  
+            if (QRID < 0){
+                return (int)ChangeQRRecordErrorCode.INCORRECT_PARAMETR;
             }
 
-            //Check for correct QRID
-            if (QRID < 0 || !_QRIDExist.Contains(QRID))
-            {
-                return (int)ChangeQRRecordErrorCode.QRID_INCORRECT;
+            //Try to add new QR record
+            int iResult = AddQRRecord(newQRID, newQRName, newX, newY); 
+            if (iResult < 0){
+                return iResult;
             }
-
-            //Get chosen xml element, change it data, save changes
-            XmlElement xmlRoot = xmlDoc.DocumentElement;
-            XmlNode QRCode = xmlRoot.ChildNodes[_QRIDExist.IndexOf(QRID)];
-            QRCode.ChildNodes[0].InnerText = x.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            QRCode.ChildNodes[1].InnerText = y.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            xmlDoc.Save(_xmlFileName);
-            return 0;
-        }
-        /// <summary>
-        ///     Change QR record in xml file according received QR record name
-        /// </summary>
-        /// <param name="QRName">Name of QR recrod</param>
-        /// <param name="x">Coordinate x</param>
-        /// <param name="y">Coordinate y</param>
-        /// <returns>
-        ///     <list type="table">
-        ///         <listheader>
-        ///             <term>
-        ///                 >= 0 - no errors, else - error
-        ///             </term>
-        ///         </listheader>
-        ///     <item>-1 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
-        ///     <item>-3 (NAME_NOT_FOUND): Incorrect QR name, or does not exist</item>
-        ///     </list>
-        ///</returns>
-        public int ChangeQRRecord(string QRName, double x, double y)
-        {
-            XmlDocument xmlDoc = new XmlDocument();
-
-            //Check for correct file content
-            if (CheckXmlFileContent(ref xmlDoc) < 0)
-            {
-                return (int)ChangeQRRecordErrorCode.CORRUPTED_FILE;
-            }
-
-            XmlElement xmlEl = xmlDoc.DocumentElement;
-
-            //Check is name exist
-            int ID = -1;
-            Boolean find = false;
-            while (ID + 1 < xmlEl.ChildNodes.Count && !find)
-            {
-                ID++;
-                if (xmlEl.ChildNodes[ID].Attributes[1].Value == QRName)
-                {
-                    find = true;
-                }
-            }
-            if (!find)
-            {
-                return (int)ChangeQRRecordErrorCode.NAME_NOT_FOUND;
-            }
-
-            //Get chosen xml element, change it data, save changes
-            XmlElement xmlRoot = xmlDoc.DocumentElement;
-            XmlNode QRCode = xmlRoot.ChildNodes[ID];
-            QRCode.ChildNodes[0].InnerText = x.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            QRCode.ChildNodes[1].InnerText = y.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            xmlDoc.Save(_xmlFileName);
+            
             return 0;
         }
 
@@ -472,8 +393,8 @@ namespace Server
                 //Get Coordinate x and y
                 try
                 {
-                    xmlContent[i].X = double.Parse(xmlNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture).ToString();
-                    xmlContent[i].Y = double.Parse(xmlNode.ChildNodes[1].InnerText, System.Globalization.CultureInfo.InvariantCulture).ToString();
+                    xmlContent[i].X = double.Parse(xmlNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    xmlContent[i].Y = double.Parse(xmlNode.ChildNodes[1].InnerText, System.Globalization.CultureInfo.InvariantCulture).ToString(System.Globalization.CultureInfo.InvariantCulture);
                 }
                 catch
                 {
@@ -573,6 +494,12 @@ namespace Server
                 //Check unique name
                 if (QRNameList.Contains(xmlNode.Attributes[1].Value))
                 {
+                    return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
+                }
+
+                //Check that name is not any number
+                int iName;
+                if (Int32.TryParse(xmlNode.Attributes[1].Value, out iName)){
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
                 }
                 QRNameList.Add(xmlNode.Attributes[1].Value);

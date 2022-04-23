@@ -75,22 +75,26 @@ namespace Server
         }
 
         //edit QR in config file
-        public static string EditQR(int QRID, double x, double y, ref ListView view)
+        public static string EditQR(string oldQRID, string QRID, string QRName, string x, string y, ref ListView view)
         {
             if (Server.Run)
                 return "The server is running. File modification is not possible";
 
             //edit QR in a file
-            int editResult = Server.qrModel.ChangeQRRecord(QRID, x, y);
+            int editResult = Server.qrModel.ChangeQRRecord(oldQRID, QRID, QRName, x, y);
 
             switch ((QRModel.ChangeQRRecordErrorCode)editResult)
             {
+                case QRModel.ChangeQRRecordErrorCode.INCORRECT_PARAMETR:
+                    return "Incorrect QR ID or QR X or QR Y";
                 case QRModel.ChangeQRRecordErrorCode.CORRUPTED_FILE:
                     return "Xml file not exist or was corrupted";
                 case QRModel.ChangeQRRecordErrorCode.QRID_INCORRECT:
-                    return "Incorrect QR ID or QR X or QR Y";
+                    return "QR ID incorrent or already exist";
+                case QRModel.ChangeQRRecordErrorCode.NAME_IS_OCCUPIED:
+                    return "QR Name already occupied";
                 case QRModel.ChangeQRRecordErrorCode.NAME_NOT_FOUND:
-                    return "Incorrect QR name of does not exist";
+                    return "QR Name is not exist";
                 default:
                     {
                         //update view
@@ -101,7 +105,7 @@ namespace Server
         }
 
         //delete QR from config file
-        public static string DeleteQR(int QRID, ref ListView view)
+        public static string DeleteQR(string QRID, ref ListView view)
         {
             if (Server.Run)
                 return "The server is running. File modification is not possible";
@@ -113,7 +117,7 @@ namespace Server
                 case QRModel.DeleteQRRecordErrorCode.CORRUPTED_FILE:
                     return "Xml file not exist or was corrupted";
                 case QRModel.DeleteQRRecordErrorCode.QRID_INCORRECT:
-                    return "Incorrect QR ID or QR X or QR Y";
+                    return "QR ID not found";
                 case QRModel.DeleteQRRecordErrorCode.NAME_NOT_FOUND:
                     return "Incorrect QR name of does not exist";
                 default:
