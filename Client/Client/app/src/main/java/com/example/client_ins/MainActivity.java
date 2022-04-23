@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     TextView text1;
     TextView text2;
     TextView text3;
-    TextView textScroll;
+    public static TextView textScroll;
 
     Button buttonStart;
     Button buttonStop;
@@ -37,16 +37,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Engine engine = new Engine(getApplicationContext());
-        ClientService clientService = new ClientService(getApplicationContext());
-        engine = clientService.getEngine();
-        if (engine == null)
-            System.out.println("Failed to create engine");
+
+        Engine engine = new Engine(getApplicationContext());
+        System.out.println("Calling background service to start");
+        ClientService clientService = new ClientService(engine);
+        startForegroundService( new Intent(this, ClientService.class));
+
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
         textScroll = findViewById(R.id.textScroll);
-
+      
+        textScroll.setText("\rLog started!\r\n");
+  
         editTextQrID = findViewById(R.id.editTextTextPersonName1);
         editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
 
@@ -85,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
         text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
         text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
         text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
+        MainActivity.textScroll.append("Log ended!"+"\n");
 
-        textScroll.setText("Yes1\nYes2\nYes3\nYes4\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\nYes5\n");
         //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
 
     }
