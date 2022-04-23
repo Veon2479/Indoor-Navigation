@@ -3,24 +3,29 @@ class Server - запуск сервера, TcpListener и UdpListener
 Ипользует:
 	IDModel: tostyk - модель ID пользователей
 	UserModel: 4Freak - модель пользователей
+	QRModel: 4Freak - модель QR координат
 	UserPacket: KJI0YH - преобразование присылаемого/отправляемого пакета
 
 Поля:
-		private static int DEFAULT_TCP_PORT - стандартный порт TCP
+	private static int DEFAULT_TCP_PORT - стандартный порт TCP
         private static int DEFAULT_UDP_PORT - стандартный порт UDP
 
         private static int DEFAULT_TABLE_CAPACITY - стандартная размерность таблицы пользователей
 
+	public delegate void LogMessageDelegate(string msg) - делегат для метода вывода log сообщений 
+	public static LogMessageDelegate LogMessage {get; set;} = null - метод вывода log сообщений
+
         private static ManualResetEvent allDoneTcp - сигналы для управления потоком TcpListener
         private static ManualResetEvent allDoneUdp - сигналы для управления потоком UdpListener
 
-        private static IDModel userIDModel - модель ID пользователей 
+        internal static IDModel userIDModel - модель ID пользователей 
         private static UserModel userModel -модель пользователей
+	internal static QRModel qrModel = null - модель QR координат
 
         private static Thread tcpListener - поток TcpListener
         private static Thread udpListener - поток UdpListener
 
-		private static bool Run - состояние работы сервера
+	private static bool Run - состояние работы сервера
 
 
 Методы: 
