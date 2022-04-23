@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,14 +16,20 @@ namespace Server
         public frmServer()
         {
             InitializeComponent();
-            BlockSettingsControls();
+
+            if (SettingsModel.DownloadSettings(pbMapImage) != 0)
+            {
+                BlockSettingsControls();
+            }
+            UpdatePointText();
+            UpdateRealValuesText();
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
-            ServerManage.SetUpServer(LogMessage, ref lvQRList);
-            
+            ServerManage.SetUpServer(LogMessage);
         }
 
+        // blocking settings controls except for the btnDownloadImage
         private void BlockSettingsControls()
         {
             foreach (Control control in pSettings.Controls)
@@ -32,6 +38,8 @@ namespace Server
             }
             btnDownloadImage.Enabled = true;
         }
+
+        // unblocking settings controls except for the tbRealWidth
         private void UnblockSettingsControls()
         {
             foreach (Control control in pSettings.Controls)
@@ -40,11 +48,15 @@ namespace Server
             }
             tbRealWidth.Enabled = false;
         }
+
+        // update tbRealLength and tbRealWidth with current values of RealLength and RealWidth
         private void UpdateRealValuesText()
         {
             tbRealLength.Text = SettingsModel.RealLength.ToString("N3");
             tbRealWidth.Text = SettingsModel.RealWidth.ToString("N3");
         }
+
+        // update coordinate text with current values of points coordinates
         private void UpdatePointText()
         {
             tbCoordinateX1.Text = SettingsModel.PointX1.ToString();
@@ -52,76 +64,92 @@ namespace Server
             tbCoordinateY1.Text = SettingsModel.PointY1.ToString();
             tbCoordinateY2.Text = SettingsModel.PointY2.ToString();
         }
+        
+        // downloading map image from file, 
+        // preparing controls for work
         private void btnDownloadImage_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
+                openFileDialog.Filter = "Image files (*.jpg,*.jpeg,*.jpe,*.bmp,*.png)|*.jpg;*.jpeg;*.jpe;*.bmp;*.png|All files (*.*)|*.*";
                 if (openFileDialog.ShowDialog() == DialogResult.Cancel)
                 {
                     return;
                 }
-                // возможно стоит копировать картинку куда-то к себе на сервер
-                // не работают фильтры
-                //openFileDialog.Filter = "Image files (*.jpg,*.jpeg,*.jpe,*.jfif,*.png)|*.jpg;*.jpeg;*.jpe;*.jfif;*.png";
-                SettingsModel.InitSettings();
-                ErrorMessageView(SettingsModel.SaveImage(openFileDialog.FileName));
+                MessageView(SettingsModel.DownloadImage(pbMapImage, openFileDialog.FileName));
             }
-            //bitmap = new Bitmap(MapImageFilename);
-            if (0 == ErrorMessageView(SettingsModel.FramePointsView(pbMapImage)))
+            if (0 == MessageView(SettingsModel.FramePointsView(pbMapImage)))
             {
                 UnblockSettingsControls();
                 UpdatePointText();
             }
         }
 
-        private int ErrorMessageView(int errorCode)
+        //  display message according to message or error code
+        private int MessageView(int errorCode)
         {
-            if (errorCode == SettingsModel.IMAGE_DOWNLOAD_ERROR)
+            switch (errorCode)
             {
-                MessageBox.Show("Ошибка", "Не удалось загрузить изображение", MessageBoxButtons.OK);
-                return SettingsModel.IMAGE_DOWNLOAD_ERROR;
+                case SettingsModel.MESSAGE.IMAGE_DOWNLOAD_ERROR:
+                    {
+                        MessageBox.Show("Image loading error", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.MESSAGE.DROW_FRAME_POINTS_ERROR:
+                    {
+                        MessageBox.Show("Error drawing additional elements", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR:
+                    {
+                        MessageBox.Show("Error loading user settings", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY:
+                    {
+                        MessageBox.Show("Settings saved successfully", "Message", MessageBoxButtons.OK);
+                    }
+                    break;
+                case SettingsModel.MESSAGE.SAVE_USER_SETTINGS_ERROR:
+                    {
+                        MessageBox.Show("Error saving user settings", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
             }
-            else if (errorCode == SettingsModel.DROW_FRAME_POINTS_ERROR)
-            {
-                MessageBox.Show("Ошибка", "Не удалось отрисовать дополнительные элементы изображения", MessageBoxButtons.OK);
-                return SettingsModel.DROW_FRAME_POINTS_ERROR;
-            }
-            else if (errorCode == SettingsModel.IMAGE_SAVE_ERROR)
-            {
-                MessageBox.Show("Ошибка", "Не удалось осохранить изображение", MessageBoxButtons.OK);
-                return SettingsModel.IMAGE_SAVE_ERROR;
-            }
-            else return 0;
+            return errorCode;
         }
+
+        // changing coordinate value and redrowing frame according to changed coordinate
         private void tbCoordinateX1_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateX1.Text, out SettingsModel.PointX1))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
         private void tbCoordinateX2_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateX2.Text, out SettingsModel.PointX2))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
         private void tbCoordinateY1_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateY1.Text, out SettingsModel.PointY1))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
         private void tbCoordinateY2_TextChanged(object sender, EventArgs e)
         {
             if (int.TryParse(tbCoordinateY2.Text, out SettingsModel.PointY2))
             {
-                ErrorMessageView(SettingsModel.FramePointsView(pbMapImage));
+                MessageView(SettingsModel.FramePointsView(pbMapImage));
             }
         }
 
+        // entering valid characters in text fields
         private void tbCoordinate_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsNumber(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != Convert.ToChar(8))
@@ -129,7 +157,6 @@ namespace Server
                 e.Handled = true;
             }
         }
-
         private void tbRealValue_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsNumber(e.KeyChar) 
@@ -141,44 +168,30 @@ namespace Server
             }
         }
 
+        // save current settings to file 
         private void btnSave_Click(object sender, EventArgs e)
         {
-
+            MessageView(SettingsModel.SaveSettings());
         }
 
+        // changing real length and changing real width according to new value of real length
         private void tbRealLength_TextChanged(object sender, EventArgs e)
         {
             if (tbRealLength.Focused)
             {
-                double realLength = SettingsModel.RealLength;
-                if (double.TryParse(tbRealLength.Text, out realLength))
-                {
-                    SettingsModel.SetRealLength(realLength);
-                }
-                tbRealWidth.Text = SettingsModel.RealWidth.ToString("N3");
+                tbRealWidth.Text = SettingsModel.RealLengthChanged(tbRealLength.Text);
             }
         }
-
-        private void tbRealWidth_TextChanged(object sender, EventArgs e)
-        {
-            if (tbRealWidth.Focused)
-            {
-                double realWidth = SettingsModel.RealWidth;
-                if (double.TryParse(tbRealWidth.Text, out realWidth))
-                {
-                    SettingsModel.SetRealLength(realWidth);
-                }
-                tbRealLength.Text = SettingsModel.RealLength.ToString("N3");
-            }
-        }
-
+        
+        // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
         {
-            SettingsModel.SelectFramePoint(pbMapImage, e.X, e.Y);
+            SettingsModel.SelectFramePoint(e.X, e.Y);
             UpdatePointText();
             UpdateRealValuesText();
         }
 
+        // moving frame point
         private void pbMapImage_MouseMove(object sender, MouseEventArgs e)
         {
             if (SettingsModel.MoveFramePoint(pbMapImage, e.X, e.Y) != SettingsModel.NO_POINT)
@@ -224,7 +237,6 @@ namespace Server
             if (!Server.Run)
                 return;
             ServerManage.UpdateOnlineUsersView(ref lvOnline, Server.userIDModel);
-        }
 
         //open QR config file
         private void btnOpenQRConf_Click(object sender, EventArgs e)
