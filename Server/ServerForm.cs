@@ -26,7 +26,7 @@ namespace Server
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
-            ServerManage.SetUpServer(LogMessage);
+            ServerManage.SetUpServer(LogMessage, ref lvQRList);
         }
 
         // blocking settings controls except for the btnDownloadImage
@@ -64,7 +64,7 @@ namespace Server
             tbCoordinateY1.Text = SettingsModel.PointY1.ToString();
             tbCoordinateY2.Text = SettingsModel.PointY2.ToString();
         }
-        
+
         // downloading map image from file, 
         // preparing controls for work
         private void btnDownloadImage_Click(object sender, EventArgs e)
@@ -159,8 +159,8 @@ namespace Server
         }
         private void tbRealValue_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsNumber(e.KeyChar) 
-                && !char.IsDigit(e.KeyChar) 
+            if (!char.IsNumber(e.KeyChar)
+                && !char.IsDigit(e.KeyChar)
                 && e.KeyChar != Convert.ToChar(8)
                 && e.KeyChar != '.')
             {
@@ -182,7 +182,7 @@ namespace Server
                 tbRealWidth.Text = SettingsModel.RealLengthChanged(tbRealLength.Text);
             }
         }
-        
+
         // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
         {
@@ -237,6 +237,7 @@ namespace Server
             if (!Server.Run)
                 return;
             ServerManage.UpdateOnlineUsersView(ref lvOnline, Server.userIDModel);
+        }
 
         //open QR config file
         private void btnOpenQRConf_Click(object sender, EventArgs e)
@@ -283,7 +284,7 @@ namespace Server
         ListView.SelectedListViewItemCollection selectedItem = null;
         private void lvQRList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedItem = lvQRList.SelectedItems.Count> 0 ? lvQRList.SelectedItems : null;
+            selectedItem = lvQRList.SelectedItems.Count > 0 ? lvQRList.SelectedItems : null;
 
             if (selectedItem != null)
             {
