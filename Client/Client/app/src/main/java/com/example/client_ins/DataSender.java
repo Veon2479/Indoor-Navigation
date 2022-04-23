@@ -3,21 +3,17 @@ package com.example.client_ins;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
+import java.time.Instant;
 
 import static com.example.client_ins.Tools.*;
-
 import static java.lang.Thread.sleep;
-
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 class DataSender implements Runnable {
     Engine mainEngine;
     private boolean isActive;
-    private DatagramSocket clientSocket;
 
     public boolean fSend = true;
 
@@ -26,15 +22,16 @@ class DataSender implements Runnable {
         this.isActive = true;
     }
 
+
     public void Disable(){
         isActive = false;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void run(){
-
+        System.out.println("Trying to start UDP");
         try {
-            clientSocket = new DatagramSocket();
+            DatagramSocket clientSocket = new DatagramSocket();
 
             // Получение IP-адреса сервера
             InetAddress IPAddress = InetAddress.getByName(serverAddr);
@@ -43,9 +40,11 @@ class DataSender implements Runnable {
             byte[] sendingDataBuffer = setInfoBuffer( mainEngine.UserId, mainEngine.Crd1, mainEngine.Crd2);
 
             // Создание UDP-пакет
-            DatagramPacket sendingPacket = new DatagramPacket(sendingDataBuffer,sendingDataBuffer.length, IPAddress, serverPort);
+            DatagramPacket sendingPacket = new DatagramPacket(sendingDataBuffer,sendingDataBuffer.length, IPAddress, serverPortUdp);
 
+            System.out.println("Ready to send udp");
             while(isActive){
+
                 if(fSend)
                 {
                     //*Помещение данных в буфер*
@@ -53,9 +52,10 @@ class DataSender implements Runnable {
 
                     // Отправьте UDP-пакет серверу
                     clientSocket.send(sendingPacket);
-
-                    sleep(1000);
+                    System.out.println("udp sent at "+ Instant.now().getEpochSecond());
+                    sleep(UdpPacketDelay);
                 }
+
             }
 
             // Закрытие соединения с сервером через сокет
