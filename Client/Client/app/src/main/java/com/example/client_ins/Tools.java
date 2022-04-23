@@ -2,59 +2,58 @@ package com.example.client_ins;
 
 import android.content.Context;
 import android.os.Build;
-import android.os.Environment;
-import android.util.Xml;
+import android.text.Editable;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
-import java.util.Scanner;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 
 public class Tools {
 
 
     //these values will be read from file
 
-   // public static String serverAddr = "10.144.50.145";
-    public static String serverAddr = "192.168.50.145";
+    public static String serverAddr;
+    public static int serverPortTcp;
+    public static int serverPortUdp;
+    public static int AttemptsToRegistrate;
+    public static int BufferSize;
+    public static int UdpPacketDelay;
 
-    public static int serverPortTcp = 4444;
-    public static int serverPortUdp = 4445;
-    public static int AttemptsToRegistrate = 3;
-    public static int BufferSize = 28;
-    public static int UdpPacketDelay = 1000;
+    private static final String SettingFile = "Settings.xml";
 
-    public static void readFromFile(Context context) throws IOException {
+    public static void readFromFile(Context context) throws Exception {
         File path = context.getFilesDir();
-        File file = new File(path, "configClient.txt");
-        if(!file.exists()) {
-            serverAddr = "192.168.50.145";
+        System.out.println("Path is: " + path.getPath() );
+
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = builder.parse(new File(path.getPath() + SettingFile));
+            doc.normalizeDocument();
+
+            Element root = doc.getDocumentElement();
+            System.out.println("Trying to read values");
+            serverAddr = root.getElementsByTagName("serverAddr").item(0).getTextContent();
+            AttemptsToRegistrate = Integer.parseInt(root.getElementsByTagName("AttemptsToRegistrate").item(0).getTextContent());
+            BufferSize = Integer.parseInt(root.getElementsByTagName("BufferSize").item(0).getTextContent());
+            UdpPacketDelay = Integer.parseInt(root.getElementsByTagName("UdpPacketDelay").item(0).getTextContent());
+            serverPortTcp = Integer.parseInt(root.getElementsByTagName("ServerPortTcp").item(0).getTextContent());
+            serverPortUdp = Integer.parseInt(root.getElementsByTagName("ServerPortUdp").item(0).getTextContent());
+        }
+        catch (Exception e)
+        {
+            serverAddr = "10.144.52.41";
             serverPortTcp = 4444;
             serverPortUdp = 4445;
             AttemptsToRegistrate = 3;
@@ -62,41 +61,69 @@ public class Tools {
             UdpPacketDelay = 1000;
             writeToFile(context);
         }
-        else {
-            Scanner in = new Scanner(new FileInputStream(file));
-            serverAddr = in.nextLine();
-            serverPortTcp = Integer.parseInt(in.nextLine());
-            serverPortUdp = Integer.parseInt(in.nextLine());
-            AttemptsToRegistrate = Integer.parseInt(in.nextLine());
-            BufferSize = Integer.parseInt(in.nextLine());
-            UdpPacketDelay = Integer.parseInt(in.nextLine());
-        }
+
     }
 
-    public static void writeToFile(Context context) throws IOException {
+
+    public static void writeToFile(Context context) throws Exception {
+
         File path = context.getFilesDir();
-        File file = new File(path, "configClient.txt");
-        if(!file.exists()) {
-            file.createNewFile();
-        }
-        OutputStreamWriter fl = new OutputStreamWriter(new FileOutputStream(file));
-        fl.write(serverAddr+"\n");
-        fl.write(serverPortTcp+"\n");
-        fl.write(serverPortUdp+"\n");
-        fl.write(AttemptsToRegistrate+"\n");
-        fl.write(BufferSize+"\n");
-        fl.write(UdpPacketDelay+"\n");
-        fl.close();
+
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = builder.newDocument();
+
+        Element root = doc.createElement("Settings");
+        doc.appendChild(root);
+
+        Element elServerAddr = doc.createElement("serverAddr");
+        elServerAddr.setTextContent(serverAddr);
+        root.appendChild(elServerAddr);
+
+        Element elServerPortTcp = doc.createElement("ServerPortTcp");
+        elServerPortTcp.setTextContent(Integer.toString(serverPortTcp));
+        root.appendChild(elServerPortTcp);
+
+        Element elServerPortUdp = doc.createElement("ServerPortUdp");
+        elServerPortUdp.setTextContent(Integer.toString(serverPortUdp));
+        root.appendChild(elServerPortUdp);
+
+        Element elAttemptsToRegistrate = doc.createElement("AttemptsToRegistrate");
+        elAttemptsToRegistrate.setTextContent(Integer.toString(AttemptsToRegistrate));
+        root.appendChild(elAttemptsToRegistrate);
+
+        Element elBufferSize = doc.createElement("BufferSize");
+        elBufferSize.setTextContent(Integer.toString(BufferSize));
+        root.appendChild(elBufferSize);
+
+        Element elUdpPacketDelay = doc.createElement("UdpPacketDelay");
+        elUdpPacketDelay.setTextContent(Integer.toString(UdpPacketDelay));
+        root.appendChild(elUdpPacketDelay);
+
+        Transformer tr = TransformerFactory.newInstance().newTransformer();
+        tr.setOutputProperty(OutputKeys.INDENT, "yes");
+        tr.transform(new DOMSource(doc), new StreamResult( new File( path.getPath() + SettingFile )));
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static byte[] setInfoBuffer(int userID, double crd1, double crd2)
     {
-        byte[] result = new byte[ ( 32 + 64 * 2 + 64) / 8 ];
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 4, crd1 );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 12, crd2 );//.order(ByteOrder.LITTLE_ENDIAN);
-        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );//.order(ByteOrder.LITTLE_ENDIAN);
+        byte[] result = new byte[ BufferSize ];
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 4, crd1 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 12, crd2 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );
+        return result;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static byte[] setInfoBufferWithLongs(int userID, long par1, long par2) //par1 is QR id
+    {
+        byte[] result = new byte[ BufferSize ];
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 4, par1 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 12, par2 );
+        ByteBuffer.wrap( result ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20,  ( Instant.now().getEpochSecond() ) );
         return result;
     }
 
