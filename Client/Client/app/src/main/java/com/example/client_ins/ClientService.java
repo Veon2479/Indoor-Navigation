@@ -16,7 +16,7 @@ public class ClientService extends Service {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        engine = new Engine(getBaseContext());
+        engine = Engine.getInstance();
 
         System.out.println("Background service is starting!");
 
@@ -29,7 +29,6 @@ public class ClientService extends Service {
         mathThread.start();
 
         SensorReader sensorReader = new SensorReader(engine, getBaseContext(), clientMath);
-
         return START_STICKY;
     }
 

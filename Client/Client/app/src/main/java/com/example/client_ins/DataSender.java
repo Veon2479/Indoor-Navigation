@@ -19,9 +19,10 @@ class DataSender implements Runnable {
 
     public DataSender(Engine engine){
         this.mainEngine = engine;
-        this.isActive = true;
+        this.isActive = false;
     }
 
+    public void Enable() { isActive = true; }
 
     public void Disable(){
         isActive = false;

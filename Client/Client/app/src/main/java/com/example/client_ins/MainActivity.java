@@ -37,11 +37,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        Engine engine = new Engine(getApplicationContext());
+        Engine.setContext(getApplicationContext());
+        Engine engine = Engine.getInstance();
         System.out.println("Calling background service to start");
         //ClientService clientService = new ClientService(engine);
-        startForegroundService( new Intent(this, ClientService.class));
+        Intent intent = new Intent(this, ClientService.class);
+        startForegroundService( intent );
+
 
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Failed to change settings file: " + e );
                 }
                 engine.startTracking();
+
             }
         });
 

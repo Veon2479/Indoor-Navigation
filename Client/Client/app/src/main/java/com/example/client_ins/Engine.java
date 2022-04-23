@@ -17,8 +17,11 @@ public class Engine {
     public double Crd1, Crd2;
     public boolean isAlive = false;
 
+    private static Engine instance;
+    public static Context context;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public Engine(Context context)
+    private Engine(Context context)
     {
         boolean flag = false;
         try {
@@ -50,6 +53,19 @@ public class Engine {
 
     }
 
+    public static void setContext(Context sContext)
+    {
+        context = sContext;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Engine getInstance()
+    {
+        if ( instance == null )
+            instance = new Engine(context);
+        return instance;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startTracking()
     {
@@ -66,6 +82,8 @@ public class Engine {
 
         if (isAlive) {
             System.out.println("Registration was successful");
+
+
 //            DataSender dataSender = new DataSender(this);
 //            Thread udpSender = new Thread(dataSender);
 //            udpSender.start();
