@@ -63,9 +63,9 @@ public class Engine {
 
         if (isAlive) {
             System.out.println("Registration was successful");
-            DataSender dataSender = new DataSender(this);
-            Thread udpSender = new Thread(dataSender);
-            udpSender.start();
+//            DataSender dataSender = new DataSender(this);
+//            Thread udpSender = new Thread(dataSender);
+//            udpSender.start();
       
 
             //create 2 streams - first to compute coordinates

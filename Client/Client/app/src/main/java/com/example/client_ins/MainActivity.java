@@ -2,6 +2,8 @@ package com.example.client_ins;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     EditText editTextQrID;
     EditText editTextServerAddr;
 
+    Engine engine;
+
     double x=0, y=0, z=0; //correct when it possible
     double accX = 0, accY = 0, accZ = 0;
     double angleX = 0, angleY = 0, angleZ = 0;
@@ -33,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Engine engine = new Engine(getApplicationContext());
+        //Engine engine = new Engine(getApplicationContext());
+        ClientService clientService = new ClientService(getApplicationContext());
+        engine = clientService.getEngine();
+        if (engine == null)
+            System.out.println("Failed to create engine");
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
