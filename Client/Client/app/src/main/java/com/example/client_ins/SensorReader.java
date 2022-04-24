@@ -41,6 +41,7 @@ public class SensorReader{
                         math.linAccQuat.x = sensorEvent.values[0];
                         math.linAccQuat.y = sensorEvent.values[1];
                         math.linAccQuat.z = sensorEvent.values[2];
+                        math.fPhysics = true;
                     math.UpdateGlobalAcc();
                 }
             }

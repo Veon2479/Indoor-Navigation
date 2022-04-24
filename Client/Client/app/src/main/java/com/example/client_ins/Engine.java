@@ -15,10 +15,14 @@ public class Engine {
 
     public int UserId = 0;
     public double Crd1, Crd2;
+    public double accX, accY;
     public boolean isAlive = false;
 
     private static Engine instance;
     public static Context context;
+
+    public ClientMath clientMath;
+    public Thread mathThread;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Engine(Context context)
@@ -50,7 +54,6 @@ public class Engine {
             StrictMode.setThreadPolicy(policy);
 
         }
-
     }
 
     public static void setContext(Context sContext)
@@ -95,6 +98,12 @@ public class Engine {
         } else {
             System.out.println("Failed to registrate");
         }
+
+        clientMath.Unpause();
+    }
+
+    public void stopTracking(){
+        clientMath.Pause();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

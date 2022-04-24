@@ -23,6 +23,7 @@ public class ClientService extends Service {
 
     private Engine engine;
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate() {
@@ -64,28 +65,19 @@ public class ClientService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
 
-
-
-
         //  engine.context.startService(Intent(context, MyService::class.java))
         //engine.context.startService(intent);
         //ContextCompat.startForegroundService(engine.context, intent);
 
-
-
-
         System.out.println("Background service is starting!");
 
+        engine.clientMath = new ClientMath(engine);
+        if(engine.mathThread != null)
+            engine.mathThread.stop();
+        engine.mathThread = new Thread(engine.clientMath);
+        engine.mathThread.start();
 
-        DataSender dataSender = new DataSender(engine);
-        Thread udpSender = new Thread(dataSender);
-        udpSender.start();
-
-        ClientMath clientMath = new ClientMath(engine);
-        Thread mathThread = new Thread(clientMath);
-        mathThread.start();
-
-        SensorReader sensorReader = new SensorReader(engine, getBaseContext(), clientMath);
+        SensorReader sensorReader = new SensorReader(engine, getBaseContext(), engine.clientMath);
         //engine.startTracking();
         return START_STICKY;
 

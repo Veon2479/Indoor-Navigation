@@ -193,6 +193,20 @@ class Matrix{
 
         return R;
     }
+
+    public void WriteMatrix(String name){
+
+        String res = name + "=\n|";
+        for(int i = 0; i<a; i++)
+        {
+            for(int j = 0; j<b; j++)
+            {
+                res += String.format("%.2f  ", matrix[i][j]);
+            }
+            res += "|\n|";
+        }
+        System.out.println(res);
+    }
 }
 
 class Quaternion{
@@ -264,6 +278,7 @@ class Quaternion{
 public class ClientMath implements Runnable{
 
     boolean isActive = true;
+    boolean fPause = false;
     public boolean fPhysics = true;
     Engine mainEngine;
 
@@ -287,6 +302,8 @@ public class ClientMath implements Runnable{
     private double time;
     private double deltaTime;
 
+    private double dispA = 100.0f;
+
     public void UpdateGlobalAcc()
     {
         tempQuat.x = rotQuat.x;
@@ -303,6 +320,8 @@ public class ClientMath implements Runnable{
         //accY = tempQuat.y;
         z.matrix[0][0] = tempQuat.x;
         z.matrix[1][0] = tempQuat.y;
+        mainEngine.accX = tempQuat.x;
+        mainEngine.accY = tempQuat.y;
         //accZ = tempQuat.z;
     }
 
@@ -388,6 +407,7 @@ __________________________________
         tempT *= deltaTime/2;
         Q.matrix[0][0] = tempT;
         Q.matrix[3][3] = tempT;
+        Q.Scale(dispA);
         tempT = deltaTime/2;
         F.matrix[0][2] = tempT;
         F.matrix[3][5] = tempT;
@@ -398,17 +418,30 @@ __________________________________
 
         predX = Matrix.Mul(F, currX);
 
+        P1.Copy(P);
+        P = Matrix.Mul(Matrix.Mul(F, P1), F.Transpose()).Add(Q);
+
         K = Matrix.Mul(Matrix.Mul(P, Htr), (Matrix.Mul(Matrix.Mul(H, P), Htr).Add(R)).Invert());
 
         currX = predX.Add(Matrix.Mul(K, z.Sub(Matrix.Mul(H, predX))));
 
         Matrix temp = Matrix.Sub(I, Matrix.Mul(K, H));
+
         P1.Copy(P);
         P = Matrix.Mul(Matrix.Mul(temp, P1), temp.Transpose()).Add(Matrix.Mul(Matrix.Mul(K, R), K.Transpose()));
     }
 
     public void Disable(){
         isActive = false;
+    }
+
+    public void Pause(){
+        fPause = true;
+    }
+
+    public void Unpause(){
+        time = System.nanoTime();
+        fPause = false;
     }
 
     public void run()
@@ -419,17 +452,17 @@ __________________________________
         H.matrix[1][5] = 1;
         Htr = H.Transpose();
         P = new Matrix(6, 6, MatrixType.ALL_ZERO);
-        P.matrix[0][0] = 500;
-        P.matrix[1][1] = 500;
+        P.matrix[0][0] = 0;
+        P.matrix[1][1] = 0;
         P.matrix[2][2] = 500;
-        P.matrix[3][3] = 500;
-        P.matrix[4][4] = 500;
+        P.matrix[3][3] = 0;
+        P.matrix[4][4] = 0;
         P.matrix[5][5] = 500;
         P1 = new Matrix(6,6, MatrixType.UNDEFINED);
         F = new Matrix(6,6, MatrixType.IDENTITY);
         R = new Matrix(2, 2, MatrixType.ALL_ZERO);
-        R.matrix[0][0] = 0.03;
-        R.matrix[1][1] = 0.03;
+        R.matrix[0][0] = 0.01;
+        R.matrix[1][1] = 0.01;
         Q = new Matrix(6,6, MatrixType.ALL_ZERO);
         I = new Matrix(6, 6, MatrixType.IDENTITY);
         currX = new Matrix(6, 1, MatrixType.ALL_ZERO);
@@ -439,13 +472,22 @@ __________________________________
         time = System.nanoTime();
         while(isActive)
         {
-            deltaTime = ((float)System.nanoTime()) / 1000000000 - time;
-            time += deltaTime;
-            if(fPhysics) {
-                KalmanFilter();
-                //PhysicsProc();
-                mainEngine.Crd1 = currX.matrix[0][0];
-                mainEngine.Crd2 = currX.matrix[3][0];
+            if(!fPause){
+                deltaTime = ((float)System.nanoTime()) / 1000000000 - time;
+                //System.out.println(deltaTime);
+                if(deltaTime < 0){
+                    time += deltaTime;
+                }
+                else if(deltaTime > 0.00001){
+                    if(fPhysics) {
+                        time += deltaTime;
+                        KalmanFilter();
+                        //PhysicsProc();
+                        mainEngine.Crd1 = currX.matrix[0][0];
+                        mainEngine.Crd2 = currX.matrix[3][0];
+                        fPhysics = false;
+                    }
+                }
             }
         }
     }
