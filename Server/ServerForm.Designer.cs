@@ -93,6 +93,7 @@ namespace Server
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
             this.ttQR = new System.Windows.Forms.ToolTip(this.components);
+            this.pbQR = new System.Windows.Forms.PictureBox();
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -111,6 +112,7 @@ namespace Server
             ((System.ComponentModel.ISupportInitialize)(this.pbQRLocation)).BeginInit();
             this.tbQRList.SuspendLayout();
             this.pnlQRLocation.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbQR)).BeginInit();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -615,6 +617,7 @@ namespace Server
             // 
             // pnlQRLocation
             // 
+            this.pnlQRLocation.Controls.Add(this.pbQR);
             this.pnlQRLocation.Controls.Add(this.lblQRy);
             this.pnlQRLocation.Controls.Add(this.lblQRx);
             this.pnlQRLocation.Controls.Add(this.lblQRName);
@@ -778,6 +781,15 @@ namespace Server
             this.ttQR.AutomaticDelay = 0;
             this.ttQR.ShowAlways = true;
             // 
+            // pbQR
+            // 
+            this.pbQR.Location = new System.Drawing.Point(8, 431);
+            this.pbQR.Name = "pbQR";
+            this.pbQR.Size = new System.Drawing.Size(274, 274);
+            this.pbQR.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbQR.TabIndex = 13;
+            this.pbQR.TabStop = false;
+            // 
             // frmServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -811,6 +823,7 @@ namespace Server
             this.tbQRList.ResumeLayout(false);
             this.pnlQRLocation.ResumeLayout(false);
             this.pnlQRLocation.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbQR)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -880,7 +893,7 @@ namespace Server
         private System.Windows.Forms.Label lAzimuth;
         private System.Windows.Forms.PictureBox pbQRLocation;
         private System.Windows.Forms.ToolTip ttQR;
-
+        private System.Windows.Forms.PictureBox pbQR;
     }
 }
 

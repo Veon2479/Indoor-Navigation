@@ -256,7 +256,7 @@ namespace Server
         private void btnEditQR_Click(object sender, EventArgs e)
         {
             string Result = "The point is not selected";
-            if (selectedItem != null)
+            if (selectedItem != null && selectedItem.Count > 0)
             {
                 Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             }
@@ -292,6 +292,7 @@ namespace Server
                 tbQRName.Text = selectedItem[0].SubItems[1].Text;
                 tbQRx.Text = selectedItem[0].SubItems[2].Text;
                 tbQRy.Text = selectedItem[0].SubItems[3].Text;
+                QRLocation.ShowQRImg(selectedItem[0].Text, pbQR);
             }
         }
 
@@ -334,20 +335,17 @@ namespace Server
         {
             //check hitting
             selectedPoint = QRLocation.HitPoint(e.X, e.Y);
+            
+            //update text boxes
             tbQRID.Text = selectedPoint.QRID;
             tbQRName.Text = selectedPoint.QRName;
             tbQRx.Text = selectedPoint.X;
             tbQRy.Text = selectedPoint.Y;
+
             if (selectedPoint.QRID != null)
             {
                 //show tip, select point
-                QRLocation.PaintQRMap(pbQRLocation);
-                string content = $"QR ID: {selectedPoint.QRID}\nQR Name: {selectedPoint.QRName}\nX: {selectedPoint.X}\nY: {selectedPoint.Y}";
-                ttQR.SetToolTip(pbQRLocation, content);
-                double x = double.Parse(selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
-                double y = double.Parse(selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
-                QRLocation.DrawQRPoint(pbQRLocation, Color.Orange, x, y);
-                QRLocation.selecting = true;
+                QRLocation.SelectPoint(selectedPoint, ttQR, pbQRLocation, pbQR);
             }
             else
             {

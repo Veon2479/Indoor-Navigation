@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace Server
 {
@@ -55,6 +56,14 @@ namespace Server
             //update view
             QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
             QRLocation.PaintQRMap(pb);
+
+            //update QR Images
+            QRModel.QRModelXmlContent[] contents = null;
+            Server.qrModel.GetQRRecordList(ref contents);
+            foreach (var item in contents)
+            {
+                int Result = Server.qrModel.GenerateQR(item.QRID);
+            }
         }
 
         //add QR to config file
@@ -216,6 +225,49 @@ namespace Server
             }
             QRModel.QRModelXmlContent ret = new QRModel.QRModelXmlContent();
             return ret;
+        }
+
+        //select point on QR map
+        public static void SelectPoint(QRModel.QRModelXmlContent point, ToolTip ttQR, PictureBox pbMap, PictureBox pbQR)
+        {
+            //show tip, select point
+            QRLocation.PaintQRMap(pbMap);
+            string content = $"QR ID: {point.QRID}\nQR Name: {point.QRName}\nX: {point.X}\nY: {point.Y}";
+            ttQR.SetToolTip(pbMap, content);
+            double x = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
+            double y = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
+            QRLocation.DrawQRPoint(pbMap, Color.Orange, x, y);
+            QRLocation.selecting = true;
+            ShowQRImg(point.QRID, pbQR);
+        }
+
+        //show selected QR
+        public static void ShowQRImg(string QRID, PictureBox pbQR)
+        {
+            string QRFileName = "";
+            int Result = Server.qrModel.GetQRImgName(QRID, ref QRFileName);
+            switch ((QRModel.GetQRImgNameErrorCode)Result)
+            {
+                case QRModel.GetQRImgNameErrorCode.CORRUPTED_FILE:
+                    return;
+                case QRModel.GetQRImgNameErrorCode.QRID_INCORRECT:
+                    return;
+                case QRModel.GetQRImgNameErrorCode.NAME_NOT_FOUND:
+                    return;
+                case QRModel.GetQRImgNameErrorCode.FILE_NOT_FOUND:
+                    //try to generate new?
+                    return;
+                default:
+                    {
+                        using (FileStream fs = File.OpenRead(QRFileName))
+                        {
+                            Bitmap QRMap = (Bitmap)new Bitmap(fs).Clone();
+                            fs.Close();
+                            pbQR.Image = QRMap;
+                        }
+                        return;
+                    }
+            }
         }
     }
 }
