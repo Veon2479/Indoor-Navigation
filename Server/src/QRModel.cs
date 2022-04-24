@@ -85,19 +85,19 @@ namespace Server
                     _xmlFileName = _xmlFileName.Insert(insertInd+1, _defaultDir + "/" + onlyName + "/");
                     _workQRDir = _defaultDir + "/" + onlyName + "/" + onlyName  + "_" + _defaultQRCodeDir;
                 }
-    
-                //Change xml document to default or create new
-                UseDefaultXmlDoc();
-
-                //Check chosen
-                if (CheckXmlFileContent(ref xmlDocument) < 0)
-                {
-                    throw new Exception("Incorrect default file or file was corrupted");
-                }
             }
             else if (iResult < 0)
             {
                 throw new Exception("Incorrect file or file was corrupted");
+            }
+
+            //Change xml document to default or create new
+            CreateNessaryFiles();
+
+            //Check chosen
+            if (CheckXmlFileContent(ref xmlDocument) < 0)
+            {
+                throw new Exception("Incorrect default file or file was corrupted");
             }
         }
 
@@ -714,27 +714,28 @@ namespace Server
         ///         </listheader>
         ///     </list>
         /// </returns>
-        private int UseDefaultXmlDoc()
+        private int CreateNessaryFiles()
         {
             XmlDocument xmlDoc = new XmlDocument();
 
-            //Change xmlFile name to default
+            //Check is default directory exist
+            if (!Directory.Exists(_defaultDir))
+            {
+                Directory.CreateDirectory(_defaultDir);
+            }
+            if (!Directory.Exists(_workQRDir)){
+                Directory.CreateDirectory(_workQRDir);
+            }
+
+            //Try to open _xmlFileName
             try
             {
                 //Try to load default file
                 xmlDoc.Load(_xmlFileName);
+                
             }
             catch
             {
-
-                //Check is default directory exist
-                if (!Directory.Exists(_defaultDir))
-                {
-                    Directory.CreateDirectory(_defaultDir);
-                }
-                if (!Directory.Exists(_workQRDir)){
-                    Directory.CreateDirectory(_workQRDir);
-                }
 
                 //Create and save default file if it cannot be reads
                 XmlDeclaration XmlDec = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
