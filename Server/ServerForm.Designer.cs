@@ -91,6 +91,7 @@ namespace Server
             this.tmrListUpdate = new System.Windows.Forms.Timer(this.components);
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
+            this.ttQR = new System.Windows.Forms.ToolTip(this.components);
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -532,7 +533,9 @@ namespace Server
             this.pbQRLocation.TabIndex = 0;
             this.pbQRLocation.TabStop = false;
             this.pbQRLocation.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseDoubleClick);
+            this.pbQRLocation.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseDown);
             this.pbQRLocation.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseMove);
+            this.pbQRLocation.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseUp);
             // 
             // tbQRList
             // 
@@ -747,6 +750,11 @@ namespace Server
             this.tmrListUpdate.Interval = 1000;
             this.tmrListUpdate.Tick += new System.EventHandler(this.tmrListUpdate_Tick);
             // 
+            // ttQR
+            // 
+            this.ttQR.AutomaticDelay = 0;
+            this.ttQR.ShowAlways = true;
+            // 
             // frmServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -846,6 +854,7 @@ namespace Server
         private System.Windows.Forms.ColumnHeader colX;
         private System.Windows.Forms.ColumnHeader colY;
         private System.Windows.Forms.PictureBox pbQRLocation;
+        private System.Windows.Forms.ToolTip ttQR;
     }
 }
 

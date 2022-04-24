@@ -270,23 +270,33 @@ namespace Server
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
-            if (selectedItem.Count == 0)
-                return;
-            string Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+            string Result = "The point is not selected";
+            if (selectedItem != null)
+            {
+                Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+            }
+            else if (selectedPoint.QRID != null)
+                Result = QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
         }
 
         //delete QR from a config file
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
-            if (selectedItem.Count == 0)
-                return;
-            string Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
+            string Result = "The point is not selected";
+            if (selectedItem != null)
+            {
+                Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
+            }
+            else if (selectedPoint.QRID!= null)
+                Result = QRLocation.DeleteQR(selectedPoint.QRID, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
         }
 
         //on select item in QR list
         ListView.SelectedListViewItemCollection selectedItem = null;
+        QRModel.QRModelXmlContent selectedPoint = new QRModel.QRModelXmlContent();
+
         private void lvQRList_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedItem = lvQRList.SelectedItems.Count > 0 ? lvQRList.SelectedItems : null;
@@ -300,13 +310,19 @@ namespace Server
             }
         }
 
+        //cursore move
         private void pbQRLocation_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!QRLocation.adding)
+            if (QRLocation.selecting && e.Button == MouseButtons.None)
+            {
+                tbQRx.Text = selectedPoint.X;
+                tbQRy.Text = selectedPoint.Y;
+            }
+            else if (QRLocation.selecting && e.Button == MouseButtons.Left || !QRLocation.adding)
             {
                 tbQRx.Text = e.X.ToString();
                 tbQRy.Text = e.Y.ToString();
-            }
+            }            
         }
 
         //repaint QR location map
@@ -318,8 +334,61 @@ namespace Server
         //add QR point
         private void pbQRLocation_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            QRLocation.DrawQRPoint(pbQRLocation, Color.Red, e.X, e.Y);
-            QRLocation.adding = true;
+            if (!QRLocation.adding)
+            {
+                QRLocation.PaintQRMap(pbQRLocation);
+                QRLocation.DrawQRPoint(pbQRLocation, Color.Red, e.X, e.Y);
+                tbQRx.Text = e.X.ToString();
+                tbQRy.Text = e.Y.ToString();
+                QRLocation.adding = true;
+            }
+        }
+
+        //on select QR point
+        private void pbQRLocation_MouseDown(object sender, MouseEventArgs e)
+        {
+            //check hitting
+            selectedPoint = QRLocation.HitPoint(e.X, e.Y);
+            tbQRID.Text = selectedPoint.QRID;
+            tbQRName.Text = selectedPoint.QRName;
+            tbQRx.Text = selectedPoint.X;
+            tbQRy.Text = selectedPoint.Y;
+            if (selectedPoint.QRID != null)
+            {
+                //show tip, select point
+                QRLocation.PaintQRMap(pbQRLocation);
+                string content = $"QR ID: {selectedPoint.QRID}\nQR Name: {selectedPoint.QRName}\nX: {selectedPoint.X}\nY: {selectedPoint.Y}";
+                ttQR.SetToolTip(pbQRLocation, content);
+                double x = double.Parse(selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
+                double y = double.Parse(selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
+                QRLocation.DrawQRPoint(pbQRLocation, Color.Orange, x, y);
+                QRLocation.selecting = true;
+            }
+            else
+            {
+                //no hitting
+                QRLocation.PaintQRMap(pbQRLocation);
+                QRLocation.adding = false;
+                QRLocation.selecting = false;
+            }
+        }
+
+        //end drag
+        private void pbQRLocation_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (selectedPoint.QRID != null)
+            {
+                double x = double.Parse(selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
+                double y = double.Parse(selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
+
+                //new location of a QR point
+                if (QRLocation.selecting && Math.Abs(e.X - x) > QRLocation.QRPointRadius && Math.Abs(e.Y - y) > QRLocation.QRPointRadius)
+                {
+                    QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, e.X.ToString(), e.Y.ToString(), ref lvQRList, pbQRLocation);
+                    QRLocation.PaintQRMap(pbQRLocation);
+                    QRLocation.selecting = false;
+                }
+            }
         }
     }
 }

@@ -12,10 +12,12 @@ namespace Server
     {
 
         public static bool adding { get; set; } = false;
+        public static bool selecting { get; set; } = false;
+        public static bool drag { get; set; } = false;
         private static Bitmap QRMap = null;
 
         //drawing settings
-        private static int QRPointRadius = 5;
+        internal static int QRPointRadius = 6;
 
         //update list view of QR location
         public static void UpdateQRView(QRModel qrModel, ref ListView view, PictureBox pb)
@@ -173,6 +175,8 @@ namespace Server
             //pb.Image = (Bitmap)QRMap.Clone();
             Graphics g = Graphics.FromImage(pb.Image);
             g.FillEllipse(new SolidBrush(color), (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
+            Pen pen = new Pen(Color.Black, 1);
+            g.DrawEllipse(pen, (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
             QRMap = (Bitmap)pb.Image.Clone();
             pb.Image = QRMap;
         }
@@ -191,6 +195,27 @@ namespace Server
                 double y = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
                 DrawQRPoint(pb, Color.Green, x, y);
             }
+        }
+
+        //hitting the point
+        public static QRModel.QRModelXmlContent HitPoint(int X, int Y)
+        {
+            QRModel.QRModelXmlContent[] content = null;
+            Server.qrModel.GetQRRecordList(ref content);
+            if (content != null)
+            {
+                foreach (var point in content)
+                {
+                    double xCircle = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
+                    double yCircle = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
+                    if (Math.Pow((X - xCircle), 2) + Math.Pow((Y - yCircle), 2) <= Math.Pow(QRPointRadius, 2))
+                    {
+                        return point;
+                    }
+                }
+            }
+            QRModel.QRModelXmlContent ret = new QRModel.QRModelXmlContent();
+            return ret;
         }
     }
 }
