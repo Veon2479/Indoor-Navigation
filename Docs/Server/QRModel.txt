@@ -1,7 +1,10 @@
 Класс QRModel реализует работу с Xml файлами, в которых содержатся информация о положении QR кодов
 /*************************
+Внешние библиотеки:
+	QRCoder; (References -> manage NuGet packages -> Browse -> QRCoder -> install)
 Для работы необходимо подключить:
 	using System.Xml;
+	using QRCoder;
 Добавить в References:
 	System.Xml;
 *************************/
@@ -27,11 +30,26 @@
         private string _xmlFileName = "";
 		Имя xml файла, с которым ведётся работа		
 
-        protected const string _defaultDir = "XmlDocs";
-		Название стандартной директории в коротой хранятся xml файлы
+        private string _workQRDir = "";
+		Дирректория для картинок QR-кодов
+
+        protected const string _defaultPrivateDir = "DefaultQRCode";
+		Стандартная директория, которая хранит набор из 1 xml файла и папки с картинками QR-кодов
+
+        protected const string _defaultDir = "config";
+		Название стандартной директории для хранения private папок (таких как _defaultPrivateDir)
+
+        protected const string _defaultQRCodeDir = "QRCodes";
+		Часть найзвания дирректории, в которой хранятся картинки QR кодов. Полное имя: только имя xml файла + _ + _defaultQRCodeDir
         
         protected const string _defaultName = "DefaultQRData.xml";
 		Имя стандартного xml файла        
+
+        protected string _defaultQRCodeData = "Default data";
+		Стандартное содержимое для всех QR - кодов 
+
+        protected int _pixelsPerModule = 1;
+		Сколько пикселей использовать для отрисовки 1 квадрата QR-кода
 
         List<int> _QRIDExist = new List<int>();
 		Список занятых QRID в указанном xml файле
@@ -57,8 +75,8 @@ Public:
 ----------------------------------------------------
 	public QRModel(string xmlFileName = "")
 	Описание:
-		Открывает и проверяет на корректность файл с именем (xmlFileName). Если остутсвует, то создаёт его. Если имя пустое используется стандарный файл в стандарноый дирреектории
-		(при необходимости создаётся)
+		Проверяет полученый xml файл и устанавливает дирректорию для работы с картинками QR-кодов. Если чего то не будет - создаёт. 
+		Что создаётя: _defaultQRCodeDir -> private dir -> xml file
 	Параметры:
 		string xmlFileName = "" - Имя xml файла, с которым нужно вести работу
 	Возвращаемые значения:
@@ -133,7 +151,36 @@ Public:
 		>= 0 всё ок, иначе ошибка
 	Коды ошибок:
 		-1 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
-		-2 (PARSE_TO_DOUBLE_ERROR): неудалось преобразовать даные из файла в (double x, double y)
+		-2 (PARSE_TO_DOUBLE_ERROR): Не удалось преобразовать даные из файла в (double x, double y)
+----------------------------------------------------
+	public int GenerateQR(string QRID_QRName)
+	Описание:
+		Генерирует QR код по принципу (_defaultQRCodeData) + "_" + (x) + "_" + (y) и сохраняет его в (_workQRDir) в формате jpeg под именем (name). (name)(x)(y) берутся из
+		соответствующего xml файла по индексу или имени, исходя из полученного QRID_QRName
+	Параметры:
+		string oldQRID_oldName - ID или имя QR-кода, который нужно изменить
+	Возвращаемые значения:
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		-1 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-2 (CODEC_NOT_FOUND): Не удалось найти кодек для преоразования и записи bitmap -> jpeg
+		-3 (GENERATE_QR_ERROR): Ошибка при генерации картинки QR-кода (это может QRCoder, ошибка в xml файле, ...)
+        	-4 (WRITE_FILE_ERROR): Ошибка записи в файл (нет такой директории, неправильное имя файла, невозможно открыть, невозможно записать, сохранить/преобразовать bitmap ...)
+----------------------------------------------------        		
+	public int GetQRImgName(string QRID_QRName, ref string QRImgFileName)
+	Описание:
+		Возвращает в (QRImgFileName) имя картинки согласно полученного ID или имени QR-кода в соответсвующем xml файле
+	Параметры:
+		string oldQRID_oldName - ID или имя QR-кода, который нужно изменить
+		ref string QRImgFileName - Имя найденой картинки QR-кода
+	Возвращаемые значения:
+		Косвеное возвращение (QRIngFileName) через переданные параметры
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		-1 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-2 (QRID_INCORRECT): ID QR-кода не верен, (0 > QRID), либо не сущесвует в xml файле  
+		-3 (NAME_NOT_FOUND): QR-код c таким именем не найден
+		-4 (FILE_NOT_FOUND): Файл с картинкой QR-кода не был найден
 
 Private:
 ----------------------------------------------------
@@ -163,3 +210,16 @@ Private:
 		>= 0 всё ок, иначе ошибка
 	Коды ошибок:
 		none
+----------------------------------------------------
+	private int CheckQRID_QRName(string QRID_QRName, XmlDocument xmlDoc)
+	Описание:
+		Проверяет (QRID_QRName) на наличие ID или имени в открытом xml документе (xmlDoc)
+	Параметры:
+		string oldQRID_oldName - ID или имя QR-кода, который нужно изменить
+		XmlDocument xmlDoc - Содержит открытый xml файл				
+	Возвражаемые значения:
+		>= 0 ID элемента в xml файле (всё ок, ошибок нет), иначе ошибка
+	Коды ошибок:
+		-2 (QRID_INCORRECT): ID QR-кода не верен, (0 > QRID), либо не сущесвует в xml файле  
+		-3 (NAME_NOT_FOUND): QR-код c таким именем не найден
+				
