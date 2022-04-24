@@ -314,6 +314,24 @@ namespace Server
         private void tcMain_Selected(object sender, TabControlEventArgs e)
         {
             QRLocation.PaintQRMap(pbQRLocation);
+
+            if (e.TabPage == tpOnline)
+            {
+                tmrOnlineViewUpdate.Interval = OnlineView.UPDATE_INTERVAL;
+                if (MapInfo.bitmap == null)
+                {
+                    return;
+                }
+                else
+                {
+                    OnlineView.DrawMap(pbOnline);
+                    tmrOnlineViewUpdate.Start();
+                }
+            }
+            else
+            {
+                tmrOnlineViewUpdate.Stop();
+            }
         }
 
         //add QR point
@@ -374,6 +392,11 @@ namespace Server
                     QRLocation.selecting = false;
                 }
             }
+        }
+
+        private void tmrOnlineViewUpdate_Tick(object sender, EventArgs e)
+        {
+            OnlineView.UpdateOnlineView(pbOnline);
         }
     }
 }

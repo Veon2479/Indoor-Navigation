@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="gui\OnlineView.cs" />
     <Compile Include="gui\QRLocation.cs" />
     <Compile Include="gui\EntryPoint.cs" />
     <Compile Include="gui\ServerManage.cs" />

@@ -17,7 +17,7 @@ namespace Server
         }
 
         //Data about 1 user nessesary to accumuleate PositionData and save it to file
-        protected internal struct UserModelTempStorageEl{
+        internal struct UserModelTempStorageEl{
             internal string FileName;
             internal int Count; //Alos using as flag "does ID exist"
             internal UserModelPositionData[] AccumData;
@@ -35,7 +35,7 @@ namespace Server
         private int _amountOfUsers = 0;
 
         //Temporary Storage that accumulate data about users and save it to file
-        protected internal UserModelTempStorageEl[] userModelTempStorage;
+        internal UserModelTempStorageEl[] userModelTempStorage;
         
         /// <summary>
         ///     Create object

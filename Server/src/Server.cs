@@ -15,7 +15,7 @@ namespace Server
         private static int DEFAULT_TCP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TCP_PORT"));
         private static int DEFAULT_UDP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_UDP_PORT"));
 
-        private static int DEFAULT_TABLE_CAPACITY = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TABLE_CAPACITY"));
+        internal static int DEFAULT_TABLE_CAPACITY = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TABLE_CAPACITY"));
 
         //logs
         public delegate void LogMessageDelegate(string msg);
@@ -28,7 +28,7 @@ namespace Server
 
         //server models
         internal static IDModel userIDModel = new IDModel(DEFAULT_TABLE_CAPACITY);
-        private static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 2);
+        internal static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 2);
         internal static QRModel qrModel = null;
 
         //thread for listeners
