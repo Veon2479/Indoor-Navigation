@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace Server
 {
@@ -28,30 +22,22 @@ namespace Server
             public const int DOWNLOAD_USER_SETTINGS_ERROR = -3;
             public const int SAVE_USER_SETTINGS_ERROR = -4;
 
-            public const int USER_SETTINGS_SAVED_SUCCESSFULLY = 4;
+            public const int USER_SETTINGS_SAVED_SUCCESSFULLY = 1;
+            public const int DOWNLOAD_USER_SETTINGS = 2;
+            public const int DOWNLOAD_DEFOULT_SETTINGS = 3;
         }
 
         const double POINT1_START_LOCATION = 0.1;
         const double POINT2_START_LOCATION = 0.9;
 
         // size of POINT1 and POINT2
-        static int PointSize = 5;
+        const int POINT_SIZE = 5;
 
-        static int SelectedPoint;
-        static bool isDownloadImage;
+        static int SelectedPoint = NO_POINT;
 
-        // the ratio of the size in meters to the size in pixels
-        public static double SizeCoefficient;
         static int WidthBorder;
         static int HeightBorder;
 
-        static string SettingsFilename = "ServerSettings.xml";
-
-        static string MapImageLocalDir = "MapImages";
-        static string MapImageLocalFilename = "MapImage1";
-        static string MapImageLocalPath;
-
-        static Bitmap bitmap;
         static readonly Color MapFrameColor = Color.Black;
         static readonly SolidBrush brush = new SolidBrush(MapFrameColor);
         static readonly Pen pen = new Pen(MapFrameColor, 2)
@@ -60,73 +46,21 @@ namespace Server
         };
 
         /// <summary>
-        /// Coordinate X of point 1
-        /// </summary>
-        public static int PointX1;
-        /// <summary>
-        /// Coordinate Y of point 1
-        /// </summary>
-        public static int PointY1;
-        /// <summary>
-        /// Coordinate X of point 2
-        /// </summary>
-        public static int PointX2;
-        /// <summary>
-        /// Coordinate Y of point 2
-        /// </summary>
-        public static int PointY2;
-
-        /// <summary>
-        /// Real length of marked area
-        /// </summary>
-        public static double RealLength;
-        /// <summary>
-        /// Real width of marked area
-        /// </summary>
-        public static double RealWidth;
-
-        static SettingsModel()
-        {
-            SizeCoefficient = 1;
-            SelectedPoint = NO_POINT;
-            isDownloadImage = false;
-            MapImageLocalPath = $"{MapImageLocalDir}/{MapImageLocalFilename}";
-        }
-
-        /// <summary>
         /// Initialise settings for drowing frame with points
         /// </summary>
         /// <param name="pictureBox">PictureBox for drowing</param>
-        public static void InitDrowSettings(PictureBox pictureBox)
+        static void InitDrowSettings(PictureBox pictureBox)
         {
-            PointX1 = Convert.ToInt32(bitmap.Width * POINT1_START_LOCATION);
-            PointY1 = Convert.ToInt32(bitmap.Height * POINT1_START_LOCATION);
-            PointX2 = Convert.ToInt32(bitmap.Width * POINT2_START_LOCATION);
-            PointY2 = Convert.ToInt32(bitmap.Height * POINT2_START_LOCATION);
-            WidthBorder = (pictureBox.Width - bitmap.Width) / 2;
-            HeightBorder = (pictureBox.Height - bitmap.Height) / 2;
+            WidthBorder = (pictureBox.Width - pictureBox.Image.Width) / 2;
+            HeightBorder = (pictureBox.Height - pictureBox.Image.Height) / 2;
         }
 
-        /// <summary>
-        /// Set real length of room and width calculating according to SizeCoefficient
-        /// </summary>
-        /// <param name="value"></param>
-        public static void SetRealLength(double value)
+        static void SetDefaultPoints(PictureBox pictureBox)
         {
-            RealLength = value;
-            SizeCoefficient = RealLength / Math.Abs(PointX2 - PointX1);
-            RealWidth = SizeCoefficient * Math.Abs(PointY2 - PointY1);
-        }
-
-        /// <summary>
-        /// Set real width of room and length calculating according to SizeCoefficient
-        /// </summary>
-        /// <param name="value"></param>
-        public static void SetRealWidth(double value)
-        {
-            RealWidth = value;
-            SizeCoefficient = RealWidth / Math.Abs(PointY2 - PointY1);
-            RealLength = SizeCoefficient * Math.Abs(PointX2 - PointX1);
+            MapInfo.SetX1(Convert.ToInt32(pictureBox.Image.Width * POINT1_START_LOCATION));
+            MapInfo.SetY1(Convert.ToInt32(pictureBox.Image.Height * POINT1_START_LOCATION));
+            MapInfo.SetX2(Convert.ToInt32(pictureBox.Image.Width * POINT2_START_LOCATION));
+            MapInfo.SetY2(Convert.ToInt32(pictureBox.Image.Height * POINT2_START_LOCATION));
         }
 
         /// <summary>
@@ -135,38 +69,108 @@ namespace Server
         /// <param name="pictureBox">PictureBox on witch the picture is loaded</param>
         /// <param name="filename">Name of file, from picture is loaded</param>
         /// <returns>Error code</returns>
-        public static int DownloadImage(PictureBox pictureBox, string filename)
+        public static int DownloadMap(PictureBox pictureBox, string filename)
         {
             try
             {
                 int width;
                 int height;
-                // download image from file to bitmap
-                using (FileStream fs = File.OpenRead(filename))
+                int returnMsg;
+                // download map from image file
+                if (TryGetMap(filename) == MESSAGE.DOWNLOAD_USER_SETTINGS)
                 {
-                    bitmap = (Bitmap)new Bitmap(fs).Clone();
-                    fs.Close();
-                }
-                if (bitmap.Width / Convert.ToDouble(bitmap.Height)
-                    > pictureBox.Width / Convert.ToDouble(pictureBox.Height))
-                {
-                    width = pictureBox.Width;
-                    height = Convert.ToInt32(Convert.ToDouble(bitmap.Height) / bitmap.Width * pictureBox.Width);
+                    returnMsg = MESSAGE.DOWNLOAD_USER_SETTINGS;
+                    pictureBox.Image = MapInfo.bitmap;
                 }
                 else
                 {
-                    height = pictureBox.Height;
-                    width = Convert.ToInt32(Convert.ToDouble(bitmap.Width) / bitmap.Height * pictureBox.Height);
+                    using (FileStream fs = File.OpenRead(filename))
+                    {
+                        MapInfo.bitmap = (Bitmap)new Bitmap(fs).Clone();
+                        fs.Close();
+                    }
+                    if (MapInfo.bitmap.Width / Convert.ToDouble(MapInfo.bitmap.Height)
+                        > pictureBox.Width / Convert.ToDouble(pictureBox.Height))
+                    {
+                        width = pictureBox.Width;
+                        height = Convert.ToInt32(Convert.ToDouble(MapInfo.bitmap.Height)
+                            / MapInfo.bitmap.Width * pictureBox.Width);
+                    }
+                    else
+                    {
+                        height = pictureBox.Height;
+                        width = Convert.ToInt32(Convert.ToDouble(MapInfo.bitmap.Width)
+                            / MapInfo.bitmap.Height * pictureBox.Height);
+                    }
+                    MapInfo.bitmap = new Bitmap(MapInfo.bitmap, new Size(width, height));
+                    MapInfo.Azimuth = 0;
+                    MapInfo.RealLength = Math.Abs(MapInfo.PointX1 - MapInfo.PointX2);
+                    pictureBox.Image = MapInfo.bitmap;
+                    SetDefaultPoints(pictureBox);
+                    returnMsg = MESSAGE.DOWNLOAD_DEFOULT_SETTINGS;
                 }
-                bitmap = new Bitmap(bitmap, new Size(width, height));
-                isDownloadImage = true;
                 InitDrowSettings(pictureBox);
-                return 0;
+                FramePointsView(pictureBox);
+                MapInfo.isDownloadMap = true;
+                return returnMsg;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return MESSAGE.IMAGE_DOWNLOAD_ERROR;
+                return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
+            }
+        }
+
+        /// <summary>
+        /// Trying get map from file
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns>Error code</returns>
+        private static int TryGetMap(string filename)
+        {
+            try
+            {
+                using (FileStream fs = File.OpenRead(filename))
+                {
+                    int bitmapSize = 0;
+                    byte[] arr = new byte[sizeof(double)];
+
+                    fs.Read(arr, 0, sizeof(int));
+                    MapInfo.PointX1 = BitConverter.ToInt32(arr, 0);
+
+                    fs.Read(arr, 0, sizeof(int));
+                    MapInfo.PointX2 = BitConverter.ToInt32(arr, 0);
+
+                    fs.Read(arr, 0, sizeof(int));
+                    MapInfo.PointY1 = BitConverter.ToInt32(arr, 0);
+
+                    fs.Read(arr, 0, sizeof(int));
+                    MapInfo.PointY2 = BitConverter.ToInt32(arr, 0);
+
+                    fs.Read(arr, 0, sizeof(double));
+                    MapInfo.SizeCoefficient = BitConverter.ToDouble(arr, 0);
+
+                    fs.Read(arr, 0, sizeof(double));
+                    MapInfo.Azimuth = BitConverter.ToDouble(arr, 0);
+
+                    MapInfo.SetRealLength(MapInfo.SizeCoefficient * Math.Abs(MapInfo.PointX1 - MapInfo.PointX2));
+
+                    fs.Read(arr, 0, sizeof(int));
+                    bitmapSize = BitConverter.ToInt32(arr, 0);
+
+                    arr = new byte[bitmapSize];
+                    fs.Read(arr, 0, bitmapSize);
+
+                    MemoryStream ms = new MemoryStream(arr);
+
+                    Bitmap b = (Bitmap)Image.FromStream(ms);
+                    MapInfo.bitmap = (Bitmap)b.Clone();
+                }
+                return MESSAGE.DOWNLOAD_USER_SETTINGS;
+            }
+            catch (Exception)
+            {
+                return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
             }
         }
 
@@ -177,12 +181,12 @@ namespace Server
         /// <returns>Error code</returns>
         public static int FramePointsView(PictureBox pictureBox)
         {
-            if (isDownloadImage)
+            if (MapInfo.isDownloadMap)
             {
                 try
                 {
                     // reset PictureBox.Image with new Bitmap
-                    Bitmap b = (Bitmap)bitmap.Clone();
+                    Bitmap b = (Bitmap)MapInfo.bitmap.Clone();
                     pictureBox.Image = b;
                 }
                 catch (Exception)
@@ -194,22 +198,23 @@ namespace Server
                     Graphics g = Graphics.FromImage(pictureBox.Image);
                     // drow point 1
                     g.FillRectangle(brush,
-                        PointX1 - PointSize,
-                        PointY1 - PointSize,
-                        2 * PointSize,
-                        2 * PointSize);
+                        MapInfo.PointX1 - POINT_SIZE,
+                        MapInfo.PointY1 - POINT_SIZE,
+                        2 * POINT_SIZE,
+                        2 * POINT_SIZE);
                     // drow point 2
                     g.FillRectangle(brush,
-                        PointX2 - PointSize,
-                        PointY2 - PointSize,
-                        2 * PointSize,
-                        2 * PointSize);
+                        MapInfo.PointX2 - POINT_SIZE,
+                        MapInfo.PointY2 - POINT_SIZE,
+                        2 * POINT_SIZE,
+                        2 * POINT_SIZE);
                     // drow frame
                     g.DrawRectangle(pen, new Rectangle(
-                        Math.Min(PointX1, PointX2),
-                        Math.Min(PointY1, PointY2),
-                        Math.Abs(PointX2 - PointX1),
-                        Math.Abs(PointY2 - PointY1)));
+                        Math.Min(MapInfo.PointX1, MapInfo.PointX2),
+                        Math.Min(MapInfo.PointY1, MapInfo.PointY2),
+                        Math.Abs(MapInfo.PointX2 - MapInfo.PointX1),
+                        Math.Abs(MapInfo.PointY2 - MapInfo.PointY1)));
+                    MapInfo.isMapChanged = true;
                 }
                 catch (Exception)
                 {
@@ -219,6 +224,11 @@ namespace Server
             return 0;
         }
 
+        internal static void RedrowAzimuth()
+        {
+            //
+        }
+
         /// <summary>
         /// Changing real length and changing real width according to new value of real length
         /// </summary>
@@ -226,12 +236,11 @@ namespace Server
         /// <returns></returns>
         public static string RealLengthChanged(string realLengthText)
         {
-            double realLength = RealLength;
-            if (double.TryParse(realLengthText, out realLength))
+            if (double.TryParse(realLengthText, out double realLength))
             {
-                SetRealLength(realLength);
+                MapInfo.SetRealLength(realLength);
             }
-            return RealWidth.ToString("N3");
+            return MapInfo.RealWidth.ToString("N3");
         }
 
         /// <summary>
@@ -241,29 +250,29 @@ namespace Server
         /// <param name="pointY">Coordinate y on control</param>
         public static void SelectFramePoint(int pointX, int pointY)
         {
-            if (isDownloadImage)
+            if (MapInfo.isDownloadMap)
             {
                 // save selected point
                 if (SelectedPoint == NO_POINT)
                 {
                     pointX -= WidthBorder;
                     pointY -= HeightBorder;
-                    if (pointX < PointX1 + PointSize
-                        && pointX > PointX1 - PointSize
-                        && pointY < PointY1 + PointSize
-                        && pointY > PointY1 - PointSize)
+                    if (pointX < MapInfo.PointX1 + POINT_SIZE
+                        && pointX > MapInfo.PointX1 - POINT_SIZE
+                        && pointY < MapInfo.PointY1 + POINT_SIZE
+                        && pointY > MapInfo.PointY1 - POINT_SIZE)
                     {
                         SelectedPoint = POINT1;
                     }
-                    else if (pointX < PointX2 + PointSize
-                        && pointX > PointX2 - PointSize
-                        && pointY < PointY2 + PointSize
-                        && pointY > PointY2 - PointSize)
+                    else if (pointX < MapInfo.PointX2 + POINT_SIZE
+                        && pointX > MapInfo.PointX2 - POINT_SIZE
+                        && pointY < MapInfo.PointY2 + POINT_SIZE
+                        && pointY > MapInfo.PointY2 - POINT_SIZE)
                     {
                         SelectedPoint = POINT2;
                     }
-                // reset selected point
                 }
+                // reset selected point
                 else
                 {
                     SelectedPoint = NO_POINT;
@@ -281,24 +290,20 @@ namespace Server
         /// <returns></returns>
         public static int MoveFramePoint(PictureBox pictureBox, int pointX, int pointY)
         {
-            if (isDownloadImage)
+            if (MapInfo.isDownloadMap)
             {
                 pointX -= WidthBorder;
                 pointY -= HeightBorder;
                 if (SelectedPoint == POINT1)
                 {
-                    PointX1 = pointX;
-                    PointY1 = pointY;
-                    RealLength = SizeCoefficient * Math.Abs(PointX2 - PointX1);
-                    RealWidth = SizeCoefficient * Math.Abs(PointY2 - PointY1);
+                    MapInfo.SetX1(pointX);
+                    MapInfo.SetY1(pointY);
                     FramePointsView(pictureBox);
                 }
                 else if (SelectedPoint == POINT2)
                 {
-                    PointX2 = pointX;
-                    PointY2 = pointY;
-                    RealLength = SizeCoefficient * Math.Abs(PointX2 - PointX1);
-                    RealWidth = SizeCoefficient * Math.Abs(PointY2 - PointY1);
+                    MapInfo.SetX2(pointX);
+                    MapInfo.SetY2(pointY);
                     FramePointsView(pictureBox);
                 }
             }
@@ -313,25 +318,40 @@ namespace Server
         {
             try
             {
-                if (!Directory.Exists(MapImageLocalDir))
+                List<byte> MapInBytes = new List<byte>(sizeof(int) * 4 + sizeof(double));
+                MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.PointX1));
+                MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.PointX2));
+                MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.PointY1));
+                MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.PointY2));
+                MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.SizeCoefficient));
+                MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.Azimuth));
+                using (SaveFileDialog saveFileDialog = new SaveFileDialog())
                 {
-                    Directory.CreateDirectory(MapImageLocalDir);
-                }
-                if (File.Exists(MapImageLocalPath))
-                {
-                    File.Delete(MapImageLocalPath);
-                }
-                bitmap.Save(MapImageLocalPath);
-                XDocument xdoc = new XDocument();
-                XElement settings = new XElement("settings");
-
-                settings.Add(new XElement("PointX1", PointX1));
-                settings.Add(new XElement("PointX2", PointX2));
-                settings.Add(new XElement("PointY1", PointY1));
-                settings.Add(new XElement("PointY2", PointY2));
-                settings.Add(new XElement("SizeCoefficient", SizeCoefficient.ToString("N12")));
-                xdoc.Add(settings);
-                xdoc.Save(SettingsFilename);
+                    saveFileDialog.Filter = "Indoor-navigation map files (*.inm)|*.inm";
+                    saveFileDialog.AddExtension = true;
+                    saveFileDialog.DefaultExt = "inm";
+                    if (saveFileDialog.ShowDialog() == DialogResult.Cancel)
+                    {
+                        return 0;
+                    }
+                    using (FileStream fs = File.OpenWrite(saveFileDialog.FileName))
+                    {
+                        fs.Write(MapInBytes.ToArray(), 0, MapInBytes.Count);
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            MapInfo.bitmap.Save(ms, ImageFormat.Bmp);
+                            byte[] bitmapInBytes = new byte[ms.Length];
+                            byte[] bitmapSize = BitConverter.GetBytes((int)ms.Length);
+                            ms.Position = 0;
+                            ms.Read(bitmapInBytes, 0, (int)ms.Length);
+                            fs.Write(bitmapSize, 0, sizeof(int));
+                            fs.Write(bitmapInBytes, 0, (int)ms.Length);
+                            ms.Close();
+                        }
+                        fs.Close();
+                    }
+                };
+                MapInfo.isMapChanged = false;
                 return MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY;
             }
             catch (Exception)
@@ -340,63 +360,72 @@ namespace Server
             }
         }
 
-        /// <summary>
-        /// Download settings from file 
-        /// and downloading image on PictureBox
-        /// </summary>
-        /// <param name="pictureBox"></param>
-        /// <returns>Error code</returns>
-        public static int DownloadSettings(PictureBox pictureBox)
+        public static int CoordTextChanged(string text, int point)
         {
-            XmlDocument xmlDoc = new XmlDocument();
-            try
+            if (int.TryParse(text, out int pointCoord))
             {
-                // downloading image
-                if (DownloadImage(pictureBox, MapImageLocalPath) != MESSAGE.IMAGE_DOWNLOAD_ERROR)
+                return pointCoord;
+            }
+            return point;
+        }
+
+        public static void CheckSaving(TabControl tabControl)
+        {
+            if (tabControl.SelectedIndex != 0)
+            {
+                if (MapInfo.isMapChanged)
                 {
-                    // downloading othet settings parameters
-                    xmlDoc.Load(SettingsFilename);
-                    XmlElement xmlEl = xmlDoc.DocumentElement;
-                    foreach (XmlElement xel in xmlEl.ChildNodes)
+                    DialogResult dialogResult =
+                        MessageBox.Show("Please, save new settings", "Warning!", MessageBoxButtons.OKCancel);
+                    if (dialogResult == DialogResult.OK)
                     {
-                        if (xel.Name == "PointX1"
-                            && !int.TryParse(xel.InnerText, out PointX1))
+                        if (MessageView(SaveSettings())
+                            != MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY)
                         {
-                            return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
-                        }
-                        else if (xel.Name == "PointX2"
-                            && !int.TryParse(xel.InnerText, out PointX2))
-                        {
-                            return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
-                        }
-                        else if (xel.Name == "PointY1"
-                            && !int.TryParse(xel.InnerText, out PointY1))
-                        {
-                            return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
-                        }
-                        else if (xel.Name == "PointY2"
-                            && !int.TryParse(xel.InnerText, out PointY2))
-                        {
-                            return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
-                        }
-                        else if (xel.Name == "SizeCoefficient"
-                            && (!double.TryParse(xel.InnerText, out SizeCoefficient)))
-                        {
-                            return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
+                            tabControl.SelectedIndex = 0;
                         }
                     }
-                    SetRealLength(SizeCoefficient * Math.Abs(PointX1 - PointX2));
-                    return 0;
+                    else
+                    {
+                        tabControl.SelectedIndex = 0;
+                    }
                 }
-                else
-                {
-                    return MESSAGE.IMAGE_DOWNLOAD_ERROR;
-                }
-            }
-            catch (Exception)
-            {
-                return MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR;
             }
         }
+
+        //  display message according to message or error code
+        public static int MessageView(int errorCode)
+        {
+            switch (errorCode)
+            {
+                case MESSAGE.IMAGE_DOWNLOAD_ERROR:
+                    {
+                        MessageBox.Show("Image loading error", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case MESSAGE.DROW_FRAME_POINTS_ERROR:
+                    {
+                        MessageBox.Show("Error drawing additional elements", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR:
+                    {
+                        MessageBox.Show("Error loading user settings", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+                case MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY:
+                    {
+                        MessageBox.Show("Settings saved successfully", "Message", MessageBoxButtons.OK);
+                    }
+                    break;
+                case MESSAGE.SAVE_USER_SETTINGS_ERROR:
+                    {
+                        MessageBox.Show("Error saving user settings", "Error", MessageBoxButtons.OK);
+                    }
+                    break;
+            }
+            return errorCode;
+        }
+
     }
 }

@@ -58,6 +58,7 @@
     <Compile Include="ServerForm.Designer.cs">
       <DependentUpon>ServerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\MapInfo.cs" />
     <Compile Include="src\RegPacket.cs" />
     <Compile Include="src\IDModel.cs" />
     <Compile Include="src\QRModel.cs" />
