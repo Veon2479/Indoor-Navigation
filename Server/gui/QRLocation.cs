@@ -79,25 +79,10 @@ namespace Server
             if (addResult == 0)
             {
                 QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
-            }
 
-            /*switch ((QRModel.AddQRRecordErrorCode)addResult)
-            {
-                case QRModel.AddQRRecordErrorCode.INCORRECT_PARAMETER:
-                    return "Incorrect QR ID or QR X or QR Y";
-                case QRModel.AddQRRecordErrorCode.CORRUPTED_FILE:
-                    return "Xml file not exists or was corrupted";
-                case QRModel.AddQRRecordErrorCode.QRID_INCORRECT:
-                    return "QR ID incorrect (QRID < 0) or alredy exist";
-                case QRModel.AddQRRecordErrorCode.NAME_OCCUPIED:
-                    return " Name of QR record already occupied";
-                default:
-                    {
-                        //update view
-                        QRLocation.UpdateQRView(ref view, Server.qrModel);
-                        return "QR added";
-                    }
-            }*/
+                //generate QR file
+                Server.qrModel.GenerateQR(QRID);
+            }
             return addResult;
         }
 
@@ -108,6 +93,9 @@ namespace Server
                 return "The server is running. File modification is not possible";
 
             //edit QR in a file
+            string OldQRFileName = "";
+            int Result = Server.qrModel.GetQRImgName(oldQRID, ref OldQRFileName);
+
             int editResult = Server.qrModel.ChangeQRRecord(oldQRID, QRID, QRName, x, y);
 
             switch ((QRModel.ChangeQRRecordErrorCode)editResult)
@@ -126,6 +114,16 @@ namespace Server
                     {
                         //update view
                         QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
+
+                        //delete old QR file
+                        if (Result >= 0)
+                        {
+                            File.Delete(OldQRFileName);
+                        }
+
+                        //generate new QR file
+                        Server.qrModel.GenerateQR(QRID);                        
+
                         return "QR edited";
                     }
             }
@@ -136,6 +134,9 @@ namespace Server
         {
             if (Server.Run)
                 return "The server is running. File modification is not possible";
+
+            string OldQRFileName = "";
+            int Result = Server.qrModel.GetQRImgName(QRID, ref OldQRFileName);
 
             int delResult = Server.qrModel.DeleteQRRecord(QRID);
 
@@ -151,6 +152,13 @@ namespace Server
                     {
                         //update view
                         QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
+
+                        //delete QR file
+                        if (Result >= 0)
+                        {
+                            File.Delete(OldQRFileName);
+                        }
+
                         return "QR deleted";
                     }
             }
@@ -182,6 +190,9 @@ namespace Server
         public static void DrawQRPoint(PictureBox pb, Color color, double x, double y)
         {
             //pb.Image = (Bitmap)QRMap.Clone();
+            if (QRMap == null)
+                return;
+
             Graphics g = Graphics.FromImage(pb.Image);
             g.FillEllipse(new SolidBrush(color), (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
             Pen pen = new Pen(Color.Black, 1);
@@ -249,13 +260,10 @@ namespace Server
             switch ((QRModel.GetQRImgNameErrorCode)Result)
             {
                 case QRModel.GetQRImgNameErrorCode.CORRUPTED_FILE:
-                    return;
                 case QRModel.GetQRImgNameErrorCode.QRID_INCORRECT:
-                    return;
                 case QRModel.GetQRImgNameErrorCode.NAME_NOT_FOUND:
-                    return;
                 case QRModel.GetQRImgNameErrorCode.FILE_NOT_FOUND:
-                    //try to generate new?
+                    pbQR.Image = null;
                     return;
                 default:
                     {

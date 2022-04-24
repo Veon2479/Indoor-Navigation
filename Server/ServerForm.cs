@@ -162,9 +162,7 @@ namespace Server
         {
             SettingsModel.MessageView(SettingsModel.SaveSettings());
         }
-        
        
-
         // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
         {
@@ -185,6 +183,9 @@ namespace Server
             SettingsModel.CheckSaving(tcMain);
         }
 
+        /*
+         * Management tab
+         */
 
         //start the server
         private void btnStart_Click(object sender, EventArgs e)
@@ -224,6 +225,10 @@ namespace Server
             ServerManage.UpdateOnlineUsersView(ref lvOnline, Server.userIDModel);
         }
 
+        /*
+         * QR location tab
+         */
+
         //open QR config file
         private void btnOpenQRConf_Click(object sender, EventArgs e)
         {
@@ -249,17 +254,20 @@ namespace Server
                 QRLocation.DrawQRPoint(pbQRLocation, Color.Green, int.Parse(tbQRx.Text), int.Parse(tbQRy.Text));
                 QRLocation.adding = false;
             }
-
         }
 
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
             string Result = "The point is not selected";
+
+            //select in list view
             if (selectedItem != null && selectedItem.Count > 0)
             {
                 Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             }
+            
+            //select in QR map
             else if (selectedPoint.QRID != null)
                 Result = QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
@@ -269,10 +277,14 @@ namespace Server
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
             string Result = "The point is not selected";
+            
+            //select in list view
             if (selectedItem != null)
             {
                 Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
             }
+
+            //select in QR map
             else if (selectedPoint.QRID!= null)
                 Result = QRLocation.DeleteQR(selectedPoint.QRID, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
@@ -281,7 +293,6 @@ namespace Server
         //on select item in QR list
         ListView.SelectedListViewItemCollection selectedItem = null;
         QRModel.QRModelXmlContent selectedPoint = new QRModel.QRModelXmlContent();
-
         private void lvQRList_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedItem = lvQRList.SelectedItems.Count > 0 ? lvQRList.SelectedItems : null;
