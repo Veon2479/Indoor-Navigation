@@ -180,9 +180,9 @@ namespace Server
             // 
             // tbAzimuth
             // 
-            this.tbAzimuth.Location = new System.Drawing.Point(14, 258);
+            this.tbAzimuth.Location = new System.Drawing.Point(19, 316);
             this.tbAzimuth.Name = "tbAzimuth";
-            this.tbAzimuth.Size = new System.Drawing.Size(100, 20);
+            this.tbAzimuth.Size = new System.Drawing.Size(128, 22);
             this.tbAzimuth.TabIndex = 25;
             this.tbAzimuth.TextChanged += new System.EventHandler(this.tbAzimuth_TextChanged);
             this.tbAzimuth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
@@ -190,9 +190,9 @@ namespace Server
             // lAzimuth
             // 
             this.lAzimuth.AutoSize = true;
-            this.lAzimuth.Location = new System.Drawing.Point(15, 242);
+            this.lAzimuth.Location = new System.Drawing.Point(16, 297);
             this.lAzimuth.Name = "lAzimuth";
-            this.lAzimuth.Size = new System.Drawing.Size(102, 13);
+            this.lAzimuth.Size = new System.Drawing.Size(128, 16);
             this.lAzimuth.TabIndex = 24;
             this.lAzimuth.Text = "Azimuth (in degrees)";
             // 
@@ -278,7 +278,7 @@ namespace Server
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(19, 305);
+            this.btnSave.Location = new System.Drawing.Point(19, 357);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(260, 31);

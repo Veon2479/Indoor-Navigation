@@ -151,19 +151,19 @@ namespace Server
         public static void PaintQRMap(PictureBox pb)
         {
             //paint map
-            if (SettingsModel.bitmap == null)
+            if (MapInfo.bitmap == null)
                 return;
 
-            QRMap = (Bitmap)SettingsModel.bitmap.Clone();
+            QRMap = (Bitmap)MapInfo.bitmap.Clone();
             pb.Image = QRMap;
 
             //paint dash rectangle
             Graphics g = Graphics.FromImage(pb.Image);
             g.DrawRectangle(SettingsModel.pen, new Rectangle(
-                Math.Min(SettingsModel.PointX1, SettingsModel.PointX2),
-                Math.Min(SettingsModel.PointY1, SettingsModel.PointY2),
-                Math.Abs(SettingsModel.PointX2 - SettingsModel.PointX1),
-                Math.Abs(SettingsModel.PointY2 - SettingsModel.PointY1)));
+                Math.Min(MapInfo.PointX1, MapInfo.PointX2),
+                Math.Min(MapInfo.PointY1, MapInfo.PointY2),
+                Math.Abs(MapInfo.PointX2 - MapInfo.PointX1),
+                Math.Abs(MapInfo.PointY2 - MapInfo.PointY1)));
 
             //draw existing points
             DrawPoints(pb);

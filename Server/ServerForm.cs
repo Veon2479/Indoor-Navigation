@@ -144,6 +144,7 @@ namespace Server
                 e.Handled = true;
             }
         }
+
         private void tbDoubleValue_KeyPress(object sender, KeyPressEventArgs e)
         {
             TextBox tb = (TextBox)sender;  
@@ -162,14 +163,7 @@ namespace Server
             SettingsModel.MessageView(SettingsModel.SaveSettings());
         }
         
-        // changing real length and changing real width according to new value of real length
-        private void tbRealLength_TextChanged(object sender, EventArgs e)
-        {
-            if (tbRealLength.Focused)
-            {
-                tbRealWidth.Text = SettingsModel.RealLengthChanged(tbRealLength.Text);
-            }
-        }
+       
 
         // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
