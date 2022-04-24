@@ -17,12 +17,7 @@ namespace Server
         {
             InitializeComponent();
 
-            if (SettingsModel.DownloadSettings(pbMapImage) != 0)
-            {
-                BlockSettingsControls();
-            }
-            UpdatePointText();
-            UpdateRealValuesText();
+            BlockSettingsControls();
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
@@ -52,126 +47,73 @@ namespace Server
         // update tbRealLength and tbRealWidth with current values of RealLength and RealWidth
         private void UpdateRealValuesText()
         {
-            tbRealLength.Text = SettingsModel.RealLength.ToString("N3");
-            tbRealWidth.Text = SettingsModel.RealWidth.ToString("N3");
+            tbRealLength.Text = MapInfo.RealLength.ToString("N3");
+            tbRealWidth.Text = MapInfo.RealWidth.ToString("N3");
         }
 
         // update coordinate text with current values of points coordinates
         private void UpdatePointText()
         {
-            tbCoordinateX1.Text = SettingsModel.PointX1.ToString();
-            tbCoordinateX2.Text = SettingsModel.PointX2.ToString();
-            tbCoordinateY1.Text = SettingsModel.PointY1.ToString();
-            tbCoordinateY2.Text = SettingsModel.PointY2.ToString();
+            tbCoordinateX1.Text = MapInfo.PointX1.ToString();
+            tbCoordinateX2.Text = MapInfo.PointX2.ToString();
+            tbCoordinateY1.Text = MapInfo.PointY1.ToString();
+            tbCoordinateY2.Text = MapInfo.PointY2.ToString();
         }
-
-        // downloading map image from file, 
-        // preparing controls for work
+      
+        // downloading map image from file, preparing controls for work
         private void btnDownloadImage_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Image files (*.jpg,*.jpeg,*.jpe,*.bmp,*.png)|*.jpg;*.jpeg;*.jpe;*.bmp;*.png|All files (*.*)|*.*";
+                openFileDialog.Filter =
+                    "Indoor-navigation map files (*.inm)|*.inm|" +
+                    "Image files (*.jpg,*.jpeg,*.jpe,*.bmp,*.png)|*.jpg;*.jpeg;*.jpe;*.bmp;*.png|" +
+                    "All files (*.*)|*.*";
                 if (openFileDialog.ShowDialog() == DialogResult.Cancel)
                 {
                     return;
                 }
-                MessageView(SettingsModel.DownloadImage(pbMapImage, openFileDialog.FileName));
-            }
-            if (0 == MessageView(SettingsModel.FramePointsView(pbMapImage)))
-            {
+                int msg = SettingsModel.DownloadMap(pbMapImage, openFileDialog.FileName);
                 UnblockSettingsControls();
                 UpdatePointText();
+                MapInfo.SetDefoult();
+                UpdateRealValuesText();
+                tbAzimuth.Text = MapInfo.Azimuth.ToString("N12");
+                if (SettingsModel.MessageView(msg) == SettingsModel.MESSAGE.DOWNLOAD_USER_SETTINGS)
+                {
+                    MapInfo.isMapChanged = false;
+                }
+                else if(msg == SettingsModel.MESSAGE.DOWNLOAD_DEFOULT_SETTINGS)
+                {
+                    MapInfo.isMapChanged = true;
+                }
             }
         }
 
-        //  display message according to message or error code
-        private int MessageView(int errorCode)
-        {
-            switch (errorCode)
-            {
-                case SettingsModel.MESSAGE.IMAGE_DOWNLOAD_ERROR:
-                    {
-                        MessageBox.Show("Image loading error", "Error", MessageBoxButtons.OK);
-                    }
-                    break;
-                case SettingsModel.MESSAGE.DROW_FRAME_POINTS_ERROR:
-                    {
-                        MessageBox.Show("Error drawing additional elements", "Error", MessageBoxButtons.OK);
-                    }
-                    break;
-                case SettingsModel.MESSAGE.DOWNLOAD_USER_SETTINGS_ERROR:
-                    {
-                        MessageBox.Show("Error loading user settings", "Error", MessageBoxButtons.OK);
-                    }
-                    break;
-                case SettingsModel.MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY:
-                    {
-                        MessageBox.Show("Settings saved successfully", "Message", MessageBoxButtons.OK);
-                    }
-                    break;
-                case SettingsModel.MESSAGE.SAVE_USER_SETTINGS_ERROR:
-                    {
-                        MessageBox.Show("Error saving user settings", "Error", MessageBoxButtons.OK);
-                    }
-                    break;
-            }
-            return errorCode;
-        }
-
-        // changing coordinate value and redrowing frame according to changed coordinate
+        // changing values of coordinates
         private void tbCoordinateX1_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tbCoordinateX1.Text, out SettingsModel.PointX1))
-            {
-                MessageView(SettingsModel.FramePointsView(pbMapImage));
-            }
+            MapInfo.SetX1(SettingsModel.CoordTextChanged(tbCoordinateX1.Text, MapInfo.PointX1));
+            SettingsModel.FramePointsView(pbMapImage);
+            UpdateRealValuesText();
         }
         private void tbCoordinateX2_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tbCoordinateX2.Text, out SettingsModel.PointX2))
-            {
-                MessageView(SettingsModel.FramePointsView(pbMapImage));
-            }
+            MapInfo.SetX2(SettingsModel.CoordTextChanged(tbCoordinateX2.Text, MapInfo.PointX2));
+            SettingsModel.FramePointsView(pbMapImage);
+            UpdateRealValuesText();
         }
         private void tbCoordinateY1_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tbCoordinateY1.Text, out SettingsModel.PointY1))
-            {
-                MessageView(SettingsModel.FramePointsView(pbMapImage));
-            }
+            MapInfo.SetY1(SettingsModel.CoordTextChanged(tbCoordinateY1.Text, MapInfo.PointY1));
+            SettingsModel.FramePointsView(pbMapImage);
+            UpdateRealValuesText();
         }
         private void tbCoordinateY2_TextChanged(object sender, EventArgs e)
         {
-            if (int.TryParse(tbCoordinateY2.Text, out SettingsModel.PointY2))
-            {
-                MessageView(SettingsModel.FramePointsView(pbMapImage));
-            }
-        }
-
-        // entering valid characters in text fields
-        private void tbCoordinate_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsNumber(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != Convert.ToChar(8))
-            {
-                e.Handled = true;
-            }
-        }
-        private void tbRealValue_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsNumber(e.KeyChar)
-                && !char.IsDigit(e.KeyChar)
-                && e.KeyChar != Convert.ToChar(8)
-                && e.KeyChar != '.')
-            {
-                e.Handled = true;
-            }
-        }
-
-        // save current settings to file 
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            MessageView(SettingsModel.SaveSettings());
+            MapInfo.SetY2(SettingsModel.CoordTextChanged(tbCoordinateY2.Text, MapInfo.PointY2));
+            SettingsModel.FramePointsView(pbMapImage);
+            UpdateRealValuesText();
         }
 
         // changing real length and changing real width according to new value of real length
@@ -182,6 +124,46 @@ namespace Server
                 tbRealWidth.Text = SettingsModel.RealLengthChanged(tbRealLength.Text);
             }
         }
+
+        // changing value of azimuth
+        private void tbAzimuth_TextChanged(object sender, EventArgs e)
+        {
+            if (double.TryParse(tbAzimuth.Text, out double value))
+            {
+                MapInfo.Azimuth = value;
+            }
+            SettingsModel.RedrowAzimuth();
+            MapInfo.isMapChanged = true;
+        }
+
+        // entering valid characters in text fields
+        private void tbIntValue_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsNumber(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != Convert.ToChar(8))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void tbDoubleValue_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            TextBox tb = (TextBox)sender;  
+            if (!char.IsNumber(e.KeyChar) 
+                && !char.IsDigit(e.KeyChar) 
+                && e.KeyChar != Convert.ToChar(8)
+                && (e.KeyChar == '.' && (tb.Text.Contains("."))))
+            {
+                e.Handled = true;
+            }
+        }
+
+        // save current settings to file 
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            SettingsModel.MessageView(SettingsModel.SaveSettings());
+        }
+        
+       
 
         // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
@@ -194,12 +176,15 @@ namespace Server
         // moving frame point
         private void pbMapImage_MouseMove(object sender, MouseEventArgs e)
         {
-            if (SettingsModel.MoveFramePoint(pbMapImage, e.X, e.Y) != SettingsModel.NO_POINT)
-            {
-                //UpdatePointText();
-                //UpdateRealValuesText();
-            }
+            SettingsModel.MoveFramePoint(pbMapImage, e.X, e.Y);
         }
+
+        // checking the save before switching to another tab
+        private void tcMain_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            SettingsModel.CheckSaving(tcMain);
+        }
+
 
         //start the server
         private void btnStart_Click(object sender, EventArgs e)
@@ -270,23 +255,33 @@ namespace Server
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
-            if (selectedItem.Count == 0)
-                return;
-            string Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+            string Result = "The point is not selected";
+            if (selectedItem != null && selectedItem.Count > 0)
+            {
+                Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+            }
+            else if (selectedPoint.QRID != null)
+                Result = QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
         }
 
         //delete QR from a config file
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
-            if (selectedItem.Count == 0)
-                return;
-            string Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
+            string Result = "The point is not selected";
+            if (selectedItem != null)
+            {
+                Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
+            }
+            else if (selectedPoint.QRID!= null)
+                Result = QRLocation.DeleteQR(selectedPoint.QRID, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
         }
 
         //on select item in QR list
         ListView.SelectedListViewItemCollection selectedItem = null;
+        QRModel.QRModelXmlContent selectedPoint = new QRModel.QRModelXmlContent();
+
         private void lvQRList_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedItem = lvQRList.SelectedItems.Count > 0 ? lvQRList.SelectedItems : null;
@@ -297,16 +292,23 @@ namespace Server
                 tbQRName.Text = selectedItem[0].SubItems[1].Text;
                 tbQRx.Text = selectedItem[0].SubItems[2].Text;
                 tbQRy.Text = selectedItem[0].SubItems[3].Text;
+                QRLocation.ShowQRImg(selectedItem[0].Text, pbQR);
             }
         }
 
+        //cursore move
         private void pbQRLocation_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!QRLocation.adding)
+            if (QRLocation.selecting && e.Button == MouseButtons.None)
+            {
+                tbQRx.Text = selectedPoint.X;
+                tbQRy.Text = selectedPoint.Y;
+            }
+            else if (QRLocation.selecting && e.Button == MouseButtons.Left || !QRLocation.adding)
             {
                 tbQRx.Text = e.X.ToString();
                 tbQRy.Text = e.Y.ToString();
-            }
+            }            
         }
 
         //repaint QR location map
@@ -318,8 +320,58 @@ namespace Server
         //add QR point
         private void pbQRLocation_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            QRLocation.DrawQRPoint(pbQRLocation, Color.Red, e.X, e.Y);
-            QRLocation.adding = true;
+            if (!QRLocation.adding)
+            {
+                QRLocation.PaintQRMap(pbQRLocation);
+                QRLocation.DrawQRPoint(pbQRLocation, Color.Red, e.X, e.Y);
+                tbQRx.Text = e.X.ToString();
+                tbQRy.Text = e.Y.ToString();
+                QRLocation.adding = true;
+            }
+        }
+
+        //on select QR point
+        private void pbQRLocation_MouseDown(object sender, MouseEventArgs e)
+        {
+            //check hitting
+            selectedPoint = QRLocation.HitPoint(e.X, e.Y);
+            
+            //update text boxes
+            tbQRID.Text = selectedPoint.QRID;
+            tbQRName.Text = selectedPoint.QRName;
+            tbQRx.Text = selectedPoint.X;
+            tbQRy.Text = selectedPoint.Y;
+
+            if (selectedPoint.QRID != null)
+            {
+                //show tip, select point
+                QRLocation.SelectPoint(selectedPoint, ttQR, pbQRLocation, pbQR);
+            }
+            else
+            {
+                //no hitting
+                QRLocation.PaintQRMap(pbQRLocation);
+                QRLocation.adding = false;
+                QRLocation.selecting = false;
+            }
+        }
+
+        //end drag
+        private void pbQRLocation_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (selectedPoint.QRID != null)
+            {
+                double x = double.Parse(selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
+                double y = double.Parse(selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
+
+                //new location of a QR point
+                if (QRLocation.selecting && Math.Abs(e.X - x) > QRLocation.QRPointRadius && Math.Abs(e.Y - y) > QRLocation.QRPointRadius)
+                {
+                    QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, e.X.ToString(), e.Y.ToString(), ref lvQRList, pbQRLocation);
+                    QRLocation.PaintQRMap(pbQRLocation);
+                    QRLocation.selecting = false;
+                }
+            }
         }
     }
 }

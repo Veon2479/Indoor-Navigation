@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace Server
 {
@@ -12,10 +13,12 @@ namespace Server
     {
 
         public static bool adding { get; set; } = false;
+        public static bool selecting { get; set; } = false;
+        public static bool drag { get; set; } = false;
         private static Bitmap QRMap = null;
 
         //drawing settings
-        private static int QRPointRadius = 5;
+        internal static int QRPointRadius = 6;
 
         //update list view of QR location
         public static void UpdateQRView(QRModel qrModel, ref ListView view, PictureBox pb)
@@ -53,6 +56,14 @@ namespace Server
             //update view
             QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
             QRLocation.PaintQRMap(pb);
+
+            //update QR Images
+            QRModel.QRModelXmlContent[] contents = null;
+            Server.qrModel.GetQRRecordList(ref contents);
+            foreach (var item in contents)
+            {
+                int Result = Server.qrModel.GenerateQR(item.QRID);
+            }
         }
 
         //add QR to config file
@@ -149,19 +160,19 @@ namespace Server
         public static void PaintQRMap(PictureBox pb)
         {
             //paint map
-            if (SettingsModel.bitmap == null)
+            if (MapInfo.bitmap == null)
                 return;
 
-            QRMap = (Bitmap)SettingsModel.bitmap.Clone();
+            QRMap = (Bitmap)MapInfo.bitmap.Clone();
             pb.Image = QRMap;
 
             //paint dash rectangle
             Graphics g = Graphics.FromImage(pb.Image);
             g.DrawRectangle(SettingsModel.pen, new Rectangle(
-                Math.Min(SettingsModel.PointX1, SettingsModel.PointX2),
-                Math.Min(SettingsModel.PointY1, SettingsModel.PointY2),
-                Math.Abs(SettingsModel.PointX2 - SettingsModel.PointX1),
-                Math.Abs(SettingsModel.PointY2 - SettingsModel.PointY1)));
+                Math.Min(MapInfo.PointX1, MapInfo.PointX2),
+                Math.Min(MapInfo.PointY1, MapInfo.PointY2),
+                Math.Abs(MapInfo.PointX2 - MapInfo.PointX1),
+                Math.Abs(MapInfo.PointY2 - MapInfo.PointY1)));
 
             //draw existing points
             DrawPoints(pb);
@@ -173,6 +184,8 @@ namespace Server
             //pb.Image = (Bitmap)QRMap.Clone();
             Graphics g = Graphics.FromImage(pb.Image);
             g.FillEllipse(new SolidBrush(color), (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
+            Pen pen = new Pen(Color.Black, 1);
+            g.DrawEllipse(pen, (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
             QRMap = (Bitmap)pb.Image.Clone();
             pb.Image = QRMap;
         }
@@ -190,6 +203,70 @@ namespace Server
                 double x = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
                 double y = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
                 DrawQRPoint(pb, Color.Green, x, y);
+            }
+        }
+
+        //hitting the point
+        public static QRModel.QRModelXmlContent HitPoint(int X, int Y)
+        {
+            QRModel.QRModelXmlContent[] content = null;
+            Server.qrModel.GetQRRecordList(ref content);
+            if (content != null)
+            {
+                foreach (var point in content)
+                {
+                    double xCircle = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
+                    double yCircle = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
+                    if (Math.Pow((X - xCircle), 2) + Math.Pow((Y - yCircle), 2) <= Math.Pow(QRPointRadius, 2))
+                    {
+                        return point;
+                    }
+                }
+            }
+            QRModel.QRModelXmlContent ret = new QRModel.QRModelXmlContent();
+            return ret;
+        }
+
+        //select point on QR map
+        public static void SelectPoint(QRModel.QRModelXmlContent point, ToolTip ttQR, PictureBox pbMap, PictureBox pbQR)
+        {
+            //show tip, select point
+            QRLocation.PaintQRMap(pbMap);
+            string content = $"QR ID: {point.QRID}\nQR Name: {point.QRName}\nX: {point.X}\nY: {point.Y}";
+            ttQR.SetToolTip(pbMap, content);
+            double x = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
+            double y = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
+            QRLocation.DrawQRPoint(pbMap, Color.Orange, x, y);
+            QRLocation.selecting = true;
+            ShowQRImg(point.QRID, pbQR);
+        }
+
+        //show selected QR
+        public static void ShowQRImg(string QRID, PictureBox pbQR)
+        {
+            string QRFileName = "";
+            int Result = Server.qrModel.GetQRImgName(QRID, ref QRFileName);
+            switch ((QRModel.GetQRImgNameErrorCode)Result)
+            {
+                case QRModel.GetQRImgNameErrorCode.CORRUPTED_FILE:
+                    return;
+                case QRModel.GetQRImgNameErrorCode.QRID_INCORRECT:
+                    return;
+                case QRModel.GetQRImgNameErrorCode.NAME_NOT_FOUND:
+                    return;
+                case QRModel.GetQRImgNameErrorCode.FILE_NOT_FOUND:
+                    //try to generate new?
+                    return;
+                default:
+                    {
+                        using (FileStream fs = File.OpenRead(QRFileName))
+                        {
+                            Bitmap QRMap = (Bitmap)new Bitmap(fs).Clone();
+                            fs.Close();
+                            pbQR.Image = QRMap;
+                        }
+                        return;
+                    }
             }
         }
     }

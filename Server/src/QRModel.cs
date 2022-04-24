@@ -23,7 +23,7 @@ namespace Server
         }
 
         //Name of xml file to work with
-        internal string _xmlFileName {get; private set;} = "";
+        internal string _xmlFileName { get; private set; } = "";
 
         //Directory that contains xml file and QR codes to work with
         private string _workQRDir = "";
@@ -44,7 +44,7 @@ namespace Server
         protected string _defaultQRCodeData = "Default data";
 
         //Amount of pixels on one module
-        protected int _pixelsPerModule = 8;
+        protected int _pixelsPerModule = 6;
 
         //List that contain exicting QRID
         List<int> _QRIDExist = new List<int>();

@@ -1,4 +1,3 @@
-﻿
 namespace Server
 {
     partial class frmServer
@@ -34,6 +33,8 @@ namespace Server
             this.pImage = new System.Windows.Forms.Panel();
             this.pbMapImage = new System.Windows.Forms.PictureBox();
             this.pSettings = new System.Windows.Forms.Panel();
+            this.tbAzimuth = new System.Windows.Forms.TextBox();
+            this.lAzimuth = new System.Windows.Forms.Label();
             this.tbRealWidth = new System.Windows.Forms.TextBox();
             this.tbRealLength = new System.Windows.Forms.TextBox();
             this.tbCoordinateY2 = new System.Windows.Forms.TextBox();
@@ -91,6 +92,8 @@ namespace Server
             this.tmrListUpdate = new System.Windows.Forms.Timer(this.components);
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
+            this.ttQR = new System.Windows.Forms.ToolTip(this.components);
+            this.pbQR = new System.Windows.Forms.PictureBox();
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -109,6 +112,7 @@ namespace Server
             ((System.ComponentModel.ISupportInitialize)(this.pbQRLocation)).BeginInit();
             this.tbQRList.SuspendLayout();
             this.pnlQRLocation.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbQR)).BeginInit();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -153,6 +157,8 @@ namespace Server
             // 
             // pSettings
             // 
+            this.pSettings.Controls.Add(this.tbAzimuth);
+            this.pSettings.Controls.Add(this.lAzimuth);
             this.pSettings.Controls.Add(this.tbRealWidth);
             this.pSettings.Controls.Add(this.tbRealLength);
             this.pSettings.Controls.Add(this.tbCoordinateY2);
@@ -174,6 +180,24 @@ namespace Server
             this.pSettings.Size = new System.Drawing.Size(300, 832);
             this.pSettings.TabIndex = 0;
             // 
+            // tbAzimuth
+            // 
+            this.tbAzimuth.Location = new System.Drawing.Point(19, 316);
+            this.tbAzimuth.Name = "tbAzimuth";
+            this.tbAzimuth.Size = new System.Drawing.Size(128, 22);
+            this.tbAzimuth.TabIndex = 25;
+            this.tbAzimuth.TextChanged += new System.EventHandler(this.tbAzimuth_TextChanged);
+            this.tbAzimuth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
+            // 
+            // lAzimuth
+            // 
+            this.lAzimuth.AutoSize = true;
+            this.lAzimuth.Location = new System.Drawing.Point(16, 297);
+            this.lAzimuth.Name = "lAzimuth";
+            this.lAzimuth.Size = new System.Drawing.Size(128, 16);
+            this.lAzimuth.TabIndex = 24;
+            this.lAzimuth.Text = "Azimuth (in degrees)";
+            // 
             // tbRealWidth
             // 
             this.tbRealWidth.Enabled = false;
@@ -182,7 +206,7 @@ namespace Server
             this.tbRealWidth.Name = "tbRealWidth";
             this.tbRealWidth.Size = new System.Drawing.Size(128, 22);
             this.tbRealWidth.TabIndex = 23;
-            this.tbRealWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbRealValue_KeyPress);
+            this.tbRealWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
             // 
             // tbRealLength
             // 
@@ -192,6 +216,7 @@ namespace Server
             this.tbRealLength.Size = new System.Drawing.Size(128, 22);
             this.tbRealLength.TabIndex = 22;
             this.tbRealLength.TextChanged += new System.EventHandler(this.tbRealLength_TextChanged);
+            this.tbRealLength.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
             // 
             // tbCoordinateY2
             // 
@@ -201,7 +226,7 @@ namespace Server
             this.tbCoordinateY2.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateY2.TabIndex = 21;
             this.tbCoordinateY2.TextChanged += new System.EventHandler(this.tbCoordinateY2_TextChanged);
-            this.tbCoordinateY2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbCoordinate_KeyPress);
+            this.tbCoordinateY2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // tbCoordinateX2
             // 
@@ -211,7 +236,7 @@ namespace Server
             this.tbCoordinateX2.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateX2.TabIndex = 20;
             this.tbCoordinateX2.TextChanged += new System.EventHandler(this.tbCoordinateX2_TextChanged);
-            this.tbCoordinateX2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbCoordinate_KeyPress);
+            this.tbCoordinateX2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // tbCoordinateY1
             // 
@@ -221,7 +246,7 @@ namespace Server
             this.tbCoordinateY1.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateY1.TabIndex = 19;
             this.tbCoordinateY1.TextChanged += new System.EventHandler(this.tbCoordinateY1_TextChanged);
-            this.tbCoordinateY1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbCoordinate_KeyPress);
+            this.tbCoordinateY1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // tbCoordinateX1
             // 
@@ -231,7 +256,7 @@ namespace Server
             this.tbCoordinateX1.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateX1.TabIndex = 18;
             this.tbCoordinateX1.TextChanged += new System.EventHandler(this.tbCoordinateX1_TextChanged);
-            this.tbCoordinateX1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbCoordinate_KeyPress);
+            this.tbCoordinateX1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // lblRealLength
             // 
@@ -255,7 +280,7 @@ namespace Server
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(19, 305);
+            this.btnSave.Location = new System.Drawing.Point(19, 357);
             this.btnSave.Margin = new System.Windows.Forms.Padding(4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(260, 31);
@@ -328,6 +353,7 @@ namespace Server
             this.tcMain.SelectedIndex = 0;
             this.tcMain.Size = new System.Drawing.Size(1504, 869);
             this.tcMain.TabIndex = 0;
+            this.tcMain.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tcMain_Selecting);
             this.tcMain.Selected += new System.Windows.Forms.TabControlEventHandler(this.tcMain_Selected);
             // 
             // tbManage
@@ -532,7 +558,9 @@ namespace Server
             this.pbQRLocation.TabIndex = 0;
             this.pbQRLocation.TabStop = false;
             this.pbQRLocation.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseDoubleClick);
+            this.pbQRLocation.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseDown);
             this.pbQRLocation.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseMove);
+            this.pbQRLocation.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbQRLocation_MouseUp);
             // 
             // tbQRList
             // 
@@ -589,6 +617,7 @@ namespace Server
             // 
             // pnlQRLocation
             // 
+            this.pnlQRLocation.Controls.Add(this.pbQR);
             this.pnlQRLocation.Controls.Add(this.lblQRy);
             this.pnlQRLocation.Controls.Add(this.lblQRx);
             this.pnlQRLocation.Controls.Add(this.lblQRName);
@@ -747,6 +776,20 @@ namespace Server
             this.tmrListUpdate.Interval = 1000;
             this.tmrListUpdate.Tick += new System.EventHandler(this.tmrListUpdate_Tick);
             // 
+            // ttQR
+            // 
+            this.ttQR.AutomaticDelay = 0;
+            this.ttQR.ShowAlways = true;
+            // 
+            // pbQR
+            // 
+            this.pbQR.Location = new System.Drawing.Point(8, 431);
+            this.pbQR.Name = "pbQR";
+            this.pbQR.Size = new System.Drawing.Size(274, 274);
+            this.pbQR.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbQR.TabIndex = 13;
+            this.pbQR.TabStop = false;
+            // 
             // frmServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -780,6 +823,7 @@ namespace Server
             this.tbQRList.ResumeLayout(false);
             this.pnlQRLocation.ResumeLayout(false);
             this.pnlQRLocation.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbQR)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -845,7 +889,11 @@ namespace Server
         private System.Windows.Forms.ColumnHeader colQRName;
         private System.Windows.Forms.ColumnHeader colX;
         private System.Windows.Forms.ColumnHeader colY;
+        private System.Windows.Forms.TextBox tbAzimuth;
+        private System.Windows.Forms.Label lAzimuth;
         private System.Windows.Forms.PictureBox pbQRLocation;
+        private System.Windows.Forms.ToolTip ttQR;
+        private System.Windows.Forms.PictureBox pbQR;
     }
 }
 
