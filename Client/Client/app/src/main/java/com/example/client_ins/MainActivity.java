@@ -3,6 +3,8 @@ package com.example.client_ins;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,10 +41,12 @@ public class MainActivity extends AppCompatActivity {
 
         Engine.setContext(getApplicationContext());
         Engine engine = Engine.getInstance();
+
         System.out.println("Calling background service to start");
         //ClientService clientService = new ClientService(engine);
         Intent intent = new Intent(this, ClientService.class);
-        startForegroundService( intent );
+        Context context = getApplicationContext();
+        context.startForegroundService( intent );
 
 
         text1 = findViewById(R.id.text1);
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //context.startForegroundService( intent );
                 serverAddr = editTextServerAddr.getText().toString();
                 try {
                     writeToFile(getApplicationContext());

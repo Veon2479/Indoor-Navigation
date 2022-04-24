@@ -25,7 +25,7 @@ public class Engine {
     {
         boolean flag = false;
         try {
-            MainActivity.textScroll.append("Initializing program state"+"\r\n");
+            //MainActivity.textScroll.append("Initializing program state"+"\r\n");
             System.out.println("Initializing program state");
             readFromFile(context);
 
