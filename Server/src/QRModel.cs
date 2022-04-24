@@ -50,13 +50,16 @@ namespace Server
         List<int> _QRIDExist = new List<int>();
 
         /// <summary>
-        ///     Open and check xml file. If file does not exist create it. Else use standart file in standart directory
+        ///     Open and check xml file. Set _workDir to work with QRCodes. If smth not exist - create it
         /// </summary>
         /// <param name="xmlFileName">Name of xml file to work with</param>
         /// <exception cref="Exception">Xml file incorrect or was corrupted</exception>
         public QRModel(string xmlFileName = "")
         {
             _xmlFileName = xmlFileName;
+            if (_xmlFileName != ""){
+                _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.')) + "_" + _defaultQRCodeDir;
+            }
             XmlDocument xmlDocument = new XmlDocument();
 
             //Check xml document
@@ -64,17 +67,29 @@ namespace Server
             if (iResult == (int)CheckXmlFileContentErrorCode.READ_FILE_ERROR)
             {
 
-                // work with default file name if name is empty
                 if (_xmlFileName == "")
                 {
+    
+                    //Work with default file name if name is empty
                     _xmlFileName = _defaultDir + "/" + _defaultPrivateDir + "/" + _defaultName;
-                }
-                _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.'));
+                    _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.')) + "_" + _defaultQRCodeDir;
+                }else{
 
-                //Change xml document to default
+                    //Create new files
+                    int insertInd = _xmlFileName.LastIndexOf('/');
+
+                    //Get only name to insert
+                    string onlyName = _xmlFileName.Remove(0, insertInd+1);
+                    onlyName = onlyName.Remove(onlyName.LastIndexOf('.'));
+
+                    _xmlFileName = _xmlFileName.Insert(insertInd+1, _defaultDir + "/" + onlyName + "/");
+                    _workQRDir = _defaultDir + "/" + onlyName + "/" + onlyName  + "_" + _defaultQRCodeDir;
+                }
+    
+                //Change xml document to default or create new
                 UseDefaultXmlDoc();
 
-                //Check default xml document 
+                //Check chosen
                 if (CheckXmlFileContent(ref xmlDocument) < 0)
                 {
                     throw new Exception("Incorrect default file or file was corrupted");
@@ -505,6 +520,62 @@ namespace Server
             return 0;
         }
 
+        public enum GetQRImgNameErrorCode{
+            CORRUPTED_FILE = -1,
+            QRID_INCORRECT = -2,
+            NAME_NOT_FOUND = -3,
+            FILE_NOT_FOUND = -4
+        }
+        /// <summary>
+        ///     Retrun name of image file accroding received QR ID or QR Name
+        /// </summary>
+        /// <param name="QRID_QRName">ID or Name of QR record in xml file</param>
+        /// <param name="QRImgFileName">Name of image file</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
+        ///     <item>-2 (QRID_INCORRECT): No this ID in xml file</item>
+        ///     <item>-3 (NAME_NOT_FOUD): No this Name in xml file</item>
+        ///     <item>-4 (FILE_NOT_FOUND): File with this name was not found</item>
+        ///     </list>
+        /// </returns>
+        public int GetQRImgName(string QRID_QRName, ref string QRImgFileName)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0){
+                return (int)GetQRImgNameErrorCode.CORRUPTED_FILE;
+            }            
+
+            //Check for correct QR ID or QR Name
+            int QRID = CheckQRID_QRName(QRID_QRName, xmlDoc);
+            if (QRID < 0){
+                return QRID;
+            }
+
+            XmlElement xmlEl = xmlDoc.DocumentElement;
+            XmlNode xmlNode = xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)];
+
+            //Check is directory exist
+            if (!Directory.Exists(_workQRDir)){
+                return (int)GetQRImgNameErrorCode.FILE_NOT_FOUND;
+            }
+            
+            //Create potentional file name
+            QRImgFileName = _workQRDir + "/" + xmlNode.Attributes[1].Value + ".jpeg";
+            if (!File.Exists(QRImgFileName)){
+                return (int)GetQRImgNameErrorCode.FILE_NOT_FOUND;
+            }
+
+            return 0;
+        }
+
         private enum CheckXmlFileContentErrorCode
         {
             IS_EMPTY = 1,
@@ -702,7 +773,7 @@ namespace Server
             XmlElement xmlEl = xmlDoc.DocumentElement;
 
             //Check contains of QRID_QRName
-            int QRID = -1;
+            int QRID;
             if (Int32.TryParse(QRID_QRName, out QRID)){
             
                 //QRID_QRName contain id
@@ -714,6 +785,7 @@ namespace Server
             
                 //QRID_QRName contain name
                 //Check is xml file contain Name
+                QRID = -1;
                 foreach (XmlNode xmlNode in xmlEl.ChildNodes){
                     if (xmlNode.Attributes[1].Value == QRID_QRName){
                         if (!Int32.TryParse(xmlNode.Attributes[0].Value, out QRID)){
