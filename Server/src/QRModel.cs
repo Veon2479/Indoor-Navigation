@@ -290,7 +290,7 @@ namespace Server
             {
                 return (int)AddQRRecordErrorCode.NAME_OCCUPIED;
             }
-            if (Int32.TryParse(QRName, out i)){
+            if (!(!Int32.TryParse(QRName, out i) && QRName != null && QRName != "" )){
                 return (int)AddQRRecordErrorCode.INCORRECT_PARAMETER;
             }
 
