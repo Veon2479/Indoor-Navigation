@@ -38,9 +38,16 @@ namespace Server
         static int WidthBorder;
         static int HeightBorder;
 
+        static string SettingsFilename = "ServerSettings.xml";
+
+        static string MapImageLocalDir = "MapImages";
+        static string MapImageLocalFilename = "MapImage1";
+        static string MapImageLocalPath;
+
+        internal static Bitmap bitmap;
         static readonly Color MapFrameColor = Color.Black;
         static readonly SolidBrush brush = new SolidBrush(MapFrameColor);
-        static readonly Pen pen = new Pen(MapFrameColor, 2)
+        internal static readonly Pen pen = new Pen(MapFrameColor, 2)
         {
             DashStyle = DashStyle.Dash
         };
