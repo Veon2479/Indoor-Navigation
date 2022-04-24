@@ -26,7 +26,7 @@ namespace Server
         private string _xmlFileName = "";
 
         //Directory that contains xml file and QR codes to work with
-        private string _workDir = "";
+        private string _workQRDir = "";
 
         //Default directory that contais xml file and QR codes
         protected const string _defaultPrivateDir = "DefaultQRCode";
@@ -69,7 +69,7 @@ namespace Server
                 {
                     _xmlFileName = _defaultDir + "/" + _defaultPrivateDir + "/" + _defaultName;
                 }
-                _workDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.'));
+                _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.'));
 
                 //Change xml document to default
                 UseDefaultXmlDoc();
@@ -417,9 +417,29 @@ namespace Server
 
         public enum GenerateQRCodeErrorCode{
             CORRUPTED_FILE = -1,
-            CODEC_NOT_FOUND = -2
+            CODEC_NOT_FOUND = -2,
+            GENERATE_QR_ERROR = -3,
+            WRITE_FILE_ERROR = -4
         }
-        public int GenerageQRCode(string QRID_QRName)
+        /// <summary>
+        ///     Generate QR according recived QRID or QRName and dafault data
+        /// </summary>
+        /// <param name="QRID_QRName">ID or Name of QR record in xml file</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
+        ///     <item>-2 (CODEC_NOT_FOUND): Cannot find codec to convert to jpeg</item>
+        ///     <item>-3 (GENERATE_QR_ERROR): Error in "using QRCoder" or xml incoming data</item>
+        ///     <item>-4 (WRITE_FILE_ERROR): Error in writing file (no such directory, can't open, 
+        ///     invalid name, can't write to file, smth with bitmap or encoding... )</item>
+        ///     </list>
+        /// </returns>
+        public int GenerateQR(string QRID_QRName)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
@@ -443,14 +463,20 @@ namespace Server
                             xmlNode.ChildNodes[1].InnerText;
 
             //Create QR code file name
-            string QRFileName = _workDir + "/" + xmlNode.Attributes[1].Value + ".jpeg";
+            string QRFileName = _workQRDir + "/" + xmlNode.Attributes[1].Value + ".jpeg";
 
             //cdr - coder
-            //Generate QR code
-            QRCodeGenerator cdrQRCodeGen = new QRCodeGenerator();
-            QRCodeData cdrQRData = cdrQRCodeGen.CreateQrCode(QRData, QRCodeGenerator.ECCLevel.L, true);
-            QRCode cdrQRCode = new QRCode(cdrQRData);
-            Bitmap QRBmp = cdrQRCode.GetGraphic(_pixelsPerModule);
+            Bitmap QRBmp;
+            try{
+    
+                //Generate QR code
+                QRCodeGenerator cdrQRCodeGen = new QRCodeGenerator();
+                QRCodeData cdrQRData = cdrQRCodeGen.CreateQrCode(QRData, QRCodeGenerator.ECCLevel.L, true);
+                QRCode cdrQRCode = new QRCode(cdrQRData);
+                QRBmp = cdrQRCode.GetGraphic(_pixelsPerModule);
+            }catch{
+                return (int)GenerateQRCodeErrorCode.GENERATE_QR_ERROR;
+            }
 
             //Finding jpeg codec info
             ImageCodecInfo[] imgsCodecInfo = ImageCodecInfo.GetImageEncoders(); 
@@ -466,11 +492,16 @@ namespace Server
                 return (int)GenerateQRCodeErrorCode.CODEC_NOT_FOUND;
             }
 
+            try{
+
             //Save Bmp as jpeg to file
-            System.Drawing.Imaging.Encoder QREncoder = System.Drawing.Imaging.Encoder.Quality;
-            EncoderParameters QREncoderParameters = new EncoderParameters(1);
-            QREncoderParameters.Param[0] = new EncoderParameter(QREncoder, 25L);
-            QRBmp.Save(QRFileName, imgsCodecInfo[0], QREncoderParameters);
+                System.Drawing.Imaging.Encoder QREncoder = System.Drawing.Imaging.Encoder.Quality;
+                EncoderParameters QREncoderParameters = new EncoderParameters(1);
+                QREncoderParameters.Param[0] = new EncoderParameter(QREncoder, 25L);
+                QRBmp.Save(QRFileName, imgsCodecInfo[0], QREncoderParameters);
+            }catch{
+                return (int)GenerateQRCodeErrorCode.WRITE_FILE_ERROR;
+            }
             return 0;
         }
 
@@ -630,8 +661,8 @@ namespace Server
                 {
                     Directory.CreateDirectory(_defaultDir);
                 }
-                if (!Directory.Exists(_workDir)){
-                    Directory.CreateDirectory(_workDir);
+                if (!Directory.Exists(_workQRDir)){
+                    Directory.CreateDirectory(_workQRDir);
                 }
 
                 //Create and save default file if it cannot be reads
@@ -650,6 +681,22 @@ namespace Server
             QRID_INCORRECT = -2,
             NAME_NOT_FOUND = -3
         }
+        /// <summary>
+        ///     Check is QRID_QRName ID or Name that exest in xml file
+        /// </summary>
+        /// <param name="QRID_QRName">>ID or Name of QR record in xml file</param>
+        /// <param name="xmlDoc">Open xml file to work with</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - ID of element in xml file (no errors), else - error
+        ///             </term>
+        ///         </listheader>
+        ///         <item>-2 (QRID_INCORRECT): No this ID in xml file</item>
+        ///         <item>-3 (NAME_NOT_FOUD): No this Name in xml file</item>
+        ///     </list>
+        /// </returns>
         private int CheckQRID_QRName(string QRID_QRName, XmlDocument xmlDoc)
         {
             XmlElement xmlEl = xmlDoc.DocumentElement;
