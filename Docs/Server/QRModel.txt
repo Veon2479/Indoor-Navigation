@@ -81,6 +81,7 @@ Public:
 		string xmlFileName = "" - Имя xml файла, с которым нужно вести работу
 	Возвращаемые значения:
 		То, что возвращает конструктор
+		Exception("Incorrect file name"): Неверное имя файла
 		Exception("Incorrect default file or file was corrupted"): Не удаётся открыть стандартный файл, либо он был повреждён
 		Exception("Incorrect file or file was corrupted"): Не удаётся открыть файл, либо он был повреждён
 ----------------------------------------------------
