@@ -319,6 +319,16 @@ namespace Server
             try
             {
                 List<byte> MapInBytes = new List<byte>(sizeof(int) * 4 + sizeof(double));
+
+                int point1 = MapInfo.PointX1;
+                int point2 = MapInfo.PointX2;
+                MapInfo.PointX1 = Math.Min(point1, point2);
+                MapInfo.PointX2 = Math.Max(point1, point2);
+                point1 = MapInfo.PointY1;
+                point2 = MapInfo.PointY2;
+                MapInfo.PointY1 = Math.Min(point1, point2);
+                MapInfo.PointY2 = Math.Max(point1, point2);
+
                 MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.PointX1));
                 MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.PointX2));
                 MapInBytes.AddRange(BitConverter.GetBytes(MapInfo.PointY1));
