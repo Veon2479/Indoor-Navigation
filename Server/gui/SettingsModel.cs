@@ -379,7 +379,7 @@ namespace Server
             return point;
         }
 
-        public static void CheckSaving(TabControl tabControl)
+        public static int CheckSaving(TabControl tabControl)
         {
             if (tabControl.SelectedIndex != 0)
             {
@@ -393,7 +393,9 @@ namespace Server
                             != MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY)
                         {
                             tabControl.SelectedIndex = 0;
+                            return 0;
                         }
+                        return MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY;
                     }
                     else
                     {
@@ -401,6 +403,7 @@ namespace Server
                     }
                 }
             }
+            return 0;
         }
 
         //  display message according to message or error code
