@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonStop = findViewById(R.id.button2);
+        buttonStop = findViewById(R.id.button3);
         buttonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buttonQR = findViewById(R.id.button3);
+        buttonQR = findViewById(R.id.button2);
         buttonQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
