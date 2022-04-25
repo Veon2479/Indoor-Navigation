@@ -59,7 +59,7 @@ namespace Server
             tbCoordinateY1.Text = MapInfo.PointY1.ToString();
             tbCoordinateY2.Text = MapInfo.PointY2.ToString();
         }
-      
+
         // downloading map image from file, preparing controls for work
         private void btnDownloadImage_Click(object sender, EventArgs e)
         {
@@ -82,7 +82,7 @@ namespace Server
                 {
                     MapInfo.isMapChanged = false;
                 }
-                else if(msg == SettingsModel.MESSAGE.DOWNLOAD_DEFOULT_SETTINGS)
+                else if (msg == SettingsModel.MESSAGE.DOWNLOAD_DEFOULT_SETTINGS)
                 {
                     MapInfo.isMapChanged = true;
                 }
@@ -146,9 +146,9 @@ namespace Server
 
         private void tbDoubleValue_KeyPress(object sender, KeyPressEventArgs e)
         {
-            TextBox tb = (TextBox)sender;  
-            if (!char.IsNumber(e.KeyChar) 
-                && !char.IsDigit(e.KeyChar) 
+            TextBox tb = (TextBox)sender;
+            if (!char.IsNumber(e.KeyChar)
+                && !char.IsDigit(e.KeyChar)
                 && e.KeyChar != Convert.ToChar(8)
                 && (e.KeyChar == '.' && (tb.Text.Contains("."))))
             {
@@ -160,8 +160,10 @@ namespace Server
         private void btnSave_Click(object sender, EventArgs e)
         {
             SettingsModel.MessageView(SettingsModel.SaveSettings());
+            UpdatePointText();
+            MapInfo.isMapChanged = false;
         }
-       
+
         // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
         {
@@ -265,7 +267,7 @@ namespace Server
             {
                 Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             }
-            
+
             //select in QR map
             else if (selectedPoint.QRID != null)
                 Result = QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
@@ -276,7 +278,7 @@ namespace Server
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
             string Result = "The point is not selected";
-            
+
             //select in list view
             if (selectedItem != null)
             {
@@ -284,7 +286,7 @@ namespace Server
             }
 
             //select in QR map
-            else if (selectedPoint.QRID!= null)
+            else if (selectedPoint.QRID != null)
                 Result = QRLocation.DeleteQR(selectedPoint.QRID, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
         }
@@ -367,7 +369,7 @@ namespace Server
         {
             //check hitting
             selectedPoint = QRLocation.HitPoint(e.X, e.Y);
-            
+
             //update text boxes
             tbQRID.Text = selectedPoint.QRID;
             tbQRName.Text = selectedPoint.QRName;
