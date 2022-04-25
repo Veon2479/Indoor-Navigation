@@ -481,7 +481,7 @@ namespace Server
                             xmlNode.ChildNodes[0].InnerText + "\n" + 
                             xmlNode.ChildNodes[1].InnerText;
 
-            //Create QR code file nam
+            //Create QR code file name
             string QRFileName = _workQRDir + "\\" + xmlNode.Attributes[1].Value + ".jpeg";
 
             //cdr - coder
