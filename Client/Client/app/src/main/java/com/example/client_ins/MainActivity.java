@@ -1,14 +1,23 @@
 package com.example.client_ins;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.budiyev.android.codescanner.CodeScanner;
+import com.budiyev.android.codescanner.CodeScannerView;
+import com.budiyev.android.codescanner.DecodeCallback;
+import com.google.zxing.Result;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button button1;
     Button button2;
+    Button button3;
 
     EditText editText1;
     EditText editText2;
@@ -30,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle arguments = getIntent().getExtras();
         setContentView(R.layout.activity_main);
-
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
@@ -40,25 +50,12 @@ public class MainActivity extends AppCompatActivity {
         Engine engine = new Engine(getApplicationContext());
         editText1 = findViewById(R.id.editTextTextPersonName1);
         editText2 = findViewById(R.id.editTextTextPersonName2);
-
+        if(arguments!=null) {
+            String qrcode = arguments.getString("1");
+            editText1.setText(qrcode);
+        }
         //editText1.getText(); //взять текст из первой строки
         //editText2.getText(); //взять текст из второй строки
-
-        button1 = findViewById(R.id.button);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //add method for first button
-            }
-        });
-
-        button2 = findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //add method for second button
-            }
-        });
 
         x = engine.Crd1;
         y = engine.Crd2;
@@ -68,6 +65,35 @@ public class MainActivity extends AppCompatActivity {
         text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
         MainActivity.textScroll.append("Log ended!"+"\n");
 
+        button1 = findViewById(R.id.button);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                    //add method for first button
+            }
+        });
+
+        button2 = findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //add method for second button
+                Intent intent = new Intent(getApplicationContext(), MainActivity2.class);
+                startActivity(intent);
+            }
+        });
+
+        button3 = findViewById(R.id.button3);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //add method for third button
+            }
+        });
+
+
         //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
     }
+
 }
