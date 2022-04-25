@@ -23,6 +23,7 @@ public class Engine {
 
     public ClientMath clientMath;
     public Thread mathThread;
+    public  DataSender dataSender;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Engine(Context context)
@@ -87,9 +88,7 @@ public class Engine {
             System.out.println("Registration was successful");
 
 
-//            DataSender dataSender = new DataSender(this);
-//            Thread udpSender = new Thread(dataSender);
-//            udpSender.start();
+            dataSender.Enable();
       
 
             //create 2 streams - first to compute coordinates
