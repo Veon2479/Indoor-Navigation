@@ -18,7 +18,7 @@ namespace Server
         private struct UserData
         {
             public int ID;
-            public int x, y;
+            public float x, y;
         }
         // coordinates in meters
         internal struct RealUserData
@@ -55,9 +55,9 @@ namespace Server
                 {
                     int count = Server.userModel.userModelTempStorage[i].Count;
                     userData.ID = i;
-                    userData.x = Convert.ToInt32(Server.userModel.userModelTempStorage[i].AccumData[count - 1].X
+                    userData.x = (float)(Server.userModel.userModelTempStorage[i].AccumData[count - 1].X
                         / MapInfo.SizeCoefficient + MapInfo.PointX1);
-                    userData.y = Convert.ToInt32(Server.userModel.userModelTempStorage[i].AccumData[count - 1].Y
+                    userData.y = (float)(Server.userModel.userModelTempStorage[i].AccumData[count - 1].Y
                         / MapInfo.SizeCoefficient + MapInfo.PointY1);
                     UserList.Add(userData);
                 }
