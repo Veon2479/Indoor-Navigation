@@ -187,16 +187,16 @@ namespace Server
         }
 
         //draw QR point on QR map
-        public static void DrawQRPoint(PictureBox pb, Color color, double x, double y)
+        public static void DrawQRPoint(PictureBox pb, Color color, double xMeters, double yMeters)
         {
             //pb.Image = (Bitmap)QRMap.Clone();
             if (QRMap == null)
                 return;
 
             Graphics g = Graphics.FromImage(pb.Image);
-            g.FillEllipse(new SolidBrush(color), (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
+            g.FillEllipse(new SolidBrush(color), (float)((xMeters / MapInfo.SizeCoefficient) + MapInfo.PointX1 - QRPointRadius), (float)(yMeters / MapInfo.SizeCoefficient) + MapInfo.PointY1 - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
             Pen pen = new Pen(Color.Black, 1);
-            g.DrawEllipse(pen, (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
+            g.DrawEllipse(pen, (float)((xMeters / MapInfo.SizeCoefficient) + MapInfo.PointX1 - QRPointRadius), (float)(yMeters / MapInfo.SizeCoefficient) + MapInfo.PointY1 - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
             QRMap = (Bitmap)pb.Image.Clone();
             pb.Image = QRMap;
         }
@@ -226,9 +226,11 @@ namespace Server
             {
                 foreach (var point in content)
                 {
+                    //meters 
                     double xCircle = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
                     double yCircle = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
-                    if (Math.Pow((X - xCircle), 2) + Math.Pow((Y - yCircle), 2) <= Math.Pow(QRPointRadius, 2))
+
+                    if (Math.Pow(((X - MapInfo.PointX1) * MapInfo.SizeCoefficient - xCircle), 2) + Math.Pow(((Y - MapInfo.PointY1) * MapInfo.SizeCoefficient - yCircle), 2) <= Math.Pow(QRPointRadius * MapInfo.SizeCoefficient, 2))
                     {
                         return point;
                     }

@@ -13,7 +13,7 @@ namespace Server
 
         internal static int UPDATE_ONLINE_VIEW_INTERVAL 
             = int.Parse(ConfigurationManager.AppSettings.Get("UPDATE_ONLINE_VIEW_INTERVAL"));
-        const int USER_POINT_SIZE = 4;
+        const int USER_POINT_SIZE = 6;
         // coordinates in pixels
         private struct UserData
         {
