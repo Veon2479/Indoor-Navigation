@@ -1,7 +1,9 @@
 package com.example.client_ins;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
 
 import android.app.Service;
 import android.content.Context;
@@ -16,6 +18,8 @@ import android.widget.TextView;
 import static com.example.client_ins.Tools.*;
 
 
+
+
 public class MainActivity extends AppCompatActivity {
 
     TextView text1;
@@ -23,8 +27,10 @@ public class MainActivity extends AppCompatActivity {
     TextView text3;
     public static TextView textScroll;
 
+  
     Button buttonStart;
     Button buttonStop;
+    Button buttonQR;
 
     EditText editTextQrID;
     EditText editTextServerAddr;
@@ -38,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle arguments = getIntent().getExtras();
         setContentView(R.layout.activity_main);
 
         Engine.setContext(getApplicationContext());
@@ -56,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         textScroll = findViewById(R.id.textScroll);
       
         textScroll.setText("\rLog started!\r\n");
+
   
         editTextQrID = findViewById(R.id.editTextTextPersonName1);
         editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
@@ -88,12 +96,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 engine.stopTracking();
                 //add method for second button
+               
             }
         });
 
-        x = engine.Crd1;
-        y = engine.Crd2;
-
+        buttonQR = findViewById(R.id.button3);
+        buttonQR.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //add method for third button
+                Intent intent = new Intent(getApplicationContext(), MainActivity2.class);
+                startActivity(intent);
+            }
+        });
 
         text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
         text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
@@ -123,4 +138,5 @@ public class MainActivity extends AppCompatActivity {
 
         countDownTimer.start();
     }
+
 }
