@@ -58,6 +58,10 @@ namespace Server
         {
             _xmlFileName = xmlFileName;
             if (_xmlFileName != ""){
+                string ext = xmlFileName.Remove(0, xmlFileName.LastIndexOf(".")+1);
+                if (ext != "xml"){
+                    throw new Exception ("Incorrect file name");
+                }
                 _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.')) + "_" + _defaultQRCodeDir;
             }
             XmlDocument xmlDocument = new XmlDocument();
