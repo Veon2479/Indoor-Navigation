@@ -161,9 +161,7 @@ namespace Server
         {
             SettingsModel.MessageView(SettingsModel.SaveSettings());
         }
-        
        
-
         // save select point 
         private void pbMapImage_MouseDown(object sender, MouseEventArgs e)
         {
@@ -184,6 +182,9 @@ namespace Server
             SettingsModel.CheckSaving(tcMain);
         }
 
+        /*
+         * Management tab
+         */
 
         //start the server
         private void btnStart_Click(object sender, EventArgs e)
@@ -223,6 +224,10 @@ namespace Server
             ServerManage.UpdateOnlineUsersView(ref lvOnline, Server.userIDModel);
         }
 
+        /*
+         * QR location tab
+         */
+
         //open QR config file
         private void btnOpenQRConf_Click(object sender, EventArgs e)
         {
@@ -248,17 +253,20 @@ namespace Server
                 QRLocation.DrawQRPoint(pbQRLocation, Color.Green, int.Parse(tbQRx.Text), int.Parse(tbQRy.Text));
                 QRLocation.adding = false;
             }
-
         }
 
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
             string Result = "The point is not selected";
-            if (selectedItem != null)
+
+            //select in list view
+            if (selectedItem != null && selectedItem.Count > 0)
             {
                 Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             }
+            
+            //select in QR map
             else if (selectedPoint.QRID != null)
                 Result = QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
@@ -268,10 +276,14 @@ namespace Server
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
             string Result = "The point is not selected";
+            
+            //select in list view
             if (selectedItem != null)
             {
                 Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
             }
+
+            //select in QR map
             else if (selectedPoint.QRID!= null)
                 Result = QRLocation.DeleteQR(selectedPoint.QRID, ref lvQRList, pbQRLocation);
             tbError.Text = Result;
@@ -280,7 +292,6 @@ namespace Server
         //on select item in QR list
         ListView.SelectedListViewItemCollection selectedItem = null;
         QRModel.QRModelXmlContent selectedPoint = new QRModel.QRModelXmlContent();
-
         private void lvQRList_SelectedIndexChanged(object sender, EventArgs e)
         {
             selectedItem = lvQRList.SelectedItems.Count > 0 ? lvQRList.SelectedItems : null;
@@ -291,6 +302,7 @@ namespace Server
                 tbQRName.Text = selectedItem[0].SubItems[1].Text;
                 tbQRx.Text = selectedItem[0].SubItems[2].Text;
                 tbQRy.Text = selectedItem[0].SubItems[3].Text;
+                QRLocation.ShowQRImg(selectedItem[0].Text, pbQR);
             }
         }
 
@@ -351,20 +363,17 @@ namespace Server
         {
             //check hitting
             selectedPoint = QRLocation.HitPoint(e.X, e.Y);
+            
+            //update text boxes
             tbQRID.Text = selectedPoint.QRID;
             tbQRName.Text = selectedPoint.QRName;
             tbQRx.Text = selectedPoint.X;
             tbQRy.Text = selectedPoint.Y;
+
             if (selectedPoint.QRID != null)
             {
                 //show tip, select point
-                QRLocation.PaintQRMap(pbQRLocation);
-                string content = $"QR ID: {selectedPoint.QRID}\nQR Name: {selectedPoint.QRName}\nX: {selectedPoint.X}\nY: {selectedPoint.Y}";
-                ttQR.SetToolTip(pbQRLocation, content);
-                double x = double.Parse(selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
-                double y = double.Parse(selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
-                QRLocation.DrawQRPoint(pbQRLocation, Color.Orange, x, y);
-                QRLocation.selecting = true;
+                QRLocation.SelectPoint(selectedPoint, ttQR, pbQRLocation, pbQR);
             }
             else
             {

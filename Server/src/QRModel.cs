@@ -23,7 +23,7 @@ namespace Server
         }
 
         //Name of xml file to work with
-        private string _xmlFileName = "";
+        internal string _xmlFileName { get; private set; } = "";
 
         //Directory that contains xml file and QR codes to work with
         private string _workQRDir = "";
@@ -44,7 +44,7 @@ namespace Server
         protected string _defaultQRCodeData = "Default data";
 
         //Amount of pixels on one module
-        protected int _pixelsPerModule = 1;
+        protected int _pixelsPerModule = 6;
 
         //List that contain exicting QRID
         List<int> _QRIDExist = new List<int>();
@@ -85,19 +85,19 @@ namespace Server
                     _xmlFileName = _xmlFileName.Insert(insertInd+1, _defaultDir + "/" + onlyName + "/");
                     _workQRDir = _defaultDir + "/" + onlyName + "/" + onlyName  + "_" + _defaultQRCodeDir;
                 }
-    
-                //Change xml document to default or create new
-                UseDefaultXmlDoc();
-
-                //Check chosen
-                if (CheckXmlFileContent(ref xmlDocument) < 0)
-                {
-                    throw new Exception("Incorrect default file or file was corrupted");
-                }
             }
             else if (iResult < 0)
             {
                 throw new Exception("Incorrect file or file was corrupted");
+            }
+
+            //Change xml document to default or create new
+            CreateNessaryFiles();
+
+            //Check chosen
+            if (CheckXmlFileContent(ref xmlDocument) < 0)
+            {
+                throw new Exception("Incorrect default file or file was corrupted");
             }
         }
 
@@ -290,7 +290,7 @@ namespace Server
             {
                 return (int)AddQRRecordErrorCode.NAME_OCCUPIED;
             }
-            if (Int32.TryParse(QRName, out i)){
+            if (!(!Int32.TryParse(QRName, out i) && QRName != null && QRName != "" )){
                 return (int)AddQRRecordErrorCode.INCORRECT_PARAMETER;
             }
 
@@ -473,8 +473,8 @@ namespace Server
             XmlNode xmlNode = xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)];
 
             //Create QR code data
-            string QRData = _defaultQRCodeData + "_" +
-                            xmlNode.ChildNodes[0].InnerText + "_" + 
+            string QRData = _defaultQRCodeData + "\n" +
+                            xmlNode.ChildNodes[0].InnerText + "\n" + 
                             xmlNode.ChildNodes[1].InnerText;
 
             //Create QR code file name
@@ -715,27 +715,28 @@ namespace Server
         ///         </listheader>
         ///     </list>
         /// </returns>
-        private int UseDefaultXmlDoc()
+        private int CreateNessaryFiles()
         {
             XmlDocument xmlDoc = new XmlDocument();
 
-            //Change xmlFile name to default
+            //Check is default directory exist
+            if (!Directory.Exists(_defaultDir))
+            {
+                Directory.CreateDirectory(_defaultDir);
+            }
+            if (!Directory.Exists(_workQRDir)){
+                Directory.CreateDirectory(_workQRDir);
+            }
+
+            //Try to open _xmlFileName
             try
             {
                 //Try to load default file
                 xmlDoc.Load(_xmlFileName);
+                
             }
             catch
             {
-
-                //Check is default directory exist
-                if (!Directory.Exists(_defaultDir))
-                {
-                    Directory.CreateDirectory(_defaultDir);
-                }
-                if (!Directory.Exists(_workQRDir)){
-                    Directory.CreateDirectory(_workQRDir);
-                }
 
                 //Create and save default file if it cannot be reads
                 XmlDeclaration XmlDec = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);

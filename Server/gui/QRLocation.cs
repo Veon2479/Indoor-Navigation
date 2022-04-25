@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 
 namespace Server
 {
@@ -55,6 +56,14 @@ namespace Server
             //update view
             QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
             QRLocation.PaintQRMap(pb);
+
+            //update QR Images
+            QRModel.QRModelXmlContent[] contents = null;
+            Server.qrModel.GetQRRecordList(ref contents);
+            foreach (var item in contents)
+            {
+                int Result = Server.qrModel.GenerateQR(item.QRID);
+            }
         }
 
         //add QR to config file
@@ -70,25 +79,10 @@ namespace Server
             if (addResult == 0)
             {
                 QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
-            }
 
-            /*switch ((QRModel.AddQRRecordErrorCode)addResult)
-            {
-                case QRModel.AddQRRecordErrorCode.INCORRECT_PARAMETER:
-                    return "Incorrect QR ID or QR X or QR Y";
-                case QRModel.AddQRRecordErrorCode.CORRUPTED_FILE:
-                    return "Xml file not exists or was corrupted";
-                case QRModel.AddQRRecordErrorCode.QRID_INCORRECT:
-                    return "QR ID incorrect (QRID < 0) or alredy exist";
-                case QRModel.AddQRRecordErrorCode.NAME_OCCUPIED:
-                    return " Name of QR record already occupied";
-                default:
-                    {
-                        //update view
-                        QRLocation.UpdateQRView(ref view, Server.qrModel);
-                        return "QR added";
-                    }
-            }*/
+                //generate QR file
+                Server.qrModel.GenerateQR(QRID);
+            }
             return addResult;
         }
 
@@ -99,6 +93,9 @@ namespace Server
                 return "The server is running. File modification is not possible";
 
             //edit QR in a file
+            string OldQRFileName = "";
+            int Result = Server.qrModel.GetQRImgName(oldQRID, ref OldQRFileName);
+
             int editResult = Server.qrModel.ChangeQRRecord(oldQRID, QRID, QRName, x, y);
 
             switch ((QRModel.ChangeQRRecordErrorCode)editResult)
@@ -117,6 +114,16 @@ namespace Server
                     {
                         //update view
                         QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
+
+                        //delete old QR file
+                        if (Result >= 0)
+                        {
+                            File.Delete(OldQRFileName);
+                        }
+
+                        //generate new QR file
+                        Server.qrModel.GenerateQR(QRID);                        
+
                         return "QR edited";
                     }
             }
@@ -127,6 +134,9 @@ namespace Server
         {
             if (Server.Run)
                 return "The server is running. File modification is not possible";
+
+            string OldQRFileName = "";
+            int Result = Server.qrModel.GetQRImgName(QRID, ref OldQRFileName);
 
             int delResult = Server.qrModel.DeleteQRRecord(QRID);
 
@@ -142,6 +152,13 @@ namespace Server
                     {
                         //update view
                         QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
+
+                        //delete QR file
+                        if (Result >= 0)
+                        {
+                            File.Delete(OldQRFileName);
+                        }
+
                         return "QR deleted";
                     }
             }
@@ -173,6 +190,9 @@ namespace Server
         public static void DrawQRPoint(PictureBox pb, Color color, double x, double y)
         {
             //pb.Image = (Bitmap)QRMap.Clone();
+            if (QRMap == null)
+                return;
+
             Graphics g = Graphics.FromImage(pb.Image);
             g.FillEllipse(new SolidBrush(color), (float)x - QRPointRadius, (float)y - QRPointRadius, 2 * QRPointRadius, 2 * QRPointRadius);
             Pen pen = new Pen(Color.Black, 1);
@@ -216,6 +236,46 @@ namespace Server
             }
             QRModel.QRModelXmlContent ret = new QRModel.QRModelXmlContent();
             return ret;
+        }
+
+        //select point on QR map
+        public static void SelectPoint(QRModel.QRModelXmlContent point, ToolTip ttQR, PictureBox pbMap, PictureBox pbQR)
+        {
+            //show tip, select point
+            QRLocation.PaintQRMap(pbMap);
+            string content = $"QR ID: {point.QRID}\nQR Name: {point.QRName}\nX: {point.X}\nY: {point.Y}";
+            ttQR.SetToolTip(pbMap, content);
+            double x = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);
+            double y = double.Parse(point.Y, System.Globalization.CultureInfo.InvariantCulture);
+            QRLocation.DrawQRPoint(pbMap, Color.Orange, x, y);
+            QRLocation.selecting = true;
+            ShowQRImg(point.QRID, pbQR);
+        }
+
+        //show selected QR
+        public static void ShowQRImg(string QRID, PictureBox pbQR)
+        {
+            string QRFileName = "";
+            int Result = Server.qrModel.GetQRImgName(QRID, ref QRFileName);
+            switch ((QRModel.GetQRImgNameErrorCode)Result)
+            {
+                case QRModel.GetQRImgNameErrorCode.CORRUPTED_FILE:
+                case QRModel.GetQRImgNameErrorCode.QRID_INCORRECT:
+                case QRModel.GetQRImgNameErrorCode.NAME_NOT_FOUND:
+                case QRModel.GetQRImgNameErrorCode.FILE_NOT_FOUND:
+                    pbQR.Image = null;
+                    return;
+                default:
+                    {
+                        using (FileStream fs = File.OpenRead(QRFileName))
+                        {
+                            Bitmap QRMap = (Bitmap)new Bitmap(fs).Clone();
+                            fs.Close();
+                            pbQR.Image = QRMap;
+                        }
+                        return;
+                    }
+            }
         }
     }
 }

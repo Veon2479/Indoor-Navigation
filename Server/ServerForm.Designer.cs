@@ -98,6 +98,7 @@ namespace Server
             this.ttQR = new System.Windows.Forms.ToolTip(this.components);
             this.tmrOnlineViewUpdate = new System.Windows.Forms.Timer(this.components);
             this.ttOnlineUser = new System.Windows.Forms.ToolTip(this.components);
+            this.pbQR = new System.Windows.Forms.PictureBox();
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -119,6 +120,7 @@ namespace Server
             this.tpOnline.SuspendLayout();
             this.pOnline.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbOnline)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbQR)).BeginInit();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -607,6 +609,7 @@ namespace Server
             // 
             // pnlQRLocation
             // 
+            this.pnlQRLocation.Controls.Add(this.pbQR);
             this.pnlQRLocation.Controls.Add(this.lblQRy);
             this.pnlQRLocation.Controls.Add(this.lblQRx);
             this.pnlQRLocation.Controls.Add(this.lblQRName);
@@ -808,6 +811,15 @@ namespace Server
             // 
             this.tmrOnlineViewUpdate.Interval = 1000;
             this.tmrOnlineViewUpdate.Tick += new System.EventHandler(this.tmrOnlineViewUpdate_Tick);
+            //
+            // pbQR
+            // 
+            this.pbQR.Location = new System.Drawing.Point(8, 431);
+            this.pbQR.Name = "pbQR";
+            this.pbQR.Size = new System.Drawing.Size(274, 274);
+            this.pbQR.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbQR.TabIndex = 13;
+            this.pbQR.TabStop = false;
             // 
             // frmServer
             // 
@@ -844,6 +856,7 @@ namespace Server
             this.tpOnline.ResumeLayout(false);
             this.pOnline.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbOnline)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbQR)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -918,6 +931,7 @@ namespace Server
         private System.Windows.Forms.PictureBox pbOnline;
         private System.Windows.Forms.Timer tmrOnlineViewUpdate;
         private System.Windows.Forms.ToolTip ttOnlineUser;
+        private System.Windows.Forms.PictureBox pbQR;
     }
 }
 

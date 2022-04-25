@@ -52,6 +52,7 @@ namespace Server
         {
             Server.LogMessage = log;
             Server.qrModel = new QRModel();
+            QRLocation.OpenQRConfig(Server.qrModel._xmlFileName, ref QRView, pb);
             QRLocation.UpdateQRView(Server.qrModel, ref QRView, pb);
         }
     }
