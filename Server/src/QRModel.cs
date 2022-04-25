@@ -514,6 +514,7 @@ namespace Server
                 EncoderParameters QREncoderParameters = new EncoderParameters(1);
                 QREncoderParameters.Param[0] = new EncoderParameter(QREncoder, 25L);
                 QRBmp.Save(QRFileName, imgsCodecInfo[0], QREncoderParameters);
+                 
             }catch{
                 return (int)GenerateQRCodeErrorCode.WRITE_FILE_ERROR;
             }

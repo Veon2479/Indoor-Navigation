@@ -76,7 +76,6 @@ namespace Server
                 int msg = SettingsModel.DownloadMap(pbMapImage, openFileDialog.FileName);
                 UnblockSettingsControls();
                 UpdatePointText();
-                MapInfo.SetDefoult();
                 UpdateRealValuesText();
                 tbAzimuth.Text = MapInfo.Azimuth.ToString("N12");
                 if (SettingsModel.MessageView(msg) == SettingsModel.MESSAGE.DOWNLOAD_USER_SETTINGS)
@@ -326,6 +325,24 @@ namespace Server
         private void tcMain_Selected(object sender, TabControlEventArgs e)
         {
             QRLocation.PaintQRMap(pbQRLocation);
+
+            if (e.TabPage == tpOnline)
+            {
+                tmrOnlineViewUpdate.Interval = OnlineView.UPDATE_ONLINE_VIEW_INTERVAL;
+                if (MapInfo.bitmap == null)
+                {
+                    return;
+                }
+                else
+                {
+                    OnlineView.DrawMap(pbOnline);
+                    tmrOnlineViewUpdate.Start();
+                }
+            }
+            else
+            {
+                tmrOnlineViewUpdate.Stop();
+            }
         }
 
         //add QR point
@@ -382,6 +399,23 @@ namespace Server
                     QRLocation.PaintQRMap(pbQRLocation);
                     QRLocation.selecting = false;
                 }
+            }
+        }
+
+        private void tmrOnlineViewUpdate_Tick(object sender, EventArgs e)
+        {
+            OnlineView.UpdateOnlineView(pbOnline);
+        }
+
+        private void pbOnline_MouseDown(object sender, MouseEventArgs e)
+        {
+            OnlineView.RealUserData uData = OnlineView.GetUserInfo(e.X, e.Y);
+            if (uData.ID > 0)
+            {
+                string uInfo = $"ID: {uData.ID}\n" +
+                    $"X:" + (uData.x).ToString("N3") + "\n" +
+                    $"Y:" + (uData.y).ToString("N3");
+                ttOnlineUser.SetToolTip(pbOnline, uInfo);
             }
         }
     }
