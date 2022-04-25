@@ -58,6 +58,10 @@ namespace Server
         {
             _xmlFileName = xmlFileName;
             if (_xmlFileName != ""){
+                string ext = xmlFileName.Remove(0, xmlFileName.LastIndexOf(".")+1);
+                if (ext != "xml"){
+                    throw new Exception ("Incorrect file name");
+                }
                 _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.')) + "_" + _defaultQRCodeDir;
             }
             XmlDocument xmlDocument = new XmlDocument();
@@ -82,8 +86,8 @@ namespace Server
                     string onlyName = _xmlFileName.Remove(0, insertInd+1);
                     onlyName = onlyName.Remove(onlyName.LastIndexOf('.'));
 
-                    _xmlFileName = _xmlFileName.Insert(insertInd+1, _defaultDir + "/" + onlyName + "/");
-                    _workQRDir = _defaultDir + "/" + onlyName + "/" + onlyName  + "_" + _defaultQRCodeDir;
+                    _xmlFileName = _xmlFileName.Insert(insertInd+1, onlyName + "/");
+                    _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.')) + "_" + _defaultQRCodeDir;
                 }
             }
             else if (iResult < 0)
@@ -514,7 +518,6 @@ namespace Server
                 EncoderParameters QREncoderParameters = new EncoderParameters(1);
                 QREncoderParameters.Param[0] = new EncoderParameter(QREncoder, 25L);
                 QRBmp.Save(QRFileName, imgsCodecInfo[0], QREncoderParameters);
-                 
             }catch{
                 return (int)GenerateQRCodeErrorCode.WRITE_FILE_ERROR;
             }
