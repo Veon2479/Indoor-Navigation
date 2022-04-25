@@ -37,14 +37,6 @@ namespace Server
 
         static int WidthBorder;
         static int HeightBorder;
-
-        static string SettingsFilename = "ServerSettings.xml";
-
-        static string MapImageLocalDir = "MapImages";
-        static string MapImageLocalFilename = "MapImage1";
-        static string MapImageLocalPath;
-
-        internal static Bitmap bitmap;
         static readonly Color MapFrameColor = Color.Black;
         static readonly SolidBrush brush = new SolidBrush(MapFrameColor);
         internal static readonly Pen pen = new Pen(MapFrameColor, 2)
@@ -114,11 +106,12 @@ namespace Server
                     MapInfo.RealLength = Math.Abs(MapInfo.PointX1 - MapInfo.PointX2);
                     pictureBox.Image = MapInfo.bitmap;
                     SetDefaultPoints(pictureBox);
+                    MapInfo.SetDefoult();
                     returnMsg = MESSAGE.DOWNLOAD_DEFOULT_SETTINGS;
                 }
                 InitDrowSettings(pictureBox);
-                FramePointsView(pictureBox);
                 MapInfo.isDownloadMap = true;
+                FramePointsView(pictureBox);
                 return returnMsg;
             }
             catch (Exception e)

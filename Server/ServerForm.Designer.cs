@@ -89,14 +89,15 @@ namespace Server
             this.btnCreateQRConf = new System.Windows.Forms.Button();
             this.btnOpenQRConf = new System.Windows.Forms.Button();
             this.tbHeatMap = new System.Windows.Forms.TabPage();
+            this.tpOnline = new System.Windows.Forms.TabPage();
+            this.pOnline = new System.Windows.Forms.Panel();
+            this.pbOnline = new System.Windows.Forms.PictureBox();
             this.tmrListUpdate = new System.Windows.Forms.Timer(this.components);
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
             this.ttQR = new System.Windows.Forms.ToolTip(this.components);
-            this.tpOnline = new System.Windows.Forms.TabPage();
-            this.pOnline = new System.Windows.Forms.Panel();
-            this.pbOnline = new System.Windows.Forms.PictureBox();
             this.tmrOnlineViewUpdate = new System.Windows.Forms.Timer(this.components);
+            this.ttOnlineUser = new System.Windows.Forms.ToolTip(this.components);
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -126,7 +127,7 @@ namespace Server
             tbSettings.Controls.Add(this.pSettings);
             tbSettings.Location = new System.Drawing.Point(4, 22);
             tbSettings.Name = "tbSettings";
-            tbSettings.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            tbSettings.Padding = new System.Windows.Forms.Padding(3);
             tbSettings.Size = new System.Drawing.Size(1120, 680);
             tbSettings.TabIndex = 0;
             tbSettings.Text = "Settings";
@@ -139,7 +140,7 @@ namespace Server
             this.pImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pImage.Location = new System.Drawing.Point(228, 3);
             this.pImage.Name = "pImage";
-            this.pImage.Padding = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.pImage.Padding = new System.Windows.Forms.Padding(5);
             this.pImage.Size = new System.Drawing.Size(889, 674);
             this.pImage.TabIndex = 1;
             // 
@@ -184,7 +185,7 @@ namespace Server
             // tbAzimuth
             // 
             this.tbAzimuth.Location = new System.Drawing.Point(14, 257);
-            this.tbAzimuth.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbAzimuth.Margin = new System.Windows.Forms.Padding(2);
             this.tbAzimuth.Name = "tbAzimuth";
             this.tbAzimuth.Size = new System.Drawing.Size(97, 20);
             this.tbAzimuth.TabIndex = 25;
@@ -351,7 +352,7 @@ namespace Server
             this.tbManage.Controls.Add(this.panel1);
             this.tbManage.Location = new System.Drawing.Point(4, 22);
             this.tbManage.Name = "tbManage";
-            this.tbManage.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tbManage.Padding = new System.Windows.Forms.Padding(3);
             this.tbManage.Size = new System.Drawing.Size(1120, 680);
             this.tbManage.TabIndex = 1;
             this.tbManage.Text = "Management";
@@ -363,7 +364,7 @@ namespace Server
             this.tabControl1.Controls.Add(this.tbOnline);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(228, 3);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(2);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(889, 674);
@@ -373,9 +374,9 @@ namespace Server
             // 
             this.tbLog.Controls.Add(this.txtbLog);
             this.tbLog.Location = new System.Drawing.Point(4, 22);
-            this.tbLog.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbLog.Margin = new System.Windows.Forms.Padding(2);
             this.tbLog.Name = "tbLog";
-            this.tbLog.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbLog.Padding = new System.Windows.Forms.Padding(2);
             this.tbLog.Size = new System.Drawing.Size(881, 648);
             this.tbLog.TabIndex = 0;
             this.tbLog.Text = "Log";
@@ -386,7 +387,7 @@ namespace Server
             this.txtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtbLog.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.txtbLog.Location = new System.Drawing.Point(2, 2);
-            this.txtbLog.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtbLog.Margin = new System.Windows.Forms.Padding(2);
             this.txtbLog.Multiline = true;
             this.txtbLog.Name = "txtbLog";
             this.txtbLog.ReadOnly = true;
@@ -398,10 +399,10 @@ namespace Server
             // 
             this.tbOnline.Controls.Add(this.lvOnline);
             this.tbOnline.Location = new System.Drawing.Point(4, 22);
-            this.tbOnline.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbOnline.Margin = new System.Windows.Forms.Padding(2);
             this.tbOnline.Name = "tbOnline";
-            this.tbOnline.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tbOnline.Size = new System.Drawing.Size(883, 650);
+            this.tbOnline.Padding = new System.Windows.Forms.Padding(2);
+            this.tbOnline.Size = new System.Drawing.Size(881, 648);
             this.tbOnline.TabIndex = 1;
             this.tbOnline.Text = "Online";
             this.tbOnline.UseVisualStyleBackColor = true;
@@ -415,10 +416,10 @@ namespace Server
             this.lvOnline.GridLines = true;
             this.lvOnline.HideSelection = false;
             this.lvOnline.Location = new System.Drawing.Point(2, 2);
-            this.lvOnline.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lvOnline.Margin = new System.Windows.Forms.Padding(2);
             this.lvOnline.MultiSelect = false;
             this.lvOnline.Name = "lvOnline";
-            this.lvOnline.Size = new System.Drawing.Size(879, 646);
+            this.lvOnline.Size = new System.Drawing.Size(877, 644);
             this.lvOnline.TabIndex = 0;
             this.lvOnline.UseCompatibleStateImageBehavior = false;
             this.lvOnline.View = System.Windows.Forms.View.Details;
@@ -440,7 +441,7 @@ namespace Server
             this.panel1.Controls.Add(this.btnStart);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(3, 3);
-            this.panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(225, 674);
             this.panel1.TabIndex = 0;
@@ -448,7 +449,7 @@ namespace Server
             // btnFlush
             // 
             this.btnFlush.Location = new System.Drawing.Point(19, 84);
-            this.btnFlush.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnFlush.Margin = new System.Windows.Forms.Padding(2);
             this.btnFlush.Name = "btnFlush";
             this.btnFlush.Size = new System.Drawing.Size(185, 23);
             this.btnFlush.TabIndex = 2;
@@ -459,7 +460,7 @@ namespace Server
             // btnStop
             // 
             this.btnStop.Location = new System.Drawing.Point(19, 57);
-            this.btnStop.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnStop.Margin = new System.Windows.Forms.Padding(2);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(185, 23);
             this.btnStop.TabIndex = 1;
@@ -470,7 +471,7 @@ namespace Server
             // btnStart
             // 
             this.btnStart.Location = new System.Drawing.Point(19, 29);
-            this.btnStart.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnStart.Margin = new System.Windows.Forms.Padding(2);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(185, 23);
             this.btnStart.TabIndex = 0;
@@ -483,7 +484,7 @@ namespace Server
             this.tbQRLocation.Controls.Add(this.panel2);
             this.tbQRLocation.Controls.Add(this.pnlQRLocation);
             this.tbQRLocation.Location = new System.Drawing.Point(4, 22);
-            this.tbQRLocation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRLocation.Margin = new System.Windows.Forms.Padding(2);
             this.tbQRLocation.Name = "tbQRLocation";
             this.tbQRLocation.Size = new System.Drawing.Size(1120, 680);
             this.tbQRLocation.TabIndex = 3;
@@ -496,7 +497,7 @@ namespace Server
             this.panel2.Controls.Add(this.tcQRLocation);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(225, 0);
-            this.panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panel2.Margin = new System.Windows.Forms.Padding(2);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(895, 680);
             this.panel2.TabIndex = 2;
@@ -506,7 +507,7 @@ namespace Server
             this.tbError.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbError.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.tbError.Location = new System.Drawing.Point(0, 660);
-            this.tbError.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbError.Margin = new System.Windows.Forms.Padding(2);
             this.tbError.Name = "tbError";
             this.tbError.Size = new System.Drawing.Size(895, 20);
             this.tbError.TabIndex = 1;
@@ -517,7 +518,7 @@ namespace Server
             this.tcQRLocation.Controls.Add(this.tbQRList);
             this.tcQRLocation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcQRLocation.Location = new System.Drawing.Point(0, 0);
-            this.tcQRLocation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tcQRLocation.Margin = new System.Windows.Forms.Padding(2);
             this.tcQRLocation.Name = "tcQRLocation";
             this.tcQRLocation.SelectedIndex = 0;
             this.tcQRLocation.Size = new System.Drawing.Size(895, 680);
@@ -527,9 +528,9 @@ namespace Server
             // 
             this.tbQRMap.Controls.Add(this.pbQRLocation);
             this.tbQRMap.Location = new System.Drawing.Point(4, 22);
-            this.tbQRMap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRMap.Margin = new System.Windows.Forms.Padding(2);
             this.tbQRMap.Name = "tbQRMap";
-            this.tbQRMap.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRMap.Padding = new System.Windows.Forms.Padding(2);
             this.tbQRMap.Size = new System.Drawing.Size(887, 654);
             this.tbQRMap.TabIndex = 0;
             this.tbQRMap.Text = "Map";
@@ -540,7 +541,7 @@ namespace Server
             this.pbQRLocation.BackColor = System.Drawing.Color.DarkGray;
             this.pbQRLocation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbQRLocation.Location = new System.Drawing.Point(2, 2);
-            this.pbQRLocation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pbQRLocation.Margin = new System.Windows.Forms.Padding(2);
             this.pbQRLocation.Name = "pbQRLocation";
             this.pbQRLocation.Size = new System.Drawing.Size(883, 650);
             this.pbQRLocation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -555,10 +556,10 @@ namespace Server
             // 
             this.tbQRList.Controls.Add(this.lvQRList);
             this.tbQRList.Location = new System.Drawing.Point(4, 22);
-            this.tbQRList.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRList.Margin = new System.Windows.Forms.Padding(2);
             this.tbQRList.Name = "tbQRList";
-            this.tbQRList.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.tbQRList.Size = new System.Drawing.Size(889, 656);
+            this.tbQRList.Padding = new System.Windows.Forms.Padding(2);
+            this.tbQRList.Size = new System.Drawing.Size(887, 654);
             this.tbQRList.TabIndex = 1;
             this.tbQRList.Text = "QR List";
             this.tbQRList.UseVisualStyleBackColor = true;
@@ -576,9 +577,9 @@ namespace Server
             this.lvQRList.GridLines = true;
             this.lvQRList.HideSelection = false;
             this.lvQRList.Location = new System.Drawing.Point(2, 2);
-            this.lvQRList.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lvQRList.Margin = new System.Windows.Forms.Padding(2);
             this.lvQRList.Name = "lvQRList";
-            this.lvQRList.Size = new System.Drawing.Size(885, 652);
+            this.lvQRList.Size = new System.Drawing.Size(883, 650);
             this.lvQRList.TabIndex = 0;
             this.lvQRList.UseCompatibleStateImageBehavior = false;
             this.lvQRList.View = System.Windows.Forms.View.Details;
@@ -621,7 +622,7 @@ namespace Server
             this.pnlQRLocation.Controls.Add(this.btnOpenQRConf);
             this.pnlQRLocation.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlQRLocation.Location = new System.Drawing.Point(0, 0);
-            this.pnlQRLocation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnlQRLocation.Margin = new System.Windows.Forms.Padding(2);
             this.pnlQRLocation.Name = "pnlQRLocation";
             this.pnlQRLocation.Size = new System.Drawing.Size(225, 680);
             this.pnlQRLocation.TabIndex = 0;
@@ -669,7 +670,7 @@ namespace Server
             // tbQRName
             // 
             this.tbQRName.Location = new System.Drawing.Point(113, 102);
-            this.tbQRName.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRName.Margin = new System.Windows.Forms.Padding(2);
             this.tbQRName.Name = "tbQRName";
             this.tbQRName.Size = new System.Drawing.Size(91, 20);
             this.tbQRName.TabIndex = 8;
@@ -677,7 +678,7 @@ namespace Server
             // tbQRx
             // 
             this.tbQRx.Location = new System.Drawing.Point(18, 153);
-            this.tbQRx.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRx.Margin = new System.Windows.Forms.Padding(2);
             this.tbQRx.Name = "tbQRx";
             this.tbQRx.Size = new System.Drawing.Size(91, 20);
             this.tbQRx.TabIndex = 7;
@@ -685,7 +686,7 @@ namespace Server
             // tbQRy
             // 
             this.tbQRy.Location = new System.Drawing.Point(113, 153);
-            this.tbQRy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRy.Margin = new System.Windows.Forms.Padding(2);
             this.tbQRy.Name = "tbQRy";
             this.tbQRy.Size = new System.Drawing.Size(91, 20);
             this.tbQRy.TabIndex = 6;
@@ -693,7 +694,7 @@ namespace Server
             // tbQRID
             // 
             this.tbQRID.Location = new System.Drawing.Point(18, 102);
-            this.tbQRID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbQRID.Margin = new System.Windows.Forms.Padding(2);
             this.tbQRID.Name = "tbQRID";
             this.tbQRID.Size = new System.Drawing.Size(91, 20);
             this.tbQRID.TabIndex = 5;
@@ -701,7 +702,7 @@ namespace Server
             // btnDeleteQR
             // 
             this.btnDeleteQR.Location = new System.Drawing.Point(18, 247);
-            this.btnDeleteQR.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDeleteQR.Margin = new System.Windows.Forms.Padding(2);
             this.btnDeleteQR.Name = "btnDeleteQR";
             this.btnDeleteQR.Size = new System.Drawing.Size(185, 23);
             this.btnDeleteQR.TabIndex = 4;
@@ -712,7 +713,7 @@ namespace Server
             // btnEditQR
             // 
             this.btnEditQR.Location = new System.Drawing.Point(18, 219);
-            this.btnEditQR.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnEditQR.Margin = new System.Windows.Forms.Padding(2);
             this.btnEditQR.Name = "btnEditQR";
             this.btnEditQR.Size = new System.Drawing.Size(185, 23);
             this.btnEditQR.TabIndex = 3;
@@ -723,7 +724,7 @@ namespace Server
             // btnAddQR
             // 
             this.btnAddQR.Location = new System.Drawing.Point(18, 192);
-            this.btnAddQR.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnAddQR.Margin = new System.Windows.Forms.Padding(2);
             this.btnAddQR.Name = "btnAddQR";
             this.btnAddQR.Size = new System.Drawing.Size(185, 23);
             this.btnAddQR.TabIndex = 2;
@@ -734,7 +735,7 @@ namespace Server
             // btnCreateQRConf
             // 
             this.btnCreateQRConf.Location = new System.Drawing.Point(18, 48);
-            this.btnCreateQRConf.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCreateQRConf.Margin = new System.Windows.Forms.Padding(2);
             this.btnCreateQRConf.Name = "btnCreateQRConf";
             this.btnCreateQRConf.Size = new System.Drawing.Size(185, 23);
             this.btnCreateQRConf.TabIndex = 1;
@@ -745,7 +746,7 @@ namespace Server
             // btnOpenQRConf
             // 
             this.btnOpenQRConf.Location = new System.Drawing.Point(18, 20);
-            this.btnOpenQRConf.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnOpenQRConf.Margin = new System.Windows.Forms.Padding(2);
             this.btnOpenQRConf.Name = "btnOpenQRConf";
             this.btnOpenQRConf.Size = new System.Drawing.Size(185, 23);
             this.btnOpenQRConf.TabIndex = 0;
@@ -756,22 +757,12 @@ namespace Server
             // tbHeatMap
             // 
             this.tbHeatMap.Location = new System.Drawing.Point(4, 22);
-            this.tbHeatMap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbHeatMap.Margin = new System.Windows.Forms.Padding(2);
             this.tbHeatMap.Name = "tbHeatMap";
             this.tbHeatMap.Size = new System.Drawing.Size(1120, 680);
             this.tbHeatMap.TabIndex = 2;
             this.tbHeatMap.Text = "Heat Map";
             this.tbHeatMap.UseVisualStyleBackColor = true;
-            // 
-            // tmrListUpdate
-            // 
-            this.tmrListUpdate.Interval = 1000;
-            this.tmrListUpdate.Tick += new System.EventHandler(this.tmrListUpdate_Tick);
-            // 
-            // ttQR
-            // 
-            this.ttQR.AutomaticDelay = 0;
-            this.ttQR.ShowAlways = true;
             // 
             // tpOnline
             // 
@@ -785,6 +776,7 @@ namespace Server
             // 
             // pOnline
             // 
+            this.pOnline.BackColor = System.Drawing.Color.DarkGray;
             this.pOnline.Controls.Add(this.pbOnline);
             this.pOnline.Location = new System.Drawing.Point(125, 11);
             this.pOnline.Name = "pOnline";
@@ -800,6 +792,17 @@ namespace Server
             this.pbOnline.Size = new System.Drawing.Size(853, 650);
             this.pbOnline.TabIndex = 0;
             this.pbOnline.TabStop = false;
+            this.pbOnline.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbOnline_MouseDown);
+            // 
+            // tmrListUpdate
+            // 
+            this.tmrListUpdate.Interval = 1000;
+            this.tmrListUpdate.Tick += new System.EventHandler(this.tmrListUpdate_Tick);
+            // 
+            // ttQR
+            // 
+            this.ttQR.AutomaticDelay = 0;
+            this.ttQR.ShowAlways = true;
             // 
             // tmrOnlineViewUpdate
             // 
@@ -914,6 +917,7 @@ namespace Server
         private System.Windows.Forms.Panel pOnline;
         private System.Windows.Forms.PictureBox pbOnline;
         private System.Windows.Forms.Timer tmrOnlineViewUpdate;
+        private System.Windows.Forms.ToolTip ttOnlineUser;
     }
 }
 

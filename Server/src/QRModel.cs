@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Xml;
-using QRCoder;
+//using QRCoder;
 
 namespace Server
 {
@@ -485,10 +485,10 @@ namespace Server
             try{
     
                 //Generate QR code
-                QRCodeGenerator cdrQRCodeGen = new QRCodeGenerator();
+               /* QRCodeGenerator cdrQRCodeGen = new QRCodeGenerator();
                 QRCodeData cdrQRData = cdrQRCodeGen.CreateQrCode(QRData, QRCodeGenerator.ECCLevel.L, true);
                 QRCode cdrQRCode = new QRCode(cdrQRData);
-                QRBmp = cdrQRCode.GetGraphic(_pixelsPerModule);
+                QRBmp = cdrQRCode.GetGraphic(_pixelsPerModule);*/
             }catch{
                 return (int)GenerateQRCodeErrorCode.GENERATE_QR_ERROR;
             }
@@ -513,7 +513,8 @@ namespace Server
                 System.Drawing.Imaging.Encoder QREncoder = System.Drawing.Imaging.Encoder.Quality;
                 EncoderParameters QREncoderParameters = new EncoderParameters(1);
                 QREncoderParameters.Param[0] = new EncoderParameter(QREncoder, 25L);
-                QRBmp.Save(QRFileName, imgsCodecInfo[0], QREncoderParameters);
+               /* QRBmp.Save(QRFileName, imgsCodecInfo[0], QREncoderParameters);
+                 */
             }catch{
                 return (int)GenerateQRCodeErrorCode.WRITE_FILE_ERROR;
             }

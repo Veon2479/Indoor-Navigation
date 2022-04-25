@@ -2,23 +2,38 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Server
 {
     static class OnlineView
     {
-        static SolidBrush brush = new SolidBrush(Color.Blue);
+        static SolidBrush brush = new SolidBrush(Color.BlueViolet);
         static Pen pen = new Pen(Color.Black, 2);
 
-        internal static int UPDATE_INTERVAL = int.Parse(ConfigurationManager.AppSettings.Get("UPDATE_INTERVAL"));
+        internal static int UPDATE_ONLINE_VIEW_INTERVAL 
+            = int.Parse(ConfigurationManager.AppSettings.Get("UPDATE_ONLINE_VIEW_INTERVAL"));
         const int USER_POINT_SIZE = 4;
+        // coordinates in pixels
         private struct UserData
         {
-            public int ID, x, y;
+            public int ID;
+            public int x, y;
+        }
+        // coordinates in meters
+        internal struct RealUserData
+        {
+            public int ID;
+            public double x, y;
+        }
+
+        private static RealUserData GetRealUserData(UserData userData)
+        {
+            RealUserData rud;
+            rud.ID = userData.ID;
+            rud.x = (userData.x - MapInfo.PointX1) * MapInfo.SizeCoefficient;
+            rud.y = (userData.y - MapInfo.PointY1) * MapInfo.SizeCoefficient;
+            return rud;
         }
 
         private static List<UserData> UserList = new List<UserData>(Server.DEFAULT_TABLE_CAPACITY);
@@ -32,7 +47,7 @@ namespace Server
         private static void GetUserList()
         {
             UserData userData;
-            //long time = DateTimeOffset.Now.ToUnixTimeSeconds();
+            // long time = DateTimeOffset.Now.ToUnixTimeSeconds();
             UserList.Clear();
             for (int i = 1; i < Server.userModel.userModelTempStorage.Length; i++)
             {
@@ -41,9 +56,9 @@ namespace Server
                     int count = Server.userModel.userModelTempStorage[i].Count;
                     userData.ID = i;
                     userData.x = Convert.ToInt32(Server.userModel.userModelTempStorage[i].AccumData[count - 1].X
-                        / MapInfo.SizeCoefficient);
+                        / MapInfo.SizeCoefficient + MapInfo.PointX1);
                     userData.y = Convert.ToInt32(Server.userModel.userModelTempStorage[i].AccumData[count - 1].Y
-                        / MapInfo.SizeCoefficient);
+                        / MapInfo.SizeCoefficient + MapInfo.PointY1);
                     UserList.Add(userData);
                 }
             }
@@ -66,6 +81,22 @@ namespace Server
                     USER_POINT_SIZE * 2,
                     USER_POINT_SIZE * 2);
             }
+        }
+
+        internal static RealUserData GetUserInfo(int x, int y)
+        {
+            for (int i = 0; i < UserList.Count; i++)
+            {
+                if (UserList[i].x - USER_POINT_SIZE < x
+                    && UserList[i].x + USER_POINT_SIZE > x
+                    && UserList[i].y - USER_POINT_SIZE < y
+                    && UserList[i].y + USER_POINT_SIZE > y
+                    )
+                {
+                    return GetRealUserData(UserList[i]);
+                }
+            }
+            return new RealUserData { ID = 0 };
         }
     }
 }
