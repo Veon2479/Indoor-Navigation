@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--QRData here-->
+<QRCodes>
+  <QRCode id="123" name="имя">
+    <x>335</x>
+    <y>467</y>
+  </QRCode>
+  <QRCode id="3" name="Zero">
+    <x>0</x>
+    <y>0</y>
+  </QRCode>
+  <QRCode id="8" name="AnotherOneTwo">
+    <x>230.64</x>
+    <y>324.55</y>
+  </QRCode>
+  <QRCode id="1" name="MainHall10">
+    <x>229.00</x>
+    <y>555.19</y>
+  </QRCode>
+  <QRCode id="10" name="back">
+    <x>416.80</x>
+    <y>677.10</y>
+  </QRCode>
+  <QRCode id="5" name="Dock">
+    <x>738.06</x>
+    <y>359.14</y>
+  </QRCode>
+  <QRCode id="6" name="AnotherOne">
+    <x>719.93</x>
+    <y>233.94</y>
+  </QRCode>
+  <QRCode id="9" name="SoFar">
+    <x>752.88</x>
+    <y>47.78</y>
+  </QRCode>
+  <QRCode id="7" name="NewQR">
+    <x>285.01</x>
+    <y>172.98</y>
+  </QRCode>
+  <QRCode id="4" name="GreatHall2">
+    <x>243.82</x>
+    <y>434.93</y>
+  </QRCode>
+  <QRCode id="2" name="MainHall2">
+    <x>64.25</x>
+    <y>443.16</y>
+  </QRCode>
+  <QRCode id="12" name="backf">
+    <x>640.86</x>
+    <y>406.92</y>
+  </QRCode>
+  <QRCode id="1232" name="asdfef">
+    <x>1000</x>
+    <y>797</y>
+  </QRCode>
+  <QRCode id="1111" name="dead">
+    <x>-131.80</x>
+    <y>306.43</y>
+  </QRCode>
+  <QRCode id="3124" name="akshjdgf">
+    <x>186.16</x>
+    <y>136.74</y>
+  </QRCode>
+</QRCodes>

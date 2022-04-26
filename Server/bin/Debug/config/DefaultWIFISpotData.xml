@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--WIFISpot data here-->
+<WIFISpots>
+  <WIFISpot id="4" name="fcdd">
+    <x>0</x>
+    <y>0</y>
+    <power>24</power>
+    <mac>E8-6F-38-DC-CD-19</mac>
+  </WIFISpot>
+  <WIFISpot id="3" name="MainHall">
+    <x>492.59</x>
+    <y>304.78</y>
+    <power>1000</power>
+    <mac>11-22-33-44-55-66</mac>
+  </WIFISpot>
+  <WIFISpot id="1" name="first">
+    <x>149.92</x>
+    <y>313.01</y>
+    <power>14</power>
+    <mac>00-00-00-11-33-33</mac>
+  </WIFISpot>
+</WIFISpots>
