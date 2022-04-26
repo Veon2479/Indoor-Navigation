@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
 
         Engine.setContext(getApplicationContext());
         Engine engine = Engine.getInstance();
+        Thread engineThread = new Thread(engine);
+        engineThread.start();
+
 
         System.out.println("Calling background service to start");
         //ClientService clientService = new ClientService(engine);
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //context.startForegroundService( intent );
+                buttonStart.setEnabled(false);
                 serverAddr = editTextServerAddr.getText().toString();
                 try {
                     writeToFile(getApplicationContext());
@@ -132,6 +136,9 @@ public class MainActivity extends AppCompatActivity {
 
                 text1.setText(String.format("Coordinates\nX: %.2f\nY: %.2f\nZ: %.2f", x, y, z));
                 text3.setText( String.format("Accelerometer\nX: %.2f\nY: %.2f\nZ: %.2f", accX, accY, accZ));
+
+                if ( engine.isBLocked == false )
+                    buttonStart.setEnabled(true);
                 this.start();
             }
         };

@@ -11,12 +11,13 @@ import java.io.OutputStream;
 import java.net.*;
 import java.time.Instant;
 
-public class Engine {
+public class Engine implements Runnable{
 
     public int UserId = 0;
     public double Crd1, Crd2;
     public double accX, accY;
     public boolean isAlive = false;
+    public boolean isBLocked = false;
 
     private static Engine instance;
     public static Context context;
@@ -49,11 +50,6 @@ public class Engine {
             System.out.println("BufferSize is "+BufferSize);
             System.out.println("UdpPacketDelay is "+UdpPacketDelay);
 
-
-
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-
         }
     }
 
@@ -73,6 +69,7 @@ public class Engine {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startTracking()
     {
+        isBLocked = true;
         boolean flag = false;
         int i = 0;
         while ( i < AttemptsToRegistrate && !flag ) {
@@ -96,6 +93,7 @@ public class Engine {
             //but they're don't working yet
         } else {
             System.out.println("Failed to registrate");
+            isBLocked = false;
         }
 
         clientMath.Unpause();
@@ -156,5 +154,10 @@ public class Engine {
         if ( UserId < 0 )
             RESULT = false;
         return RESULT;
+    }
+
+    @Override
+    public void run() {
+
     }
 }
