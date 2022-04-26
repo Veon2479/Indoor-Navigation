@@ -19,9 +19,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Tools {
 
 
+    Engine engine = Engine.getInstance();
     //these values will be read from file
 
     public static String serverAddr;
@@ -30,6 +32,7 @@ public class Tools {
     public static int AttemptsToRegistrate;
     public static int BufferSize;
     public static int UdpPacketDelay;
+    public static int ResponseBufferSize;
 
     private static final String SettingFile = "Settings.xml";
 
@@ -139,30 +142,36 @@ public class Tools {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static byte[] setCustomBufferWithLongs(long[] prms)
     {
-        ByteBuffer buff = ByteBuffer.allocate( prms.length * 4 /* + 4 */ );
+        ByteBuffer buff = ByteBuffer.allocate( prms.length * 8  + 8 );
         int i;
         for ( i = 0; i < prms.length; i++ )
         {
-            buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, prms[i] );
+            buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*8, prms[i] );
         }
-        //buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, Instant.now().getEpochSecond() );
-        byte[] res = new byte[ prms.length * 4 /* + 4 */];
+        buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*8, Instant.now().getEpochSecond() );
+        byte[] res = new byte[ prms.length * 8 + 8 ];
         buff.get(res);
         return res;
     }
 
     public static long[] getCustomBufferWithLongs(byte[] buff)
     {
-        long[] res = new long[ buff.length / 4 ];
+        long[] res = new long[ buff.length / 8 ];
         ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
         int i;
         for ( i = 0; i < res.length; i++ )
         {
-            res[i] = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getLong( i*4 );
+            res[i] = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getLong( i*8 );
         }
-
-
         return res;
+    }
+
+    public static void getResponseBuffer(Engine engine, byte[] buff)
+    {
+        ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
+        engine.UserId = (int) tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getLong(0 );
+        engine.Crd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 4 );
+        engine.Crd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 12 );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

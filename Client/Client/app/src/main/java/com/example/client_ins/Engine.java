@@ -9,15 +9,19 @@ import androidx.annotation.RequiresApi;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 public class Engine implements Runnable{
 
     public int UserId = 0;
+    public int QrId;
     public double Crd1, Crd2;
     public double accX, accY;
     public boolean isAlive = false;
     public boolean isBLocked = false;
+
+    public WiFi[] WiFi_List;
 
     private static Engine instance;
     public static Context context;
@@ -120,19 +124,37 @@ public class Engine implements Runnable{
             OutputStream sock_outs = clientTcp.getOutputStream();
 
 
-            byte[] buffer = setInfoBufferWithLongs( UserId, 0, 0); //TODO: par1 is ID of qr of place
+//            byte[] buffer = setInfoBufferWithLongs( UserId, 0, 0); //TODO: par1 is ID of qr of place
+//
+//
+//            System.out.println("Sending data");
+//            sock_outs.write(buffer);
+//            System.out.println("Receiving data");
+//            sock_ins.read(buffer);
+//
+//            long timeStamp = getInfoBuffer( this, buffer );
+//            System.out.println("Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
 
+            long[] regBuffer = {0, QrId};
+            sock_outs.write( setCustomBufferWithLongs(regBuffer) );
 
-            System.out.println("Sending data");
-            sock_outs.write(buffer);
-            System.out.println("Receiving data");
-            sock_ins.read(buffer);
+            long[] responseBuffer;
+            byte[] buffer = new byte[ 3 * 8 * 8 ];
+            sock_ins.read( buffer );
 
-            long timeStamp = getInfoBuffer( this, buffer );
-            System.out.println("Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
+            getResponseBuffer( this, buffer );
             System.out.println( "new ID is "+UserId);
             System.out.println( "new crd1 is "+Crd1);
             System.out.println( "new crd2 is "+Crd2);
+
+            byte[] textBuffer = new byte[256];
+            String WiFi_infoBuffer = "";
+            while (sock_ins.read(textBuffer) > 0)
+            {
+                WiFi_infoBuffer += new String(textBuffer, StandardCharsets.UTF_8);
+            }
+
+            //TODO: parse WiFi info to a list
 
             try {
                 sock_ins.close();
