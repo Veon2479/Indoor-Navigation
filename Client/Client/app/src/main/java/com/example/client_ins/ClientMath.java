@@ -122,7 +122,8 @@ class Matrix{
 
     public Matrix Invert(){
         Matrix R = this.Transpose();
-        R.Scale(1/this.Determinant());
+        double x = 1/this.Determinant();
+        R.Scale(x);
         return R;
     }
 
@@ -194,6 +195,23 @@ class Matrix{
         return R;
     }
 
+    public static Matrix Add(Matrix A, Matrix B){
+        if(B.a != A.a || B.b != A.b)
+            return null;
+
+        Matrix R = new Matrix(A.a, A.b, MatrixType.UNDEFINED);
+
+        for(int i = 0; i<A.a; i++)
+        {
+            for(int j = 0; j<A.b; j++)
+            {
+                R.matrix[i][j] = A.matrix[i][j] + B.matrix[i][j];
+            }
+        }
+
+        return R;
+    }
+
     public void WriteMatrix(String name){
 
         String res = name + "=\n|";
@@ -206,6 +224,35 @@ class Matrix{
             res += "|\n|";
         }
         System.out.println(res);
+    }
+
+    public Matrix Sqrt(){
+        if(a != b)
+            return null;
+        Matrix R = new Matrix(a, a, MatrixType.UNDEFINED);
+
+        for(int i = 0; i<a; i++)
+        {
+            for(int j = 0; j<b; j++)
+            {
+                float sum = 0;
+                for(int k = 0; k < j; k++){
+                    sum += R.matrix[i][k] * R.matrix[j][k];
+                }
+
+                if(i == j)
+                    R.matrix[i][j] = Math.sqrt(matrix[i][i] - sum);
+                else
+                    if (R.matrix[j][j] != 0)
+                        R.matrix[i][j] = (1.0f/R.matrix[j][j] * (matrix[i][j] - sum));
+                    else
+                        R.matrix[i][j] = 0;
+                if(R.matrix[i][j] != R.matrix[i][j])
+                    R.matrix[i][j] = 0;
+            }
+        }
+
+        return R;
     }
 }
 
@@ -279,7 +326,7 @@ public class ClientMath implements Runnable{
 
     boolean isActive = true;
     boolean fPause = false;
-    public boolean fPhysics = true;
+    public boolean fPhysics = false;
     Engine mainEngine;
 
     public ClientMath(Engine engine) {
@@ -294,15 +341,12 @@ public class ClientMath implements Runnable{
 
     public double accX = 0;
     public double accY = 0;
-    public double accZ = 0;
 
     public double velX = 0;
     public double velY = 0;
 
     private double time;
     private double deltaTime;
-
-    private double dispA = 100.0f;
 
     public void UpdateGlobalAcc()
     {
@@ -335,12 +379,12 @@ public class ClientMath implements Runnable{
 
 /*
     x(n+1) = F * x(n)
-        |1   t  0.5t  0   0   0  |
-    F = |0   1   t    0   0   0  |
-        |0   0   1    0   0   0  |
-        |0   0   0    1   t  0.5t|
-        |0   0   0    0   1   t  |
-        |0   0   0    0   0   1  |
+        |1   t  0.5t^2  0   0   0    |
+    F = |0   1   t      0   0   0    |
+        |0   0   1      0   0   0    |
+        |0   0   0      1   t  0.5t^2|
+        |0   0   0      0   1   t    |
+        |0   0   0      0   0   1    |
 __________________________________
     p(n+1) = F*P*F.Transpose + Q
         |t^4 / 4   t^3 / 2   t^2 / 2   0         0         0      |
@@ -370,19 +414,36 @@ __________________________________
    P(n) = (I - K*H)*P(n-1) * (I - K*H).Transpose + K*R * K.Transpose
 */
     private Matrix H;
-    private Matrix Htr;
-    private Matrix P;
+    public Matrix P;
     private Matrix P1;
     private Matrix F;
     private Matrix R;
     private Matrix Q;
     private Matrix K;
-    private Matrix I;
 
     private Matrix predX;
-    private Matrix currX;
+    private Matrix tempX;
+    public Matrix currX;
 
     private Matrix z;
+    private Matrix zt;
+    private Matrix tempZ;
+
+    private int L = 6;
+    private int k = 1;
+    private double alpha = 0.001f;
+    private int beta = 2;
+    private double u = alpha*alpha*(L + k) - L;
+    private double wm0 = u/(L + u);
+    private double wc0 = u/(L + u) + (1 - alpha*alpha + beta);
+    private double wm = 1 / (2*(L + u));
+    private double wc = wm;
+    private Matrix[] sigmaPoints = new Matrix[2*L+1];
+    private Matrix[] Zt = new Matrix[2*L+1];
+    private Matrix St;
+    private Matrix Pxz;
+
+    private double dispA = 1;
 
     void KalmanFilter(){
         Q.matrix[2][2] = 1;
@@ -408,7 +469,7 @@ __________________________________
         Q.matrix[0][0] = tempT;
         Q.matrix[3][3] = tempT;
         Q.Scale(dispA);
-        tempT = deltaTime/2;
+        tempT = deltaTime*deltaTime/2;
         F.matrix[0][2] = tempT;
         F.matrix[3][5] = tempT;
         F.matrix[0][1] = deltaTime;
@@ -416,19 +477,90 @@ __________________________________
         F.matrix[3][4] = deltaTime;
         F.matrix[4][5] = deltaTime;
 
-        predX = Matrix.Mul(F, currX);
-
+        sigmaPoints[0].Copy(currX);
         P1.Copy(P);
-        P = Matrix.Mul(Matrix.Mul(F, P1), F.Transpose()).Add(Q);
+        P1.Scale(L+u);
+        P1 = P1.Sqrt();
+        for(int i = 1; i<=L; i++){
+            for(int j = 0; j<sigmaPoints[i].a; j++)
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[i-1][j];
+        }
+        for(int i = L+1; i<=2*L; i++){
+            for(int j = 0; j<sigmaPoints[i].a; j++)
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[i-L-1][j];
+        }
 
-        K = Matrix.Mul(Matrix.Mul(P, Htr), (Matrix.Mul(Matrix.Mul(H, P), Htr).Add(R)).Invert());
+        predX = Matrix.Mul(F, sigmaPoints[0]);
+        predX.Scale(wm0);
+        for(int i = 1; i<=2*L; i++){
+            Matrix temp = Matrix.Mul(F, sigmaPoints[i]);
+            temp.Scale(wm);
+            predX.Add(temp);
+        }
 
-        currX = predX.Add(Matrix.Mul(K, z.Sub(Matrix.Mul(H, predX))));
+        tempX = Matrix.Mul(F, sigmaPoints[0]).Sub(predX);
+        P = Matrix.Mul(tempX, tempX.Transpose());
+        P.Scale(wc0);
+        for(int i = 1; i<2*L + 1; i++){
+            tempX = Matrix.Mul(F, sigmaPoints[i]).Sub(predX);
+            P1 = Matrix.Mul(tempX, tempX.Transpose());
+            P1.Scale(wc);
+            P.Add(P1);
+        }
+        P.Add(Q);
 
-        Matrix temp = Matrix.Sub(I, Matrix.Mul(K, H));
-
+        sigmaPoints[0].Copy(predX);
         P1.Copy(P);
-        P = Matrix.Mul(Matrix.Mul(temp, P1), temp.Transpose()).Add(Matrix.Mul(Matrix.Mul(K, R), K.Transpose()));
+        P1.Scale(L+u);
+        P1 = P1.Sqrt();
+        for(int i = 1; i<=L; i++){
+            for(int j = 0; j<sigmaPoints[i].a; j++)
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[i-1][j];
+        }
+        for(int i = L+1; i<=2*L; i++){
+            for(int j = 0; j<sigmaPoints[i].a; j++)
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[i-L-1][j];
+        }
+
+        for(int i = 0; i<=2*L; i++){
+            Zt[i] = Matrix.Mul(H, sigmaPoints[i]);
+        }
+
+        zt.Copy(Zt[0]);
+        zt.Scale(wm0);
+        for(int i = 1; i<=2*L; i++){
+            tempZ.Copy(Zt[i]);
+            tempZ.Scale(wm);
+            zt.Add(tempZ);
+        }
+
+        Matrix temp = Matrix.Sub(Zt[0], zt);
+        St = Matrix.Mul(temp, temp.Transpose());
+        St.Scale(wc0);
+        for(int i = 1; i<=2*L; i++){
+            temp = Matrix.Sub(Zt[i], zt);
+            temp = Matrix.Mul(temp, temp.Transpose());
+            temp.Scale(wc);
+            St.Add(temp);
+        }
+        St.Add(R);
+
+        Pxz = Matrix.Mul(Matrix.Sub(sigmaPoints[0], predX), (Matrix.Sub(Zt[0], zt)).Transpose());
+        Pxz.Scale(wc0);
+        for(int i = 1; i<=2*L; i++){
+            temp = Matrix.Mul(Matrix.Sub(sigmaPoints[i], predX), (Matrix.Sub(Zt[i], zt)).Transpose());
+            temp.Scale(wc);
+            Pxz.Add(temp);
+        }
+
+        temp = St.Invert();
+        K = Matrix.Mul(Pxz, temp);
+
+        currX = Matrix.Add(predX, Matrix.Mul(K, z.Sub(zt)));
+
+        P = P.Sub(Matrix.Mul(Matrix.Mul(K, St), K.Transpose()));
+        if(P.matrix[2][2] < 0)
+            P.matrix[2][2] = Math.abs(P.matrix[2][2]);
     }
 
     public void Disable(){
@@ -450,23 +582,40 @@ __________________________________
         H = new Matrix(2, 6, MatrixType.ALL_ZERO);
         H.matrix[0][2] = 1;
         H.matrix[1][5] = 1;
-        Htr = H.Transpose();
         P = new Matrix(6, 6, MatrixType.ALL_ZERO);
         P.matrix[0][0] = 0;
         P.matrix[1][1] = 0;
-        P.matrix[2][2] = 500;
+        P.matrix[2][2] = 0;
         P.matrix[3][3] = 0;
         P.matrix[4][4] = 0;
-        P.matrix[5][5] = 500;
+        P.matrix[5][5] = 0;
         P1 = new Matrix(6,6, MatrixType.UNDEFINED);
         F = new Matrix(6,6, MatrixType.IDENTITY);
         R = new Matrix(2, 2, MatrixType.ALL_ZERO);
-        R.matrix[0][0] = 0.01;
-        R.matrix[1][1] = 0.01;
+        R.matrix[0][0] = 0.16f;
+        R.matrix[1][1] = 0.16f;
         Q = new Matrix(6,6, MatrixType.ALL_ZERO);
-        I = new Matrix(6, 6, MatrixType.IDENTITY);
         currX = new Matrix(6, 1, MatrixType.ALL_ZERO);
         predX = new Matrix(6, 1, MatrixType.ALL_ZERO);
+        zt = new Matrix(z.a, z.b, MatrixType.UNDEFINED);
+        tempZ = new Matrix(z.a, z.b, MatrixType.UNDEFINED);
+        for(int i = 0; i<2*L + 1; i++){
+            Zt[i] = new Matrix(z.a, z.b, MatrixType.ALL_ZERO);
+            sigmaPoints[i] = new Matrix(currX.a, currX.b, MatrixType.ALL_ZERO);
+        }
+
+        sigmaPoints[0].Copy(currX);
+        P1.Copy(P);
+        P1.Scale(L+u);
+        P1 = P1.Sqrt();
+        for(int i = 1; i<=L; i++){
+            for(int j = 0; j<sigmaPoints[i].a; j++)
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[j][i-1];
+        }
+        for(int i = L+1; i<=2*L; i++){
+            for(int j = 0; j<sigmaPoints[i].a; j++)
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[j][i-L-1];
+        }
 
 
         time = System.nanoTime();

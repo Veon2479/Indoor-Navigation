@@ -115,7 +115,14 @@ public class MainActivity extends AppCompatActivity {
                 accX = engine.accX;
                 accY = engine.accY;
 
-                text1.setText(String.format("Coordinates\nX: %.2f\nY: %.2f\nZ: %.2f", x, y, z));
+                text1.setText(String.format("Coordinates\nX: %.2f\nVX: %.2f\nAX: %.2f\nY: %.2f\nVY: %.2f\nAY: %.2f",
+                        engine.clientMath.currX.matrix[0][0], engine.clientMath.currX.matrix[1][0],
+                        engine.clientMath.currX.matrix[2][0], engine.clientMath.currX.matrix[3][0],
+                        engine.clientMath.currX.matrix[4][0], engine.clientMath.currX.matrix[5][0]));
+                text2.setText(String.format("P\npX: %.2f\npVX: %.2f\npAX: %.2f\npY: %.2f\npVY: %.2f\npAY: %.2f",
+                        engine.clientMath.P.matrix[0][0], engine.clientMath.P.matrix[1][1],
+                        engine.clientMath.P.matrix[2][2], engine.clientMath.P.matrix[3][3],
+                        engine.clientMath.P.matrix[4][4], engine.clientMath.P.matrix[5][5]));
                 text3.setText( String.format("Accelerometer\nX: %.2f\nY: %.2f\nZ: %.2f", accX, accY, accZ));
                 this.start();
             }
