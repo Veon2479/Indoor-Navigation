@@ -123,11 +123,10 @@ public class Engine implements Runnable{
             InputStream sock_ins = clientTcp.getInputStream();
             OutputStream sock_outs = clientTcp.getOutputStream();
 
-            long[] regBuffer = {0, QrId};       //request for registration
-            sock_outs.write( setCustomBufferWithLongs(regBuffer) );
+            int[] regBuffer = {0, QrId};       //request for registration
+            sock_outs.write( setCustomBufferWithInts(regBuffer) );
 
-            long[] responseBuffer;
-            byte[] buffer = new byte[ 3 * 8 * 8 ];
+            byte[] buffer = new byte[ 4 + 2 * 8 ];
             sock_ins.read( buffer );
 
             getResponseBuffer( this, buffer );
@@ -140,8 +139,8 @@ public class Engine implements Runnable{
 
                 System.out.println("Getting additional info");
 
-                long[] reqBuffer = {1};       //request for Wifi's list
-                sock_outs.write(setCustomBufferWithLongs(reqBuffer));
+                int[] reqBuffer = { 1, 0 };       //request for Wifi's list
+                sock_outs.write(setCustomBufferWithInts(reqBuffer));
 
                 byte[] textBuffer = new byte[256];
                 String WiFi_infoBuffer = "";

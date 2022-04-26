@@ -140,28 +140,14 @@ public class Tools {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public static byte[] setCustomBufferWithLongs(long[] prms)
+    public static byte[] setCustomBufferWithInts(int[] prms)
     {
-        ByteBuffer buff = ByteBuffer.allocate( prms.length * 8  + 8 );
+        byte[] res = new byte[ prms.length * 4 ];
+        ByteBuffer buff = ByteBuffer.wrap( res );
         int i;
         for ( i = 0; i < prms.length; i++ )
         {
-            buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*8, prms[i] );
-        }
-        buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*8, Instant.now().getEpochSecond() );
-        byte[] res = new byte[ prms.length * 8 + 8 ];
-        buff.get(res);
-        return res;
-    }
-
-    public static long[] getCustomBufferWithLongs(byte[] buff)
-    {
-        long[] res = new long[ buff.length / 8 ];
-        ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
-        int i;
-        for ( i = 0; i < res.length; i++ )
-        {
-            res[i] = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getLong( i*8 );
+            buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, prms[i] );
         }
         return res;
     }
@@ -169,7 +155,7 @@ public class Tools {
     public static void getResponseBuffer(Engine engine, byte[] buff)
     {
         ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
-        engine.UserId = (int) tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getLong(0 );
+        engine.UserId = (int) tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getInt(0 );
         engine.Crd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 4 );
         engine.Crd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 12 );
     }
