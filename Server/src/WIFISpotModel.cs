@@ -24,7 +24,7 @@ namespace Server
         //Name of xml file to work with
         internal string _xmlFileName { get; private set; } = "";
 
-        //Default directory that contains private directories
+        //Default directory that contains xml files
         protected const string _defaultDir = "config";
 
         //Default xml file name
@@ -34,9 +34,14 @@ namespace Server
         //MAC - 6 oct. by 2 hex values and 5 smb '-'
         protected const int _WIFISpotMACLen = 17; 
 
-        //List that contain exicting QRID
+        //List that contain existing WIFISpotID
         List<int> _WIFISpotIDExist = new List<int>();
 
+        /// <summary>
+        ///     Open and check xml file. If smth not exist - create it
+        /// </summary>
+        /// <param name="xmlFileName">Name of xml file to work with</param>
+        /// <exception cref="Exception">Xml file incorrect or was corrupted</exception>
         public WIFISpotModel(string xmlFileName = "")
         {
             _xmlFileName = xmlFileName;
@@ -67,7 +72,7 @@ namespace Server
             }
 
             //Change xml document to default or create new
-            CreateNessaryFiles();
+            CreateNecessaryFiles();
 
             //Check chosen
             if (CheckXmlFileContent(ref xmlDocument) < 0)
@@ -76,22 +81,28 @@ namespace Server
             }
         }
 
-        private enum CheckXmlFileContentErrorCode
-        {
-            IS_EMPTY = 1,
-            READ_FILE_ERROR = -1,
-            UNKNOWN_ROOT_TAG = -2,
-            UNKNOWN_ELEMENT_LV1_TAG = -3,
-            INCORRECT_ATRIBUTES_LV1 = -4,
-            INCORRECT_ELEMENT_LV2 = -5
-        }
-
         public enum DeleteWIFISpotRecordErrorCode
         {
             CORRUPTED_FILE = -1,
-            QRID_INCORRECT = -2,
+            WIFISPPOT_ID_INCORRECT = -2,
             NAME_NOT_FOUND = -3
         }
+        /// <summary>
+        ///     Delet WIFISpot Record from xml file according recived WIFISpotID or WIFISpotName
+        /// </summary>
+        /// <param name="WIFISpotID_WIFISpotName">ID or Name of recrod in xml file</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or was corrupted</item>
+        ///     <item>-2 (WIFISPOTID_INCORRECT): No this ID in xml file</item>
+        ///     <item>-3 (NAME_NOT_FOUD): No this Name in xml file</item>
+        ///     </list>
+        /// </returns>
         public int DeleteWIFISpotRecord(string WIFISpotID_WIFISpotName)
         {
              XmlDocument xmlDoc = new XmlDocument();
@@ -102,7 +113,7 @@ namespace Server
                 return (int)DeleteWIFISpotRecordErrorCode.CORRUPTED_FILE;
             }
 
-            //Check for correct QR ID or QR Name
+            //Check for correct WIFISpot ID or WIFISpot Name
             int WIFISpotID = CheckWIFISpotID_WIFISpotName(WIFISpotID_WIFISpotName, xmlDoc);
             if (WIFISpotID < 0){
                 return WIFISpotID;
@@ -120,9 +131,31 @@ namespace Server
         {
             INCORRECT_PARAMETER = -1,
             CORRUPTED_FILE = -2,
-            QRID_INCORRECT = -3,
+            WIFISPOTID_INCORRECT = -3,
             NAME_OCCUPIED = -4
         }
+        /// <summary>
+        ///     Add WIFISpot recrod in xml file
+        /// </summary>
+        /// <param name="WIFISpotID">ID of WIFI spot record to add</param>
+        /// <param name="WIFISpotName">Name of WIFI spot record to add</param>
+        /// <param name="x">Coordinate x</param>
+        /// <param name="y">Coordinate y</param>
+        /// <param name="power">Power of WIFI spot</param>
+        /// <param name="MACAddress">MAC address of WIFI spot </param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (INCORRECT_PARAMET): Incorrect one of received parameters</item>
+        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-3 (WIFISPOTID_INCORRECT): WIFI spot ID incorrect (0 > WIFISpotID) or alredy exist</item>
+        ///     <item>-4 (NAME_OCCUPIED): Name of WIFI spot record already occupied</item>
+        ///     </list>
+        /// </returns>
         public int AddWIFISpotRecord(string WIFISpotID, string WIFISpotName, string x, string y, string power, string MACAddress)
         {
             //Check for correct input parametrs
@@ -142,6 +175,7 @@ namespace Server
             }
 
             //Check power (greater then 0) and MAC address
+            MACAddress = MACAddress.Trim();
             if (dblPower <= 0 || !CheckMACAddress(MACAddress)){
                 return (int)AddWIFISpotRecordErrorCode.INCORRECT_PARAMETER;                
             }
@@ -153,7 +187,7 @@ namespace Server
                 return (int)AddWIFISpotRecordErrorCode.CORRUPTED_FILE;
             }
 
-            //if QRID is empty then generate it 
+            //if WIFISpotID is empty then generate it 
             int iWIFISpotID = -1;
             if (!Int32.TryParse(WIFISpotID, out iWIFISpotID))
             {
@@ -167,10 +201,10 @@ namespace Server
                 }
             }
 
-            //Check for correct QRID
+            //Check for correct WIFISpotID
             if (iWIFISpotID < 0 || _WIFISpotIDExist.Contains(iWIFISpotID))
             {
-                return (int)AddWIFISpotRecordErrorCode.QRID_INCORRECT;
+                return (int)AddWIFISpotRecordErrorCode.WIFISPOTID_INCORRECT;
             }
 
             XmlElement xmlRoot = xmlDoc.DocumentElement;
@@ -216,27 +250,50 @@ namespace Server
             return 0;
         }
 
-
         public enum ChangeWIFISpotRecordErrorCode
         {
             INCORRECT_PARAMETR = -1,
             CORRUPTED_FILE = -2,
-            QRID_INCORRECT = -3,
+            WIFISpotID_INCORRECT = -3,
             NAME_IS_OCCUPIED = -4,
             NAME_NOT_FOUND = -5
         }
+        /// <summary>
+        ///     Change WIFISpot record in xml file according received ID or Name
+        /// </summary>
+        /// <param name="oldQRID_oldName">ID of WIFI spot record in xml file</param>
+        /// <param name="newQRID">New WIFI spot ID to change</param>
+        /// <param name="newQRName">New WIFI spot name to change</param>
+        /// <param name="newX">New coordinate x</param>
+        /// <param name="newY">New coordinate y</param>
+        /// <param name="newPower">New power of WIFI spot</param>
+        /// <param name="newMAC">NEW MAC address of WIFI spot</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
+        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-3 (WIFISPOTID_INCORRECT): WIFI spot ID incorrect (0 > WIFISpotID) or alredy exist</item>
+        ///     <item>-4 (NAME_OCCUPIED): Name of WIFI spot record already occupied</item>
+        ///     <item>-5 (NAME_NOT_FOUND): name of WIFI spot record is not exists</item>
+        ///     </list>
+        /// </returns>
         public int ChangeWIFISpotRecord(string oldQRID_oldName, string newQRID, string newQRName, string newX, string newY, 
                                         string newPower, string newMAC)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
-            //Try to delete old QR record
+            //Try to delete old WIFISpot record
             int QRID = DeleteWIFISpotRecord(oldQRID_oldName);  
             if (QRID < 0){
                 return (int)ChangeWIFISpotRecordErrorCode.INCORRECT_PARAMETR;
             }
 
-            //Try to add new QR record
+            //Try to add new WIFISpot record
             int iResult = AddWIFISpotRecord(newQRID, newQRName, newX, newY, newPower, newMAC); 
             if (iResult < 0){
                 return iResult;
@@ -250,6 +307,21 @@ namespace Server
             CORRUPTED_FILE = -1,
             PARSE_TO_DOUBLE_ERROR = -2
         }
+        /// <summary>
+        ///     Get list of xml file elements data
+        /// </summary>
+        /// <param name="xmlContent">Array that contain xml file elemtns data</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
+        ///     <item>-2 (PARSE_TO_DOUBLE_ERROR): Error in parcing data from xml table to double</item>
+        ///     </list>
+        /// </returns>
         public int GetWIFISpotRecordList(ref WIFISpotModelXmlContent[] xmlContent)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -276,12 +348,12 @@ namespace Server
             {
                 XmlNode xmlNode = xmlRoot.ChildNodes[i];
 
-                //Get atributes QRID, QRName
+                //Get atributes WIFISpotID, WIFISpotName
                 xmlContent[i].WIFISpotID = xmlNode.Attributes[0].Value;
                 xmlContent[i].WIFISpotName = xmlNode.Attributes[1].Value;
                 xmlContent[i].WIFISpotMAC = xmlNode.ChildNodes[3].InnerText;
 
-                //Get Coordinate x and y
+                //Get Coordinate x and y, power
                 try
                 {
                     xmlContent[i].X = double.Parse(xmlNode.ChildNodes[0].InnerText, System.Globalization.CultureInfo.InvariantCulture).ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -296,7 +368,34 @@ namespace Server
             return 0;
         }
 
-
+        private enum CheckXmlFileContentErrorCode
+        {
+            IS_EMPTY = 1,
+            READ_FILE_ERROR = -1,
+            UNKNOWN_ROOT_TAG = -2,
+            UNKNOWN_ELEMENT_LV1_TAG = -3,
+            INCORRECT_ATRIBUTES_LV1 = -4,
+            INCORRECT_ELEMENT_LV2 = -5
+        }
+        /// <summary>
+        ///     Check xml file for incorrect content
+        /// </summary>
+        /// <param name="xmlDoc">Xml document to open xml file</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item> 1 (IS_EMPTY): xml document is empty</item>
+        ///     <item>-1 (READ_FILE_ERROR): Error on read file (cannot find, incorrect name, cannot read, incorrect directory...)</item>
+        ///     <item>-2 (UNKNOWN_ROOT_TAG): Xml file contain unknown root tag (Known root tags: "QRCodes")</item>
+        ///     <item>-3 (UNKNOWN_ELEMENT_LV1_TAG): Xml file contain unknown element tag on lvl 1 (Known lvl 1 tags: "QRCode")</item>
+        ///     <item>-4 (INCORRECT_ATRIBUTES_LV1): Xml file contain incorrect atributes on lvl 1 (Correct artributes: "id", "name")</item>
+        ///     <item>-5 (INCORRECT_ELEMENT_LV2): Xml file contain incorrect element on lvl 2 (Correct lvl 2 tags: "x", "y"; Correct lvl 2 innrer text type: double)</item>
+        ///     </list>
+        /// </returns>
         private int CheckXmlFileContent(ref XmlDocument xmlDoc)
         {
             //Check is this file exist
@@ -317,7 +416,7 @@ namespace Server
                 return (int)CheckXmlFileContentErrorCode.UNKNOWN_ROOT_TAG;
             }
 
-            //Initialize dictionnary
+            //Initialize list
             _WIFISpotIDExist.Clear();
 
             if (xmlEl.ChildNodes.Count == 0)
@@ -332,7 +431,7 @@ namespace Server
             foreach (XmlNode xmlNode in xmlEl)
             {
 
-                //Check tag
+                //Check element tag
                 if (xmlNode.Name != "WIFISpot")
                 {
                     return (int)CheckXmlFileContentErrorCode.UNKNOWN_ELEMENT_LV1_TAG;
@@ -358,7 +457,8 @@ namespace Server
                 _WIFISpotIDExist.Add(WIFISpotID);
 
                 //Check unique name
-                if (WIFISpotNameList.Contains(xmlNode.Attributes[1].Value))
+                if (WIFISpotNameList.Contains(xmlNode.Attributes[1].Value) || 
+                    xmlNode.Attributes[1].Value == "")
                 {
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
                 }
@@ -396,21 +496,33 @@ namespace Server
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ELEMENT_LV2;
                 }
 
-                //Power must be greater that zero
+                //Power must be greater than 0
                 if (dblPower <= 0){
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ELEMENT_LV2;
                 }
 
-                //Chaeck Correct MAC address
+                //Check Correct MAC address
                 Boolean isCorrectMAC = CheckMACAddress(xmlNode.ChildNodes[3].InnerText);
-                if (!isCorrectMAC || xmlNode.ChildNodes[3].InnerText.Length != _WIFISpotMACLen){
+                if (!isCorrectMAC){
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ELEMENT_LV2;
                 }
             }
             return 0;
         }
 
-        private int CreateNessaryFiles()
+        /// <summary>
+        ///     Try open xml file. Create all nessary file and directories for xml file if doesn't open file
+        /// </summary>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     </list>
+        /// </returns>
+        private int CreateNecessaryFiles()
         {
             XmlDocument xmlDoc = new XmlDocument();
 
@@ -421,13 +533,13 @@ namespace Server
             //Try to open _xmlFileName
             try
             {
-                //Try to load default file
+                //Try to load file
                 xmlDoc.Load(_xmlFileName);   
             }
             catch
             {
 
-                //Create and save default file if it cannot be reads
+                //Create and save file if it cannot be reads
                 XmlDeclaration XmlDec = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
                 xmlDoc.AppendChild(XmlDec);
                 XmlComment XmlCom = xmlDoc.CreateComment("WIFISpot data here");
@@ -440,45 +552,76 @@ namespace Server
         }
 
         private enum CheckWIFISpotID_WIFISpotNameErrorCode{
-            QRID_INCORRECT = -2,
+            WIFISPOTID_INCORRECT = -2,
             NAME_NOT_FOUND = -3
         }
+        /// <summary>
+        ///     Check is SIFISpotID_WIFISpotName ID or Name that exist in xml file
+        /// </summary>
+        /// <param name="WIFISpotID_WIFISpotName">ID or Name of WIFI spot record in xml file</param>
+        /// <param name="xmlDoc">Open xml file to work with</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - ID of element in xml file (no errors), else - error
+        ///             </term>
+        ///         </listheader>
+        ///         <item>-2 (WIFISPOTID_INCORRECT): No this ID in xml file</item>
+        ///         <item>-3 (NAME_NOT_FOUD): No this Name in xml file</item>
+        ///     </list>
+        /// </returns>
         private int CheckWIFISpotID_WIFISpotName(string WIFISpotID_WIFISpotName, XmlDocument xmlDoc)
         {
             XmlElement xmlEl = xmlDoc.DocumentElement;
 
             //Check contains of WIFISpotID_WIFISpotName
-            int QRID;
-            if (Int32.TryParse(WIFISpotID_WIFISpotName, out QRID)){
+            int WIFISpotID;
+            if (Int32.TryParse(WIFISpotID_WIFISpotName, out WIFISpotID)){
             
                 //WIFISpotID_WIFISpotName contain id
-                //Check if WIFISpotID exists if WIFISpotID correct
-                if (QRID < 0 || !_WIFISpotIDExist.Contains(QRID)){
-                    return (int)CheckWIFISpotID_WIFISpotNameErrorCode.QRID_INCORRECT;
+                //Check if WIFISpotID exists, if WIFISpotID correct
+                if (WIFISpotID < 0 || !_WIFISpotIDExist.Contains(WIFISpotID)){
+                    return (int)CheckWIFISpotID_WIFISpotNameErrorCode.WIFISPOTID_INCORRECT;
                 }
             }else{
             
                 //WIFISpotID_WIFISpotName contain name
                 //Check is xml file contain Name
-                QRID = -1;
+                WIFISpotID = -1;
                 foreach (XmlNode xmlNode in xmlEl.ChildNodes){
                     if (xmlNode.Attributes[1].Value == WIFISpotID_WIFISpotName){
-                        if (!Int32.TryParse(xmlNode.Attributes[0].Value, out QRID)){
-                            return (int)CheckWIFISpotID_WIFISpotNameErrorCode.QRID_INCORRECT;
+                        if (!Int32.TryParse(xmlNode.Attributes[0].Value, out WIFISpotID)){
+                            return (int)CheckWIFISpotID_WIFISpotNameErrorCode.WIFISPOTID_INCORRECT;
                         }
                     }
                 }
 
                 //WIFISpotID_WIFISpotName == -1 => not changed => WIFISpotName not found
-                if (QRID == -1){
+                if (WIFISpotID == -1){
                     return (int)CheckWIFISpotID_WIFISpotNameErrorCode.NAME_NOT_FOUND;
                 }
             }
-            return QRID;
+            return WIFISpotID;
         }
 
+        /// <summary>
+        ///     Check MAC addres for errors
+        /// </summary>
+        /// <param name="MACAddress">MAC address to check</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <item>TRUE: MAC address is correct</item>
+        ///         <item>FALSE: MAC address is not correct</item>
+        ///     </list>
+        /// </returns>
         private Boolean CheckMACAddress(string MACAddress)
         {
+            //Principe of verification:
+            //  MAC contain 6 oct.
+            //  1 oct - 2 hex. numbers
+            //  Between oct. - symbol '-'
+            //  Result MAC length = 6 * 2 + 5 = 17 = _WIFISpotMACLen 
             Boolean isCorrectMAC = true;
             int state = 0, count = 0;
             foreach (char c in MACAddress){
@@ -486,7 +629,7 @@ namespace Server
                     case 0: 
                         if (!(c >= '0' && c <= '9' || c >= 'A' && c <= 'F')){
                             state = -1;
-                         }
+                        }
                        count ++;
                         if (count == 2){
                             state = 1;
@@ -504,7 +647,12 @@ namespace Server
                         isCorrectMAC = false;
                         break;
                 }
-            }  
+            }
+            
+            //Check for length
+            if (MACAddress.Length != _WIFISpotMACLen){
+                isCorrectMAC = false;
+            }
             return isCorrectMAC;
         }
 

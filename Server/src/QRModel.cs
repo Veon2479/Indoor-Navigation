@@ -323,13 +323,13 @@ namespace Server
             NAME_NOT_FOUND = -5
         }
         /// <summary>
-        ///     Chade QR record in xml file according received ID or Name
+        ///     Change QR record in xml file according received ID or Name
         /// </summary>
         /// <param name="oldQRID_oldName">ID of QR record in xml file</param>
         /// <param name="newQRID">New QR ID to change</param>
         /// <param name="newQRName">New QR name to change</param>
-        /// <param name="newX">Coordinate x</param>
-        /// <param name="newY">Coordinate y</param>
+        /// <param name="newX">New coordinate x</param>
+        /// <param name="newY">New coordinate y</param>
         /// <returns>
         ///     <list type="table">
         ///         <listheader>
@@ -369,13 +369,9 @@ namespace Server
             PARSE_TO_DOUBLE_ERROR = -2
         }
         /// <summary>
-        ///     Chade QR record in xml file according received ID or Name
+        ///     Get list of xml file elements data
         /// </summary>
-        /// <param name="oldQRID_oldName">ID of QR record in xml file</param>
-        /// <param name="newQRID">New QR ID to change</param>
-        /// <param name="newQRName">New QR name to change</param>
-        /// <param name="newX">Coordinate x</param>
-        /// <param name="newY">Coordinate y</param>
+        /// <param name="xmlContent">Array that contain xml file elemtns data</param>
         /// <returns>
         ///     <list type="table">
         ///         <listheader>
@@ -587,7 +583,7 @@ namespace Server
             INCORRECT_ELEMENT_LV2 = -5
         }
         /// <summary>
-        ///     Check xml file for incrrect content
+        ///     Check xml file for incorrect content
         /// </summary>
         /// <param name="xmlDoc">Xml document to open xml file</param>
         /// <returns>
@@ -597,7 +593,7 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <itme> 1 (IS_EMPTY): xml document is empty</itme>
+        ///     <item> 1 (IS_EMPTY): xml document is empty</item>
         ///     <item>-1 (READ_FILE_ERROR): Error on read file (cannot find, incorrect name, cannot read, incorrect directory...)</item>
         ///     <item>-2 (UNKNOWN_ROOT_TAG): Xml file contain unknown root tag (Known root tags: "QRCodes")</item>
         ///     <item>-3 (UNKNOWN_ELEMENT_LV1_TAG): Xml file contain unknown element tag on lvl 1 (Known lvl 1 tags: "QRCode")</item>
@@ -666,7 +662,8 @@ namespace Server
                 _QRIDExist.Add(QRID);
 
                 //Check unique name
-                if (QRNameList.Contains(xmlNode.Attributes[1].Value))
+                if (QRNameList.Contains(xmlNode.Attributes[1].Value) || 
+                    xmlNode.Attributes[1].Value == "")
                 {
                     return (int)CheckXmlFileContentErrorCode.INCORRECT_ATRIBUTES_LV1;
                 }
@@ -704,7 +701,7 @@ namespace Server
         }
 
         /// <summary>
-        ///     Change _xmlFileName to default value and check it for errors
+        ///     Try open xml file. Create all nessary file and directories for xml file if doesn't open file
         /// </summary>
         /// <returns>
         ///     <list type="table">
@@ -755,7 +752,7 @@ namespace Server
             NAME_NOT_FOUND = -3
         }
         /// <summary>
-        ///     Check is QRID_QRName ID or Name that exest in xml file
+        ///     Check is QRID_QRName ID or Name that exist in xml file
         /// </summary>
         /// <param name="QRID_QRName">>ID or Name of QR record in xml file</param>
         /// <param name="xmlDoc">Open xml file to work with</param>

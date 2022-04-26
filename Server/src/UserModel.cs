@@ -22,8 +22,9 @@ namespace Server
             internal int Count; //Alos using as flag "does ID exist"
             internal UserModelPositionData[] AccumData;
         }
+        
         //Defaul directory to save accumulated data
-        private const string DEFAULT_DIR = "ID_Data";
+        private const string _defaultDir = "Default session";
 
         //Const that define ID as "Free"
         private const int NO_ID = -1;
@@ -36,14 +37,25 @@ namespace Server
 
         //Temporary Storage that accumulate data about users and save it to file
         internal UserModelTempStorageEl[] userModelTempStorage;
+
+        //Directory that accumulate data anout users in current session
+        internal string _sessionDir {get; private set; } = "";
         
         /// <summary>
         ///     Create object
         /// </summary>
         /// <param name="amountOfUsers">Size of temporrary storage (how much users can be processing) (expands by 2 times if need)</param>
         /// <param name="accumDataSize">Size of accumulated storage (how much record save by time))</param>
-        public UserModel(int amountOfUsers, int accumDataSize)
+        public UserModel(int amountOfUsers, int accumDataSize, long sessionDir = -1)
         {
+            //Chouse session directory name
+            if (sessionDir  != -1){
+                this._sessionDir = sessionDir.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }else{
+                this._sessionDir = _defaultDir;
+            }
+
+            //Create temp storage
             this._amountOfUsers = amountOfUsers;
             this._accumDataSize = accumDataSize;
             Array.Resize(ref userModelTempStorage, this._amountOfUsers);
@@ -104,7 +116,7 @@ namespace Server
             }
 
             //Create file path
-            StringBuilder FileName = new StringBuilder(DEFAULT_DIR + "/" + time.ToString() + "_" + ID.ToString() + ".uinf");
+            StringBuilder FileName = new StringBuilder(_sessionDir + "\\" + time.ToString() + "_" + ID.ToString() + ".uinf");
             var processedID = this.userModelTempStorage;
 
             //Fill new element
@@ -265,8 +277,8 @@ namespace Server
         {
             try{
                 //Check if directory exists
-                if (!Directory.Exists(DEFAULT_DIR)){
-                    Directory.CreateDirectory(DEFAULT_DIR);
+                if (!Directory.Exists(_sessionDir)){
+                    Directory.CreateDirectory(_sessionDir);
                 }
                 
                 //Write data to file
@@ -276,7 +288,7 @@ namespace Server
                         bWriter.Write(tempStorageEl.AccumData[i].Y);
                         bWriter.Write(tempStorageEl.AccumData[i].Time);
                     }
-                bWriter.Close();
+                    bWriter.Close();
                 }
                 }catch{
                     return (int)SaveStorageElErrorCode.WRITE_FILE_ERROR; //Thraulble with file (no such directory, can't open,
