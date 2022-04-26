@@ -25,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class Engine {
 
     public int UserId = 0;
-    public double Crd1, Crd2;
+    public double Crd1, Crd2, Azimuth;
     public boolean isAlive = false;
 
     private Socket clientTcp;

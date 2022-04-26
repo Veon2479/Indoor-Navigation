@@ -30,6 +30,8 @@ import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.zxing.Result;
 
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -71,6 +73,26 @@ public class MainActivity extends AppCompatActivity {
         if(arguments!=null) {
             String qrcode = arguments.getString("1");
             editText1.setText(qrcode);
+            System.out.println(qrcode);
+            String[] helpStr = qrcode.split("[\n\\t]");
+            System.out.println("Nice "+helpStr.length);
+            try {
+                Tools.serverAddr = helpStr[0];
+                Tools.serverPortTcp = Integer.parseInt(helpStr[1]);
+                Tools.serverPortUdp = Integer.parseInt(helpStr[2]);
+                engine.Azimuth = Double.parseDouble(helpStr[3]);
+                engine.Crd1 = Double.parseDouble(helpStr[4]);
+                engine.Crd2 = Double.parseDouble(helpStr[5]);
+            }
+            catch (Exception ex) {
+                Tools.serverAddr = "192.168.50.145";
+                Tools.serverPortTcp = 4444;
+                Tools.serverPortUdp = 4445;
+                engine.Azimuth = 0;
+                engine.Crd1 = 0;
+                engine.Crd2 = 0;
+            }
+            System.out.println("Ok "+engine.Crd2);
         }
         //editText1.getText(); //взять текст из первой строки
         //editText2.getText(); //взять текст из второй строки
