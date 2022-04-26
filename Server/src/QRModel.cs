@@ -75,18 +75,18 @@ namespace Server
                 {
     
                     //Work with default file name if name is empty
-                    _xmlFileName = _defaultDir + "/" + _defaultPrivateDir + "/" + _defaultName;
+                    _xmlFileName = _defaultDir + "\\" + _defaultPrivateDir + "\\" + _defaultName;
                     _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.')) + "_" + _defaultQRCodeDir;
                 }else{
 
                     //Create new files
-                    int insertInd = _xmlFileName.LastIndexOf('/');
+                    int insertInd = _xmlFileName.LastIndexOf('\\');
 
                     //Get only name to insert
                     string onlyName = _xmlFileName.Remove(0, insertInd+1);
                     onlyName = onlyName.Remove(onlyName.LastIndexOf('.'));
 
-                    _xmlFileName = _xmlFileName.Insert(insertInd+1, onlyName + "/");
+                    _xmlFileName = _xmlFileName.Insert(insertInd+1, onlyName + "\\");
                     _workQRDir = _xmlFileName.Remove(_xmlFileName.LastIndexOf('.')) + "_" + _defaultQRCodeDir;
                 }
             }
@@ -482,7 +482,7 @@ namespace Server
                             xmlNode.ChildNodes[1].InnerText;
 
             //Create QR code file name
-            string QRFileName = _workQRDir + "/" + xmlNode.Attributes[1].Value + ".jpeg";
+            string QRFileName = _workQRDir + "\\" + xmlNode.Attributes[1].Value + ".jpeg";
 
             //cdr - coder
             Bitmap QRBmp;
