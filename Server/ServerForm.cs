@@ -610,5 +610,35 @@ namespace Server
                 }
             }
         }
+
+        private void bGenerate_Click(object sender, EventArgs e)
+        {
+            string BeginDateTime;
+            string EndDateTime;
+            mtbBegin.ValidatingType = typeof(DateTime);
+
+            if (mtbBegin.ValidateText() == null)
+            {
+                return;
+            }
+            if (mtbEnd.ValidateText() == null)
+            {
+                return;
+            }
+
+            BeginDateTime = mtbBegin.ValidateText().ToString();
+            EndDateTime = mtbEnd.ValidateText().ToString();
+            if (BeginDateTime != null && EndDateTime != null)
+            {
+                if (MapInfo.bitmap != null)
+                {
+                    pbHeatMap.Image = (Image)MapInfo.bitmap.Clone();
+                    long BeginTime = DateTimeOffset.Parse(BeginDateTime).ToUnixTimeSeconds();
+                    long EndTime = DateTimeOffset.Parse(EndDateTime).ToUnixTimeSeconds();
+                    if (BeginTime > EndTime) return;
+                    HeatMap.Generate(pbHeatMap, BeginTime, EndTime);
+                }
+            }
+        }
     }
 }
