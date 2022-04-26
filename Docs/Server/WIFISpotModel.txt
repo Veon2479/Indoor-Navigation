@@ -1,0 +1,179 @@
+Класс WIFISpotModel реализует работу с Xml файлами, в которых содержатся информация о WIFI роутерах
+==========================
+Используется:
+	Server: Алексей
+==========================
+Типы:
+        public struct WIFISpotModelXmlContent
+        {
+            public string WIFISpotID;
+            public string WIFISpotName;
+            public string WIFISpotPower;
+            public string WIFISpotMAC;
+            public string X;
+            public string Y;
+        }
+	Описание:
+		Структура, хранящая данные об одной записи из xml файла
+	Поля:
+		string WIFISpotID - ID QR-кода
+		string WIFISpotName - Имя записи/QR-кода в xml файле
+		string WIFISpotPower - Мощность WIFI устройства
+		string WIFISpotMAC - MAC адрес WIFI устройства
+		string x, y - Координаты QR-кода
+==========================
+Поля:
+        internal string _xmlFileName { get; private set; } = "";
+		Имя xml файла, с которым ведётся работа (задаётся при создани)
+
+        protected const string _defaultDir = "config";
+		Директория, в которой хранятся xml файлы по умолчанию	
+
+        protected const string _defaultName = "DefaultWIFISpotData.xml";
+		Имя xml файла по умолчанию
+
+        protected const int _WIFISpotMACLen = 17; 
+		Длина MAC адреса (6 октетов по 2 шестн. символа + 5 символов "-")		
+
+        List<int> _WIFISpotIDExist = new List<int>();
+		Список существующих ID
+
+/*************************
+Прмер таблицы:
+
+<?xml version="1.0" encoding="utf-8"?>
+<!--WIFISpot data here-->
+<WIFISpots>
+  <WIFISpot id="0" name="Greate hall">
+    <x>-4841538.43461</x>
+    <y>16841.4684</y>
+    <power>146.4</power>
+    <mac>E8-6F-38-DF-CD-19</mac>
+  </WIFISpot>
+</WIFISpots>
+*************************/
+
+==========================
+Методы:
+
+Public: 
+----------------------------------------------------
+	public WIFISpotModel(string xmlFileName = "")
+	Описание:
+		Проверяет полученый xml файл. Если не существует - создаёт с переданным именем. Если имя пустое - создаёт с именем по умолчанию в дирректории по умолчанию.
+	Параметры:
+		string xmlFileName = "" - Имя xml файла, с которым нужно вести работу
+	Возвращаемые значения:
+		То, что возвращает конструктор
+		Exception("Incorrect file name"): Неверное имя файла
+		Exception("Incorrect default file or file was corrupted"): Не удаётся открыть стандартный файл, либо он был повреждён
+		Exception("Incorrect file or file was corrupted"): Не удаётся открыть файл, либо он был повреждён
+----------------------------------------------------
+	public int DeleteWIFISpotRecord(string WIFISpotID_WIFISpotName)
+	Описание: 
+		Удаляет элемент из xml файла, согласно переденного ID или имени
+	Параметры:
+		string WIFISpotID_WIFISpotName - ID или имя QR-кода, который нужно удалить
+	Возвращаемые значения:
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		-1 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-2 (WIFISPPOT_ID_INCORRECT): ID WIFI-устройства невернен, или занят	
+		-3 (NAME_NOT_FOUD): Указанное имя не найдено
+----------------------------------------------------
+        public int AddWIFISpotRecord(string WIFISpotID, string WIFISpotName, string x, string y, string power, string MACAddress)
+	Описание:
+		Добавлет новый элемент с переданными параметрамиы в xml файл 
+	Параметры:
+		string WIFISpotID - ID WIFI-устройства
+		string WIFISpotName - Имя WIFI-устройства
+		string x, y - Координаты WIFI-устройства
+		string power - Мощность WIFI-устройства
+		string MACAddress - MAC адрес WIFI-усройства
+	Возвращаемые значения:
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		-1 (INCORRECT_PARAMET): Передан неверный параметр (не тот тип, не то содержимое ...)
+		-2 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-3 (WIFISPOTID_INCORRECT): ID WIFI-устройства невернен, или занят
+		-4 (NAME_OCCUPIED): Имя занято, уже существует запись с таким именем
+		-5 (MACADDRESS_OCCUPED): MAC адерес занят, уже существует запись с таким именем
+----------------------------------------------------
+        public int ChangeWIFISpotRecord(string oldWIFISpotID_WIFISpotName, string newWIFISpotID, string newWIFISpotName, string newX, string newY, string newPower, string newMACAddress)
+	Описание:
+		Изменяет в xml файле запись с перданным ID или именем 
+	Параметры:
+		string oldWIFISpotID_WIFISpotName - ID или имя WIFI-устройства, который нужно изменить
+		string newWIFISpotID - ID WIFI-устройства на которой нужно изменить
+		string newWIFISpotName - Имя WIFI-устройства на который нужно изменить
+		string x, y - Координаты WIFI-устройства на который нужно изменить
+		string newPower - Мощность WIFI-устройства
+		string newMACAddress - MAC адрес WIFI-устройства
+	Возвращаемые значения:
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		-1 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-2 (INCORRECT_PARAMET): Передан неверный параметр (не тот тип, не то содержимое ...)
+		-3 (QRID_INCORRECT): ID WIFI-утсройства не верен, (0 > newWIFISpotID), либо не сущесвует в xml файле  
+		-4 (NAME_OCCUPIED): WIFI-устройство с таким именем уже существует
+		-5 (NAME_NOT_FOUND): WIFI-устройства c таким именем не найдено
+----------------------------------------------------
+	public int GetWIFISpotRecordList(ref WIFISpotModelXmlContent[] xmlContent)
+	Описание:
+		Заполняет переданный массив структур данными из xml файла
+	Параметры:
+		ref QRModelXmlContent[] xmlContent - массив структур, который необходимо заполнить
+	Возвращаемые значения:
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		-1 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-2 (PARSE_TO_DOUBLE_ERROR): Не удалось преобразовать даные из файла в (double x, double y)
+
+Private:
+----------------------------------------------------
+	private int CheckXmlFileContent(ref XmlDocument xmlDoc)
+	Описание:
+		Проверяет целостность и корректность xml файла и возвращает окрытый (XmlDocument)
+	Парамеры:
+		ref XmlDocument xmlDoc - Содержит открытый xml файл
+	Возвращаемые значения:
+		Косвенное возвращение (xmlDoc) через переданные параметры
+		>= 0 всё ок, иначе ошибка
+		1 (IS_EMPTY): Xml файл не содержит записей
+	Коды ошибок:
+		-1 (READ_FILE_ERROR): Ошибка чтения файла (файл не существует, нельзя прочитать, не существует путь ...)
+		-2 (UNKNOWN_ROOT_TAG): Неизвестный корневой тег в xml файле (Известные корневые теги: "QRCodes")
+		-3 (UNKNOWN_ELEMENT_LV1_TAG): Незвестный тэн элемента 1-го уровня (Известные теги первого уровня: "QRCode")
+		-4 (INCORRECT_ATRIBUTES_LV1): Неверный атрибут 1-го уровня или их количество (Известные атрибуты: (int)"id", (не пустой string, не какое-либо число)"name")
+		-5 (INCORRECT_ELEMENT_LV2): Неверный элемент 2-го уровня (Изветсные теги: "x", "y"; Известное содержимое должно быть типа "double", записано через точку)
+----------------------------------------------------
+	private int CreateNessaryFiles()
+	Описание: 
+		Создаёт необходимые файлы и дирректории в соответсвии с (_xmlFileName) и (_xmlQRDir)
+	Параметры:
+		none
+	Возвращаемые значения:
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		none
+----------------------------------------------------
+        private int CheckWIFISpotID_WIFISpotName(string WIFISpotID_WIFISpotName, XmlDocument xmlDoc)
+	Описание:
+		Проверяет (WIFISpotID_WIFISpotName) на наличие ID или имени в открытом xml документе (xmlDoc)
+	Параметры:
+		string WIFISpotID_WIFISpotName - ID или имя WIFI-устройства
+		XmlDocument xmlDoc - Содержит открытый xml файл				
+	Возвращаемые значения:
+		>= 0 ID элемента в xml файле (всё ок, ошибок нет), иначе ошибка
+	Коды ошибок:
+		-2 (WIFISPOTID_INCORRECT): ID WIFI-устройства не верен, (0 > WIFISpotID)либо не сущесвует в xml файле  
+		-3 (NAME_NOT_FOUND): WIFI-устройство c таким именем не найдено
+----------------------------------------------------
+	private Boolean CheckMACAddress(string MACAddress)
+	Описание:
+		Проверяет MAC адрес на корректность
+	Параметры:
+		string MACAddress - MAC адрес, котороый необходимо проверить
+	Возвращаетмые значения:
+		TRUE: MAC адрес корректен
+		FALSE: MAC адрес не кореектен
