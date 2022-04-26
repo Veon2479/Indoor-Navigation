@@ -46,11 +46,11 @@ namespace Server
         /// </summary>
         /// <param name="amountOfUsers">Size of temporrary storage (how much users can be processing) (expands by 2 times if need)</param>
         /// <param name="accumDataSize">Size of accumulated storage (how much record save by time))</param>
-        public UserModel(int amountOfUsers, int accumDataSize, string sessionDir = "")
+        public UserModel(int amountOfUsers, int accumDataSize, long sessionDir = -1)
         {
             //Chouse session directory name
-            if (sessionDir != ""){
-                this._sessionDir = sessionDir;
+            if (sessionDir  != -1){
+                this._sessionDir = sessionDir.ToString(System.Globalization.CultureInfo.InvariantCulture);
             }else{
                 this._sessionDir = _defaultDir;
             }
@@ -116,7 +116,7 @@ namespace Server
             }
 
             //Create file path
-            StringBuilder FileName = new StringBuilder(_sessionDir + "/" + time.ToString() + "_" + ID.ToString() + ".uinf");
+            StringBuilder FileName = new StringBuilder(_sessionDir + "\\" + time.ToString() + "_" + ID.ToString() + ".uinf");
             var processedID = this.userModelTempStorage;
 
             //Fill new element
