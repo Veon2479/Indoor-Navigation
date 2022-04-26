@@ -4,6 +4,7 @@ import static com.example.client_ins.Tools.*;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
+import android.util.Pair;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import java.io.InputStream;
@@ -21,7 +22,7 @@ public class Engine implements Runnable{
     public boolean isAlive = false;
     public boolean isBLocked = false;
 
-    public WiFi[] WiFi_List;
+    public Pair< WiFi[], Double> WiFi_List;
 
     private static Engine instance;
     public static Context context;
