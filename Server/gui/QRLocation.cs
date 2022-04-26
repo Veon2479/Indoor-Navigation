@@ -11,11 +11,12 @@ namespace Server
 {
     internal class QRLocation
     {
-
         public static bool adding { get; set; } = false;
         public static bool selecting { get; set; } = false;
-        public static bool drag { get; set; } = false;
         private static Bitmap QRMap = null;
+
+        internal static ListView.SelectedListViewItemCollection selectedItem = null;
+        internal static QRModel.QRModelXmlContent selectedPoint = new QRModel.QRModelXmlContent();
 
         //drawing settings
         internal static int QRPointRadius = 6;
@@ -41,7 +42,7 @@ namespace Server
             }
 
             view.EndUpdate();
-            QRLocation.PaintQRMap(pb);
+            QRLocation.DrawQRMap(pb);
         }
 
         //open config file
@@ -55,7 +56,7 @@ namespace Server
 
             //update view
             QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
-            QRLocation.PaintQRMap(pb);
+            QRLocation.DrawQRMap(pb);
 
             //update QR Images
             QRModel.QRModelXmlContent[] contents = null;
@@ -87,10 +88,10 @@ namespace Server
         }
 
         //edit QR in config file
-        public static string EditQR(string oldQRID, string QRID, string QRName, string x, string y, ref ListView view, PictureBox pb)
+        public static int EditQR(string oldQRID, string QRID, string QRName, string x, string y, ref ListView view, PictureBox pb)
         {
             if (Server.Run)
-                return "The server is running. File modification is not possible";
+                return -1;
 
             //edit QR in a file
             string OldQRFileName = "";
@@ -98,74 +99,51 @@ namespace Server
 
             int editResult = Server.qrModel.ChangeQRRecord(oldQRID, QRID, QRName, x, y);
 
-            switch ((QRModel.ChangeQRRecordErrorCode)editResult)
+            if (editResult == 0)
             {
-                case QRModel.ChangeQRRecordErrorCode.INCORRECT_PARAMETR:
-                    return "Incorrect QR ID or QR X or QR Y";
-                case QRModel.ChangeQRRecordErrorCode.CORRUPTED_FILE:
-                    return "Xml file not exist or was corrupted";
-                case QRModel.ChangeQRRecordErrorCode.QRID_INCORRECT:
-                    return "QR ID incorrent or already exist";
-                case QRModel.ChangeQRRecordErrorCode.NAME_IS_OCCUPIED:
-                    return "QR Name already occupied";
-                case QRModel.ChangeQRRecordErrorCode.NAME_NOT_FOUND:
-                    return "QR Name is not exist";
-                default:
-                    {
-                        //update view
-                        QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
+                //update view
+                QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
 
-                        //delete old QR file
-                        if (Result >= 0)
-                        {
-                            File.Delete(OldQRFileName);
-                        }
+                //delete old QR file
+                if (Result >= 0)
+                {
+                    File.Delete(OldQRFileName);
+                }
 
-                        //generate new QR file
-                        Server.qrModel.GenerateQR(QRID);                        
-
-                        return "QR edited";
-                    }
+                //generate new QR file
+                Server.qrModel.GenerateQR(QRID);
             }
+            return editResult;
         }
 
         //delete QR from config file
-        public static string DeleteQR(string QRID, ref ListView view, PictureBox pb)
+        public static int DeleteQR(string QRID, ref ListView view, PictureBox pb)
         {
             if (Server.Run)
-                return "The server is running. File modification is not possible";
+                return -1;
 
             string OldQRFileName = "";
             int Result = Server.qrModel.GetQRImgName(QRID, ref OldQRFileName);
 
             int delResult = Server.qrModel.DeleteQRRecord(QRID);
 
-            switch ((QRModel.DeleteQRRecordErrorCode)delResult)
+            if (delResult == 0)
             {
-                case QRModel.DeleteQRRecordErrorCode.CORRUPTED_FILE:
-                    return "Xml file not exist or was corrupted";
-                case QRModel.DeleteQRRecordErrorCode.QRID_INCORRECT:
-                    return "QR ID not found";
-                case QRModel.DeleteQRRecordErrorCode.NAME_NOT_FOUND:
-                    return "Incorrect QR name of does not exist";
-                default:
-                    {
-                        //update view
-                        QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
 
-                        //delete QR file
-                        if (Result >= 0)
-                        {
-                            File.Delete(OldQRFileName);
-                        }
+                //update view
+                QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
 
-                        return "QR deleted";
-                    }
+                //delete QR file
+                if (Result >= 0)
+                {
+                    File.Delete(OldQRFileName);
+                }
             }
+            return delResult;
         }
 
         //paint QR Map
-        public static void PaintQRMap(PictureBox pb)
+        public static void DrawQRMap(PictureBox pb)
         {
             //paint map
             if (MapInfo.bitmap == null)
@@ -244,7 +222,7 @@ namespace Server
         public static void SelectPoint(QRModel.QRModelXmlContent point, ToolTip ttQR, PictureBox pbMap, PictureBox pbQR)
         {
             //show tip, select point
-            QRLocation.PaintQRMap(pbMap);
+            QRLocation.DrawQRMap(pbMap);
             string content = $"QR ID: {point.QRID}\nQR Name: {point.QRName}\nX: {point.X}\nY: {point.Y}";
             ttQR.SetToolTip(pbMap, content);
             double x = double.Parse(point.X, System.Globalization.CultureInfo.InvariantCulture);

@@ -53,6 +53,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="gui\WIFILocation.cs" />
     <Compile Include="gui\OnlineView.cs" />
     <Compile Include="gui\QRLocation.cs" />
     <Compile Include="gui\EntryPoint.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="ServerForm.Designer.cs">
       <DependentUpon>ServerForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\WIFISpotModel.cs" />
     <Compile Include="src\MapInfo.cs" />
     <Compile Include="src\RegPacket.cs" />
     <Compile Include="src\IDModel.cs" />

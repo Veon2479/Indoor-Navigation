@@ -37,6 +37,8 @@ namespace Server
         public static void StartServer(ref Timer timer)
         {
             timer.Start();
+            Server.userIDModel = new IDModel(Server.DEFAULT_TABLE_CAPACITY);
+            Server.userModel = new UserModel(Server.DEFAULT_TABLE_CAPACITY, 2);
             Server.Start();
         }
 

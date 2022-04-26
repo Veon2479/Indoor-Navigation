@@ -250,6 +250,9 @@ namespace Server
         private void btnAddQR_Click(object sender, EventArgs e)
         {
             int Result = QRLocation.AddQR(tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+
+            //processing Result
+
             if (Result == 0)
             {
                 QRLocation.DrawQRPoint(pbQRLocation, Color.Green, double.Parse(tbQRx.Text), double.Parse(tbQRy.Text));
@@ -260,51 +263,51 @@ namespace Server
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
-            string Result = "The point is not selected";
+            int Result = -1;
 
             //select in list view
-            if (selectedItem != null && selectedItem.Count > 0)
+            if (QRLocation.selectedItem != null && QRLocation.selectedItem.Count > 0)
             {
-                Result = QRLocation.EditQR(selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+                Result = QRLocation.EditQR(QRLocation.selectedItem[0].Text, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             }
 
             //select in QR map
-            else if (selectedPoint.QRID != null)
-                Result = QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
-            tbError.Text = Result;
+            else if (QRLocation.selectedPoint.QRID != null)
+                Result = QRLocation.EditQR(QRLocation.selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
+            
+            //processing Result
         }
 
         //delete QR from a config file
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
-            string Result = "The point is not selected";
+            int Result = -1; 
 
             //select in list view
-            if (selectedItem != null)
+            if (QRLocation.selectedItem != null)
             {
                 Result = QRLocation.DeleteQR(tbQRID.Text, ref lvQRList, pbQRLocation);
             }
 
             //select in QR map
-            else if (selectedPoint.QRID != null)
-                Result = QRLocation.DeleteQR(selectedPoint.QRID, ref lvQRList, pbQRLocation);
-            tbError.Text = Result;
+            else if (QRLocation.selectedPoint.QRID != null)
+                Result = QRLocation.DeleteQR(QRLocation.selectedPoint.QRID, ref lvQRList, pbQRLocation);
+
+            //processing Result
         }
 
         //on select item in QR list
-        ListView.SelectedListViewItemCollection selectedItem = null;
-        QRModel.QRModelXmlContent selectedPoint = new QRModel.QRModelXmlContent();
         private void lvQRList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedItem = lvQRList.SelectedItems.Count > 0 ? lvQRList.SelectedItems : null;
+            QRLocation.selectedItem = lvQRList.SelectedItems.Count > 0 ? lvQRList.SelectedItems : null;
 
-            if (selectedItem != null)
+            if (QRLocation.selectedItem != null)
             {
-                tbQRID.Text = selectedItem[0].Text;
-                tbQRName.Text = selectedItem[0].SubItems[1].Text;
-                tbQRx.Text = selectedItem[0].SubItems[2].Text;
-                tbQRy.Text = selectedItem[0].SubItems[3].Text;
-                QRLocation.ShowQRImg(selectedItem[0].Text, pbQR);
+                tbQRID.Text = QRLocation.selectedItem[0].Text;
+                tbQRName.Text = QRLocation.selectedItem[0].SubItems[1].Text;
+                tbQRx.Text = QRLocation.selectedItem[0].SubItems[2].Text;
+                tbQRy.Text = QRLocation.selectedItem[0].SubItems[3].Text;
+                QRLocation.ShowQRImg(QRLocation.selectedItem[0].Text, pbQR);
             }
         }
 
@@ -316,8 +319,8 @@ namespace Server
 
             if (QRLocation.selecting && e.Button == MouseButtons.None)
             {
-                tbQRx.Text = selectedPoint.X;
-                tbQRy.Text = selectedPoint.Y;
+                tbQRx.Text = QRLocation.selectedPoint.X;
+                tbQRy.Text = QRLocation.selectedPoint.Y;
             }
             else
             {
@@ -331,8 +334,13 @@ namespace Server
         {
             if (e.TabPage == tbQRLocation)
             {
-                QRLocation.PaintQRMap(pbQRLocation);
-            } else if (e.TabPage == tpOnline)
+                QRLocation.DrawQRMap(pbQRLocation);
+            }
+            else if (e.TabPage == tbWIFILocation)
+            {
+                WIFILocation.DrawWIFIMap(pbWIFIMap);
+            }
+            else if (e.TabPage == tpOnline)
             {
                 tmrOnlineViewUpdate.Interval = OnlineView.UPDATE_ONLINE_VIEW_INTERVAL;
                 if (MapInfo.bitmap == null)
@@ -356,7 +364,7 @@ namespace Server
         {
             if (!QRLocation.adding)
             {
-                QRLocation.PaintQRMap(pbQRLocation);
+                QRLocation.DrawQRMap(pbQRLocation);
                 QRLocation.DrawQRPoint(pbQRLocation, Color.Red, (e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient, (e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient);
                 tbQRx.Text = ((e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient).ToString("0.00");
                 tbQRy.Text = ((e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient).ToString("0.00");
@@ -368,23 +376,23 @@ namespace Server
         private void pbQRLocation_MouseDown(object sender, MouseEventArgs e)
         {
             //check hitting
-            selectedPoint = QRLocation.HitPoint(e.X, e.Y);
+            QRLocation.selectedPoint = QRLocation.HitPoint(e.X, e.Y);
 
             //update text boxes
-            tbQRID.Text = selectedPoint.QRID;
-            tbQRName.Text = selectedPoint.QRName;
-            tbQRx.Text = selectedPoint.X;
-            tbQRy.Text = selectedPoint.Y;
+            tbQRID.Text = QRLocation.selectedPoint.QRID;
+            tbQRName.Text = QRLocation.selectedPoint.QRName;
+            tbQRx.Text = QRLocation.selectedPoint.X;
+            tbQRy.Text = QRLocation.selectedPoint.Y;
 
-            if (selectedPoint.QRID != null)
+            if (QRLocation.selectedPoint.QRID != null)
             {
                 //show tip, select point
-                QRLocation.SelectPoint(selectedPoint, ttQR, pbQRLocation, pbQR);
+                QRLocation.SelectPoint(QRLocation.selectedPoint, ttQR, pbQRLocation, pbQR);
             }
             else
             {
                 //no hitting
-                QRLocation.PaintQRMap(pbQRLocation);
+                QRLocation.DrawQRMap(pbQRLocation);
                 QRLocation.adding = false;
                 QRLocation.selecting = false;
             }
@@ -393,21 +401,20 @@ namespace Server
         //end drag
         private void pbQRLocation_MouseUp(object sender, MouseEventArgs e)
         {
-            if (selectedPoint.QRID != null)
+            if (QRLocation.selectedPoint.QRID != null)
             {
-                double x = double.Parse(selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
-                double y = double.Parse(selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
+                double x = double.Parse(QRLocation.selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
+                double y = double.Parse(QRLocation.selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
 
                 //new location of a QR point
                 if (QRLocation.selecting && Math.Abs(e.X - (x / MapInfo.SizeCoefficient + MapInfo.PointX1)) > QRLocation.QRPointRadius && Math.Abs(e.Y - (y /  MapInfo.SizeCoefficient + MapInfo.PointY1)) > QRLocation.QRPointRadius)
                 {
-                    QRLocation.EditQR(selectedPoint.QRID, tbQRID.Text, tbQRName.Text, ((e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient).ToString("0.00"), ((e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient).ToString("0.00"), ref lvQRList, pbQRLocation);
-                    QRLocation.PaintQRMap(pbQRLocation);
+                    QRLocation.EditQR(QRLocation.selectedPoint.QRID, tbQRID.Text, tbQRName.Text, ((e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient).ToString("0.00"), ((e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient).ToString("0.00"), ref lvQRList, pbQRLocation);
+                    QRLocation.DrawQRMap(pbQRLocation);
                     QRLocation.selecting = false;
                 }
             }
         }
-
 
         /*
          * Online user tab
@@ -428,6 +435,24 @@ namespace Server
                     $"Y:" + (uData.y).ToString("N3");
                 ttOnlineUser.SetToolTip(pbOnline, uInfo);
             }
+        }
+
+        /*
+        * Wi-Fi location tab
+        */
+
+        private void btnWIFIOpen_Click(object sender, EventArgs e)
+        {
+            if (dlgOpenFile.ShowDialog() == DialogResult.Cancel)
+                return;
+            WIFILocation.OpenWIFIConfig(dlgOpenFile.FileName, ref lvWIFIList, pbWIFIMap);
+        }
+
+        private void btnWIFICreate_Click(object sender, EventArgs e)
+        {
+            if (dlgSaveFile.ShowDialog() == DialogResult.Cancel)
+                return;
+            WIFILocation.OpenWIFIConfig(dlgSaveFile.FileName, ref lvWIFIList, pbWIFIMap);
         }
     }
 }

@@ -27,9 +27,10 @@ namespace Server
 
 
         //server models
-        internal static IDModel userIDModel = new IDModel(DEFAULT_TABLE_CAPACITY);
-        internal static UserModel userModel = new UserModel(DEFAULT_TABLE_CAPACITY, 2);
+        internal static IDModel userIDModel = null;
+        internal static UserModel userModel = null;
         internal static QRModel qrModel = null;
+        internal static WIFISpotModel wifiSpotModel = null;
 
         //thread for listeners
         private static Task tcpListener;

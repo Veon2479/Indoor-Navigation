@@ -64,7 +64,6 @@ namespace Server
             this.btnStart = new System.Windows.Forms.Button();
             this.tbQRLocation = new System.Windows.Forms.TabPage();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.tbError = new System.Windows.Forms.TextBox();
             this.tcQRLocation = new System.Windows.Forms.TabControl();
             this.tbQRMap = new System.Windows.Forms.TabPage();
             this.pbQRLocation = new System.Windows.Forms.PictureBox();
@@ -93,6 +92,52 @@ namespace Server
             this.tpOnline = new System.Windows.Forms.TabPage();
             this.pOnline = new System.Windows.Forms.Panel();
             this.pbOnline = new System.Windows.Forms.PictureBox();
+            this.tbWIFILocation = new System.Windows.Forms.TabPage();
+            this.tbWIFI = new System.Windows.Forms.TabControl();
+            this.tbWIFIMap = new System.Windows.Forms.TabPage();
+            this.pbWIFIMap = new System.Windows.Forms.PictureBox();
+            this.tbWIFIList = new System.Windows.Forms.TabPage();
+            this.lvWIFIList = new System.Windows.Forms.ListView();
+            this.colWIFIID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colWIFIName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colMAC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colWIFIStrength = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colWIFIX = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colWIFIY = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.lblWIFIStrength = new System.Windows.Forms.Label();
+            this.lblWIFIMAC = new System.Windows.Forms.Label();
+            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.textBox9 = new System.Windows.Forms.TextBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.lblWIFIY = new System.Windows.Forms.Label();
+            this.lblWIFIX = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.btnWIFIDelete = new System.Windows.Forms.Button();
+            this.btnWIFIEdit = new System.Windows.Forms.Button();
+            this.btnWIFIAdd = new System.Windows.Forms.Button();
+            this.btnWIFICreate = new System.Windows.Forms.Button();
+            this.btnWIFIOpen = new System.Windows.Forms.Button();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lblWIFIName = new System.Windows.Forms.Label();
+            this.lblWIFIID = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.btnCreateWIFI = new System.Windows.Forms.Button();
+            this.btnOpenWIFI = new System.Windows.Forms.Button();
             this.tmrListUpdate = new System.Windows.Forms.Timer(this.components);
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
@@ -121,6 +166,15 @@ namespace Server
             this.tpOnline.SuspendLayout();
             this.pOnline.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbOnline)).BeginInit();
+            this.tbWIFILocation.SuspendLayout();
+            this.tbWIFI.SuspendLayout();
+            this.tbWIFIMap.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbWIFIMap)).BeginInit();
+            this.tbWIFIList.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -128,9 +182,9 @@ namespace Server
             tbSettings.Controls.Add(this.pImage);
             tbSettings.Controls.Add(this.pSettings);
             tbSettings.Location = new System.Drawing.Point(4, 25);
-            tbSettings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            tbSettings.Margin = new System.Windows.Forms.Padding(4);
             tbSettings.Name = "tbSettings";
-            tbSettings.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            tbSettings.Padding = new System.Windows.Forms.Padding(4);
             tbSettings.Size = new System.Drawing.Size(1496, 840);
             tbSettings.TabIndex = 0;
             tbSettings.Text = "Settings";
@@ -142,7 +196,7 @@ namespace Server
             this.pImage.Controls.Add(this.pbMapImage);
             this.pImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pImage.Location = new System.Drawing.Point(304, 4);
-            this.pImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pImage.Margin = new System.Windows.Forms.Padding(4);
             this.pImage.Name = "pImage";
             this.pImage.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.pImage.Size = new System.Drawing.Size(1188, 832);
@@ -154,7 +208,7 @@ namespace Server
             this.pbMapImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pbMapImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbMapImage.Location = new System.Drawing.Point(7, 6);
-            this.pbMapImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pbMapImage.Margin = new System.Windows.Forms.Padding(4);
             this.pbMapImage.Name = "pbMapImage";
             this.pbMapImage.Size = new System.Drawing.Size(1174, 820);
             this.pbMapImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -183,7 +237,7 @@ namespace Server
             this.pSettings.Controls.Add(this.btnDownloadImage);
             this.pSettings.Dock = System.Windows.Forms.DockStyle.Left;
             this.pSettings.Location = new System.Drawing.Point(4, 4);
-            this.pSettings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pSettings.Margin = new System.Windows.Forms.Padding(4);
             this.pSettings.Name = "pSettings";
             this.pSettings.Size = new System.Drawing.Size(300, 832);
             this.pSettings.TabIndex = 0;
@@ -211,7 +265,7 @@ namespace Server
             // 
             this.tbRealWidth.Enabled = false;
             this.tbRealWidth.Location = new System.Drawing.Point(19, 254);
-            this.tbRealWidth.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbRealWidth.Margin = new System.Windows.Forms.Padding(4);
             this.tbRealWidth.Name = "tbRealWidth";
             this.tbRealWidth.Size = new System.Drawing.Size(128, 22);
             this.tbRealWidth.TabIndex = 23;
@@ -220,7 +274,7 @@ namespace Server
             // tbRealLength
             // 
             this.tbRealLength.Location = new System.Drawing.Point(19, 176);
-            this.tbRealLength.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbRealLength.Margin = new System.Windows.Forms.Padding(4);
             this.tbRealLength.Name = "tbRealLength";
             this.tbRealLength.Size = new System.Drawing.Size(128, 22);
             this.tbRealLength.TabIndex = 22;
@@ -230,7 +284,7 @@ namespace Server
             // tbCoordinateY2
             // 
             this.tbCoordinateY2.Location = new System.Drawing.Point(192, 89);
-            this.tbCoordinateY2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateY2.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateY2.Name = "tbCoordinateY2";
             this.tbCoordinateY2.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateY2.TabIndex = 21;
@@ -240,7 +294,7 @@ namespace Server
             // tbCoordinateX2
             // 
             this.tbCoordinateX2.Location = new System.Drawing.Point(192, 57);
-            this.tbCoordinateX2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateX2.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateX2.Name = "tbCoordinateX2";
             this.tbCoordinateX2.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateX2.TabIndex = 20;
@@ -250,7 +304,7 @@ namespace Server
             // tbCoordinateY1
             // 
             this.tbCoordinateY1.Location = new System.Drawing.Point(59, 89);
-            this.tbCoordinateY1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateY1.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateY1.Name = "tbCoordinateY1";
             this.tbCoordinateY1.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateY1.TabIndex = 19;
@@ -260,7 +314,7 @@ namespace Server
             // tbCoordinateX1
             // 
             this.tbCoordinateX1.Location = new System.Drawing.Point(59, 57);
-            this.tbCoordinateX1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateX1.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateX1.Name = "tbCoordinateX1";
             this.tbCoordinateX1.Size = new System.Drawing.Size(68, 22);
             this.tbCoordinateX1.TabIndex = 18;
@@ -290,7 +344,7 @@ namespace Server
             // btnSave
             // 
             this.btnSave.Location = new System.Drawing.Point(19, 357);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(4);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(260, 31);
             this.btnSave.TabIndex = 13;
@@ -341,7 +395,7 @@ namespace Server
             // btnDownloadImage
             // 
             this.btnDownloadImage.Location = new System.Drawing.Point(19, 14);
-            this.btnDownloadImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnDownloadImage.Margin = new System.Windows.Forms.Padding(4);
             this.btnDownloadImage.Name = "btnDownloadImage";
             this.btnDownloadImage.Size = new System.Drawing.Size(260, 31);
             this.btnDownloadImage.TabIndex = 0;
@@ -356,9 +410,10 @@ namespace Server
             this.tcMain.Controls.Add(this.tbQRLocation);
             this.tcMain.Controls.Add(this.tbHeatMap);
             this.tcMain.Controls.Add(this.tpOnline);
+            this.tcMain.Controls.Add(this.tbWIFILocation);
             this.tcMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcMain.Location = new System.Drawing.Point(0, 0);
-            this.tcMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tcMain.Margin = new System.Windows.Forms.Padding(4);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
             this.tcMain.Size = new System.Drawing.Size(1504, 869);
@@ -371,9 +426,9 @@ namespace Server
             this.tbManage.Controls.Add(this.tabControl1);
             this.tbManage.Controls.Add(this.panel1);
             this.tbManage.Location = new System.Drawing.Point(4, 25);
-            this.tbManage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbManage.Margin = new System.Windows.Forms.Padding(4);
             this.tbManage.Name = "tbManage";
-            this.tbManage.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbManage.Padding = new System.Windows.Forms.Padding(4);
             this.tbManage.Size = new System.Drawing.Size(1496, 840);
             this.tbManage.TabIndex = 1;
             this.tbManage.Text = "Management";
@@ -423,7 +478,7 @@ namespace Server
             this.tbOnline.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbOnline.Name = "tbOnline";
             this.tbOnline.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tbOnline.Size = new System.Drawing.Size(1177, 801);
+            this.tbOnline.Size = new System.Drawing.Size(1180, 803);
             this.tbOnline.TabIndex = 1;
             this.tbOnline.Text = "Online";
             this.tbOnline.UseVisualStyleBackColor = true;
@@ -440,7 +495,7 @@ namespace Server
             this.lvOnline.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.lvOnline.MultiSelect = false;
             this.lvOnline.Name = "lvOnline";
-            this.lvOnline.Size = new System.Drawing.Size(1171, 797);
+            this.lvOnline.Size = new System.Drawing.Size(1174, 799);
             this.lvOnline.TabIndex = 0;
             this.lvOnline.UseCompatibleStateImageBehavior = false;
             this.lvOnline.View = System.Windows.Forms.View.Details;
@@ -514,7 +569,6 @@ namespace Server
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.tbError);
             this.panel2.Controls.Add(this.tcQRLocation);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(300, 0);
@@ -522,16 +576,6 @@ namespace Server
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1196, 840);
             this.panel2.TabIndex = 2;
-            // 
-            // tbError
-            // 
-            this.tbError.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbError.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tbError.Location = new System.Drawing.Point(0, 818);
-            this.tbError.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tbError.Name = "tbError";
-            this.tbError.Size = new System.Drawing.Size(1196, 22);
-            this.tbError.TabIndex = 1;
             // 
             // tcQRLocation
             // 
@@ -580,7 +624,7 @@ namespace Server
             this.tbQRList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbQRList.Name = "tbQRList";
             this.tbQRList.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tbQRList.Size = new System.Drawing.Size(1185, 808);
+            this.tbQRList.Size = new System.Drawing.Size(1188, 811);
             this.tbQRList.TabIndex = 1;
             this.tbQRList.Text = "QR List";
             this.tbQRList.UseVisualStyleBackColor = true;
@@ -600,7 +644,7 @@ namespace Server
             this.lvQRList.Location = new System.Drawing.Point(3, 2);
             this.lvQRList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.lvQRList.Name = "lvQRList";
-            this.lvQRList.Size = new System.Drawing.Size(1179, 804);
+            this.lvQRList.Size = new System.Drawing.Size(1182, 807);
             this.lvQRList.TabIndex = 0;
             this.lvQRList.UseCompatibleStateImageBehavior = false;
             this.lvQRList.View = System.Windows.Forms.View.Details;
@@ -652,7 +696,7 @@ namespace Server
             // pbQR
             // 
             this.pbQR.Location = new System.Drawing.Point(11, 530);
-            this.pbQR.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pbQR.Margin = new System.Windows.Forms.Padding(4);
             this.pbQR.Name = "pbQR";
             this.pbQR.Size = new System.Drawing.Size(274, 274);
             this.pbQR.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -796,7 +840,7 @@ namespace Server
             // 
             this.tpOnline.Controls.Add(this.pOnline);
             this.tpOnline.Location = new System.Drawing.Point(4, 25);
-            this.tpOnline.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tpOnline.Margin = new System.Windows.Forms.Padding(4);
             this.tpOnline.Name = "tpOnline";
             this.tpOnline.Size = new System.Drawing.Size(1496, 840);
             this.tpOnline.TabIndex = 4;
@@ -808,9 +852,9 @@ namespace Server
             this.pOnline.BackColor = System.Drawing.Color.DarkGray;
             this.pOnline.Controls.Add(this.pbOnline);
             this.pOnline.Location = new System.Drawing.Point(167, 14);
-            this.pOnline.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pOnline.Margin = new System.Windows.Forms.Padding(4);
             this.pOnline.Name = "pOnline";
-            this.pOnline.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pOnline.Padding = new System.Windows.Forms.Padding(4);
             this.pOnline.Size = new System.Drawing.Size(1145, 807);
             this.pOnline.TabIndex = 0;
             // 
@@ -818,12 +862,466 @@ namespace Server
             // 
             this.pbOnline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbOnline.Location = new System.Drawing.Point(4, 4);
-            this.pbOnline.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pbOnline.Margin = new System.Windows.Forms.Padding(4);
             this.pbOnline.Name = "pbOnline";
             this.pbOnline.Size = new System.Drawing.Size(1137, 799);
             this.pbOnline.TabIndex = 0;
             this.pbOnline.TabStop = false;
             this.pbOnline.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbOnline_MouseDown);
+            // 
+            // tbWIFILocation
+            // 
+            this.tbWIFILocation.Controls.Add(this.tbWIFI);
+            this.tbWIFILocation.Controls.Add(this.panel3);
+            this.tbWIFILocation.Location = new System.Drawing.Point(4, 25);
+            this.tbWIFILocation.Name = "tbWIFILocation";
+            this.tbWIFILocation.Size = new System.Drawing.Size(1496, 840);
+            this.tbWIFILocation.TabIndex = 5;
+            this.tbWIFILocation.Text = "Wi-Fi location";
+            this.tbWIFILocation.UseVisualStyleBackColor = true;
+            // 
+            // tbWIFI
+            // 
+            this.tbWIFI.Controls.Add(this.tbWIFIMap);
+            this.tbWIFI.Controls.Add(this.tbWIFIList);
+            this.tbWIFI.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tbWIFI.Location = new System.Drawing.Point(300, 0);
+            this.tbWIFI.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbWIFI.Name = "tbWIFI";
+            this.tbWIFI.SelectedIndex = 0;
+            this.tbWIFI.Size = new System.Drawing.Size(1196, 840);
+            this.tbWIFI.TabIndex = 4;
+            // 
+            // tbWIFIMap
+            // 
+            this.tbWIFIMap.Controls.Add(this.pbWIFIMap);
+            this.tbWIFIMap.Location = new System.Drawing.Point(4, 25);
+            this.tbWIFIMap.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbWIFIMap.Name = "tbWIFIMap";
+            this.tbWIFIMap.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbWIFIMap.Size = new System.Drawing.Size(1188, 811);
+            this.tbWIFIMap.TabIndex = 0;
+            this.tbWIFIMap.Text = "Map";
+            this.tbWIFIMap.UseVisualStyleBackColor = true;
+            // 
+            // pbWIFIMap
+            // 
+            this.pbWIFIMap.BackColor = System.Drawing.Color.DarkGray;
+            this.pbWIFIMap.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pbWIFIMap.Location = new System.Drawing.Point(3, 2);
+            this.pbWIFIMap.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.pbWIFIMap.Name = "pbWIFIMap";
+            this.pbWIFIMap.Size = new System.Drawing.Size(1182, 807);
+            this.pbWIFIMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pbWIFIMap.TabIndex = 0;
+            this.pbWIFIMap.TabStop = false;
+            // 
+            // tbWIFIList
+            // 
+            this.tbWIFIList.Controls.Add(this.lvWIFIList);
+            this.tbWIFIList.Location = new System.Drawing.Point(4, 25);
+            this.tbWIFIList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbWIFIList.Name = "tbWIFIList";
+            this.tbWIFIList.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbWIFIList.Size = new System.Drawing.Size(1188, 811);
+            this.tbWIFIList.TabIndex = 1;
+            this.tbWIFIList.Text = "Wi-Fi List";
+            this.tbWIFIList.UseVisualStyleBackColor = true;
+            // 
+            // lvWIFIList
+            // 
+            this.lvWIFIList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colWIFIID,
+            this.colWIFIName,
+            this.colMAC,
+            this.colWIFIStrength,
+            this.colWIFIX,
+            this.colWIFIY});
+            this.lvWIFIList.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lvWIFIList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lvWIFIList.FullRowSelect = true;
+            this.lvWIFIList.GridLines = true;
+            this.lvWIFIList.HideSelection = false;
+            this.lvWIFIList.Location = new System.Drawing.Point(3, 2);
+            this.lvWIFIList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.lvWIFIList.Name = "lvWIFIList";
+            this.lvWIFIList.Size = new System.Drawing.Size(1182, 807);
+            this.lvWIFIList.TabIndex = 0;
+            this.lvWIFIList.UseCompatibleStateImageBehavior = false;
+            this.lvWIFIList.View = System.Windows.Forms.View.Details;
+            // 
+            // colWIFIID
+            // 
+            this.colWIFIID.Text = "Wi-Fi ID";
+            this.colWIFIID.Width = 100;
+            // 
+            // colWIFIName
+            // 
+            this.colWIFIName.Text = "Wi-FI Name";
+            this.colWIFIName.Width = 300;
+            // 
+            // colMAC
+            // 
+            this.colMAC.Text = "MAC-address";
+            this.colMAC.Width = 300;
+            // 
+            // colWIFIStrength
+            // 
+            this.colWIFIStrength.Text = "Strength";
+            this.colWIFIStrength.Width = 100;
+            // 
+            // colWIFIX
+            // 
+            this.colWIFIX.Text = "X";
+            this.colWIFIX.Width = 100;
+            // 
+            // colWIFIY
+            // 
+            this.colWIFIY.Text = "Y";
+            this.colWIFIY.Width = 100;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.panel4);
+            this.panel3.Controls.Add(this.pictureBox2);
+            this.panel3.Controls.Add(this.label1);
+            this.panel3.Controls.Add(this.label2);
+            this.panel3.Controls.Add(this.lblWIFIName);
+            this.panel3.Controls.Add(this.lblWIFIID);
+            this.panel3.Controls.Add(this.textBox1);
+            this.panel3.Controls.Add(this.textBox2);
+            this.panel3.Controls.Add(this.textBox3);
+            this.panel3.Controls.Add(this.textBox4);
+            this.panel3.Controls.Add(this.button1);
+            this.panel3.Controls.Add(this.button2);
+            this.panel3.Controls.Add(this.button3);
+            this.panel3.Controls.Add(this.btnCreateWIFI);
+            this.panel3.Controls.Add(this.btnOpenWIFI);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(300, 840);
+            this.panel3.TabIndex = 3;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.lblWIFIStrength);
+            this.panel4.Controls.Add(this.lblWIFIMAC);
+            this.panel4.Controls.Add(this.textBox10);
+            this.panel4.Controls.Add(this.textBox9);
+            this.panel4.Controls.Add(this.pictureBox3);
+            this.panel4.Controls.Add(this.lblWIFIY);
+            this.panel4.Controls.Add(this.lblWIFIX);
+            this.panel4.Controls.Add(this.label5);
+            this.panel4.Controls.Add(this.label6);
+            this.panel4.Controls.Add(this.textBox5);
+            this.panel4.Controls.Add(this.textBox6);
+            this.panel4.Controls.Add(this.textBox7);
+            this.panel4.Controls.Add(this.textBox8);
+            this.panel4.Controls.Add(this.btnWIFIDelete);
+            this.panel4.Controls.Add(this.btnWIFIEdit);
+            this.panel4.Controls.Add(this.btnWIFIAdd);
+            this.panel4.Controls.Add(this.btnWIFICreate);
+            this.panel4.Controls.Add(this.btnWIFIOpen);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel4.Location = new System.Drawing.Point(0, 0);
+            this.panel4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(300, 840);
+            this.panel4.TabIndex = 14;
+            // 
+            // lblWIFIStrength
+            // 
+            this.lblWIFIStrength.AutoSize = true;
+            this.lblWIFIStrength.Location = new System.Drawing.Point(149, 181);
+            this.lblWIFIStrength.Name = "lblWIFIStrength";
+            this.lblWIFIStrength.Size = new System.Drawing.Size(56, 16);
+            this.lblWIFIStrength.TabIndex = 17;
+            this.lblWIFIStrength.Text = "Strength";
+            // 
+            // lblWIFIMAC
+            // 
+            this.lblWIFIMAC.AutoSize = true;
+            this.lblWIFIMAC.Location = new System.Drawing.Point(21, 181);
+            this.lblWIFIMAC.Name = "lblWIFIMAC";
+            this.lblWIFIMAC.Size = new System.Drawing.Size(90, 16);
+            this.lblWIFIMAC.TabIndex = 16;
+            this.lblWIFIMAC.Text = "MAC-address";
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(24, 199);
+            this.textBox10.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(120, 22);
+            this.textBox10.TabIndex = 15;
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new System.Drawing.Point(151, 199);
+            this.textBox9.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new System.Drawing.Size(120, 22);
+            this.textBox9.TabIndex = 14;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Location = new System.Drawing.Point(11, 530);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(274, 274);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox3.TabIndex = 13;
+            this.pictureBox3.TabStop = false;
+            // 
+            // lblWIFIY
+            // 
+            this.lblWIFIY.AutoSize = true;
+            this.lblWIFIY.Location = new System.Drawing.Point(148, 240);
+            this.lblWIFIY.Name = "lblWIFIY";
+            this.lblWIFIY.Size = new System.Drawing.Size(50, 16);
+            this.lblWIFIY.TabIndex = 12;
+            this.lblWIFIY.Text = "Wi-Fi Y";
+            // 
+            // lblWIFIX
+            // 
+            this.lblWIFIX.AutoSize = true;
+            this.lblWIFIX.Location = new System.Drawing.Point(21, 240);
+            this.lblWIFIX.Name = "lblWIFIX";
+            this.lblWIFIX.Size = new System.Drawing.Size(49, 16);
+            this.lblWIFIX.TabIndex = 11;
+            this.lblWIFIX.Text = "Wi-Fi X";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(148, 107);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(78, 16);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Wi-Fi Name";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(21, 107);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(54, 16);
+            this.label6.TabIndex = 9;
+            this.label6.Text = "Wi-Fi ID";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(151, 126);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(120, 22);
+            this.textBox5.TabIndex = 8;
+            // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(24, 259);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(120, 22);
+            this.textBox6.TabIndex = 7;
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(151, 259);
+            this.textBox7.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(120, 22);
+            this.textBox7.TabIndex = 6;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(24, 126);
+            this.textBox8.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(120, 22);
+            this.textBox8.TabIndex = 5;
+            // 
+            // btnWIFIDelete
+            // 
+            this.btnWIFIDelete.Location = new System.Drawing.Point(24, 375);
+            this.btnWIFIDelete.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnWIFIDelete.Name = "btnWIFIDelete";
+            this.btnWIFIDelete.Size = new System.Drawing.Size(247, 28);
+            this.btnWIFIDelete.TabIndex = 4;
+            this.btnWIFIDelete.Text = "Delete Wi-Fi";
+            this.btnWIFIDelete.UseVisualStyleBackColor = true;
+            // 
+            // btnWIFIEdit
+            // 
+            this.btnWIFIEdit.Location = new System.Drawing.Point(24, 341);
+            this.btnWIFIEdit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnWIFIEdit.Name = "btnWIFIEdit";
+            this.btnWIFIEdit.Size = new System.Drawing.Size(247, 28);
+            this.btnWIFIEdit.TabIndex = 3;
+            this.btnWIFIEdit.Text = "Edit Wi-Fi";
+            this.btnWIFIEdit.UseVisualStyleBackColor = true;
+            // 
+            // btnWIFIAdd
+            // 
+            this.btnWIFIAdd.Location = new System.Drawing.Point(24, 307);
+            this.btnWIFIAdd.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnWIFIAdd.Name = "btnWIFIAdd";
+            this.btnWIFIAdd.Size = new System.Drawing.Size(247, 28);
+            this.btnWIFIAdd.TabIndex = 2;
+            this.btnWIFIAdd.Text = "Add Wi-Fi";
+            this.btnWIFIAdd.UseVisualStyleBackColor = true;
+            // 
+            // btnWIFICreate
+            // 
+            this.btnWIFICreate.Location = new System.Drawing.Point(24, 59);
+            this.btnWIFICreate.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnWIFICreate.Name = "btnWIFICreate";
+            this.btnWIFICreate.Size = new System.Drawing.Size(247, 28);
+            this.btnWIFICreate.TabIndex = 1;
+            this.btnWIFICreate.Text = "Create Wi-Fi config";
+            this.btnWIFICreate.UseVisualStyleBackColor = true;
+            this.btnWIFICreate.Click += new System.EventHandler(this.btnWIFICreate_Click);
+            // 
+            // btnWIFIOpen
+            // 
+            this.btnWIFIOpen.Location = new System.Drawing.Point(24, 25);
+            this.btnWIFIOpen.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnWIFIOpen.Name = "btnWIFIOpen";
+            this.btnWIFIOpen.Size = new System.Drawing.Size(247, 28);
+            this.btnWIFIOpen.TabIndex = 0;
+            this.btnWIFIOpen.Text = "Open Wi-Fi config";
+            this.btnWIFIOpen.UseVisualStyleBackColor = true;
+            this.btnWIFIOpen.Click += new System.EventHandler(this.btnWIFIOpen_Click);
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Location = new System.Drawing.Point(11, 530);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(274, 274);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox2.TabIndex = 13;
+            this.pictureBox2.TabStop = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(148, 240);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(39, 16);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "QR Y";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(21, 240);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(38, 16);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "QR X";
+            // 
+            // lblWIFIName
+            // 
+            this.lblWIFIName.AutoSize = true;
+            this.lblWIFIName.Location = new System.Drawing.Point(148, 107);
+            this.lblWIFIName.Name = "lblWIFIName";
+            this.lblWIFIName.Size = new System.Drawing.Size(78, 16);
+            this.lblWIFIName.TabIndex = 10;
+            this.lblWIFIName.Text = "Wi-Fi Name";
+            // 
+            // lblWIFIID
+            // 
+            this.lblWIFIID.AutoSize = true;
+            this.lblWIFIID.Location = new System.Drawing.Point(21, 107);
+            this.lblWIFIID.Name = "lblWIFIID";
+            this.lblWIFIID.Size = new System.Drawing.Size(54, 16);
+            this.lblWIFIID.TabIndex = 9;
+            this.lblWIFIID.Text = "Wi-Fi ID";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(151, 126);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(120, 22);
+            this.textBox1.TabIndex = 8;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(24, 259);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(120, 22);
+            this.textBox2.TabIndex = 7;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(151, 259);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(120, 22);
+            this.textBox3.TabIndex = 6;
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(24, 126);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(120, 22);
+            this.textBox4.TabIndex = 5;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(24, 375);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(247, 28);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "Delete QR";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(24, 341);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(247, 28);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Edit QR";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(24, 307);
+            this.button3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(247, 28);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "Add QR";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
+            // btnCreateWIFI
+            // 
+            this.btnCreateWIFI.Location = new System.Drawing.Point(24, 59);
+            this.btnCreateWIFI.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnCreateWIFI.Name = "btnCreateWIFI";
+            this.btnCreateWIFI.Size = new System.Drawing.Size(247, 28);
+            this.btnCreateWIFI.TabIndex = 1;
+            this.btnCreateWIFI.Text = "Create Wi-Fi config";
+            this.btnCreateWIFI.UseVisualStyleBackColor = true;
+            // 
+            // btnOpenWIFI
+            // 
+            this.btnOpenWIFI.Location = new System.Drawing.Point(24, 25);
+            this.btnOpenWIFI.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnOpenWIFI.Name = "btnOpenWIFI";
+            this.btnOpenWIFI.Size = new System.Drawing.Size(247, 28);
+            this.btnOpenWIFI.TabIndex = 0;
+            this.btnOpenWIFI.Text = "Open Wi-Fi config";
+            this.btnOpenWIFI.UseVisualStyleBackColor = true;
             // 
             // tmrListUpdate
             // 
@@ -855,7 +1353,7 @@ namespace Server
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1504, 869);
             this.Controls.Add(this.tcMain);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmServer";
             this.Text = "Server";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmServer_FormClosing);
@@ -873,7 +1371,6 @@ namespace Server
             this.panel1.ResumeLayout(false);
             this.tbQRLocation.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
             this.tcQRLocation.ResumeLayout(false);
             this.tbQRMap.ResumeLayout(false);
             this.tbQRMap.PerformLayout();
@@ -885,6 +1382,18 @@ namespace Server
             this.tpOnline.ResumeLayout(false);
             this.pOnline.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbOnline)).EndInit();
+            this.tbWIFILocation.ResumeLayout(false);
+            this.tbWIFI.ResumeLayout(false);
+            this.tbWIFIMap.ResumeLayout(false);
+            this.tbWIFIMap.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbWIFIMap)).EndInit();
+            this.tbWIFIList.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
+            this.panel4.ResumeLayout(false);
+            this.panel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -943,7 +1452,6 @@ namespace Server
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TabControl tcQRLocation;
         private System.Windows.Forms.TabPage tbQRMap;
-        private System.Windows.Forms.TextBox tbError;
         private System.Windows.Forms.TabPage tbQRList;
         private System.Windows.Forms.ListView lvQRList;
         private System.Windows.Forms.ColumnHeader colQRID;
@@ -960,6 +1468,52 @@ namespace Server
         private System.Windows.Forms.Timer tmrOnlineViewUpdate;
         private System.Windows.Forms.ToolTip ttOnlineUser;
         private System.Windows.Forms.PictureBox pbQR;
+        private System.Windows.Forms.TabPage tbWIFILocation;
+        private System.Windows.Forms.TabControl tbWIFI;
+        private System.Windows.Forms.TabPage tbWIFIMap;
+        private System.Windows.Forms.PictureBox pbWIFIMap;
+        private System.Windows.Forms.TabPage tbWIFIList;
+        private System.Windows.Forms.ListView lvWIFIList;
+        private System.Windows.Forms.ColumnHeader colWIFIID;
+        private System.Windows.Forms.ColumnHeader colMAC;
+        private System.Windows.Forms.ColumnHeader colWIFIX;
+        private System.Windows.Forms.ColumnHeader colWIFIY;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblWIFIName;
+        private System.Windows.Forms.Label lblWIFIID;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button btnCreateWIFI;
+        private System.Windows.Forms.Button btnOpenWIFI;
+        private System.Windows.Forms.ColumnHeader colWIFIName;
+        private System.Windows.Forms.ColumnHeader colWIFIStrength;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Label lblWIFIStrength;
+        private System.Windows.Forms.Label lblWIFIMAC;
+        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.TextBox textBox9;
+        private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.Label lblWIFIY;
+        private System.Windows.Forms.Label lblWIFIX;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.Button btnWIFIDelete;
+        private System.Windows.Forms.Button btnWIFIEdit;
+        private System.Windows.Forms.Button btnWIFIAdd;
+        private System.Windows.Forms.Button btnWIFICreate;
+        private System.Windows.Forms.Button btnWIFIOpen;
     }
 }
 
