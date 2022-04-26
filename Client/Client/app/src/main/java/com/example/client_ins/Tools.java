@@ -13,7 +13,13 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -43,6 +49,7 @@ public class Tools {
     public static int NumberOfWiFi;
 
     private static final String SettingFile = "Settings.xml";
+    static final String WiFiFile = "WiFi.xml";
 
     public static void readFromFile(Context context) throws Exception {
         File path = context.getFilesDir();
@@ -184,11 +191,15 @@ public class Tools {
         ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20, Instant.now().getEpochSecond() );
     }
 
-    public static void fillWiFiInfo(Engine engine, String info) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        InputSource is = new InputSource(new StringReader(info));
-        Document doc = builder.parse(is);
+
+
+    public static void fillWiFiInfo() throws ParserConfigurationException, IOException, SAXException {
+
+        Engine engine = Engine.getInstance();
+        File path = engine.context.getFilesDir();
+
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = builder.parse(new File(path.getPath() + WiFiFile));
         doc.normalizeDocument();
 
         Element root = doc.getDocumentElement();

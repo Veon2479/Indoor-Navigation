@@ -7,11 +7,22 @@ import android.os.StrictMode;
 import android.util.Pair;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.*;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
@@ -24,7 +35,7 @@ public class Engine implements Runnable{
     public boolean isAlive = false;
     public boolean isBLocked = false;
 
-    public List<WiFi> WiFi_List;
+    public List<WiFi> WiFi_List = new ArrayList<>();
 
     private static Engine instance;
     public static Context context;
@@ -85,6 +96,19 @@ public class Engine implements Runnable{
             if (!flag)
                 UserId = 0;
             i++;
+
+        }
+        if (flag)
+        {
+            flag = false;
+            i = 0;
+            while ( i < AttemptsToRegistrate && !flag ) {
+                System.out.println("Trying to get wifi info");
+                flag = getWiFiInfo();
+
+                i++;
+
+            }
         }
         isAlive = flag;
 
@@ -138,22 +162,7 @@ public class Engine implements Runnable{
             System.out.println( "new crd2 is "+Crd2);
 
 
-            if ( UserId > 0 ) {
-
-                System.out.println("Getting additional info");
-
-                int[] reqBuffer = { 1, UserId };       //request for Wifi's list
-                sock_outs.write(setCustomBufferWithInts(reqBuffer));
-
-                byte[] textBuffer = new byte[256];
-                String WiFi_infoBuffer = "";
-                while (sock_ins.read(textBuffer) > 0) {
-                    WiFi_infoBuffer += new String(textBuffer, StandardCharsets.UTF_8);
-                }
-
-                fillWiFiInfo(this, WiFi_infoBuffer);
-            }
-            else {
+            if ( UserId < 0 ) {
                 RESULT = false;
                 System.out.println("Server refused to distribute UserId");
             }
@@ -171,13 +180,80 @@ public class Engine implements Runnable{
         catch  (Exception e)
         {
             System.out.println("While registrate: " + e );
+            e.printStackTrace();
             RESULT = false;
         }
+
 
 
         if ( UserId < 0 )
             RESULT = false;
         return RESULT;
+    }
+
+
+    public boolean getWiFiInfo()
+    {
+        boolean RESULT = true;
+        try
+        {
+
+            Socket clientTcp = new Socket();
+            clientTcp.connect( new InetSocketAddress( serverAddr, serverPortTcp ) );
+            if ( clientTcp.isConnected() )
+                System.out.println("Connected!");
+            else
+                System.out.println("Not connected!");
+
+            InputStream sock_ins = clientTcp.getInputStream();
+            OutputStream sock_outs = clientTcp.getOutputStream();
+
+            System.out.println("Getting additional info");
+
+            int[] reqBuffer = { 1, UserId };       //request for Wifi's list
+            sock_outs.write(setCustomBufferWithInts(reqBuffer));
+
+            byte[] textBuffer = new byte[4096];
+            String WiFi_infoBuffer = "";
+
+            CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();
+            utf8Decoder.onMalformedInput(CodingErrorAction.REPLACE);
+            utf8Decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
+
+            File path = context.getFilesDir();
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File( path.getPath() + WiFiFile) ), StandardCharsets.UTF_8));
+
+
+            while (sock_ins.read(textBuffer) > 0)
+            {
+                bw.write( utf8Decoder.decode(ByteBuffer.wrap(textBuffer)).array() );
+            }
+            bw.close();
+            fillWiFiInfo();
+
+
+            try {
+                sock_ins.close();
+                sock_outs.close();
+                clientTcp.close();
+            } catch (Exception e)
+            {
+                System.out.println("Exception while closing sockets: " + e );
+            }
+            System.out.println("Connection closed!");
+        }
+        catch  (Exception e)
+        {
+            System.out.println("While getting wifi info: " + e );
+            RESULT = false;
+        }
+
+
+
+        if ( UserId < 0 )
+            RESULT = false;
+        return RESULT;
+
     }
 
     @Override

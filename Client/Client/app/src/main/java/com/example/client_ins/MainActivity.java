@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Bundle arguments = getIntent().getExtras();
         setContentView(R.layout.activity_main);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         Engine.setContext(getApplicationContext());
         Engine engine = Engine.getInstance();
@@ -83,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //context.startForegroundService( intent );
                 buttonStart.setEnabled(false);
+                engine.QrId = Integer.parseInt( editTextQrID.getText().toString() );
                 serverAddr = editTextServerAddr.getText().toString();
                 try {
                     writeToFile(getApplicationContext());
