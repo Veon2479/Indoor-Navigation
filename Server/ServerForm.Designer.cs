@@ -58,7 +58,6 @@ namespace Server
             this.tbHeatMap = new System.Windows.Forms.TabPage();
             this.lTo = new System.Windows.Forms.Label();
             this.lFrom = new System.Windows.Forms.Label();
-            this.lGenerateHeatMap = new System.Windows.Forms.Label();
             this.pHeatMap = new System.Windows.Forms.Panel();
             this.pbHeatMap = new System.Windows.Forms.PictureBox();
             this.bGenerate = new System.Windows.Forms.Button();
@@ -152,6 +151,7 @@ namespace Server
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.tcMain = new System.Windows.Forms.TabControl();
+            this.pnlHeatMap = new System.Windows.Forms.Panel();
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -186,6 +186,7 @@ namespace Server
             this.tbOnlineList.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tcMain.SuspendLayout();
+            this.pnlHeatMap.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -422,13 +423,8 @@ namespace Server
             // 
             // tbHeatMap
             // 
-            this.tbHeatMap.Controls.Add(this.lTo);
-            this.tbHeatMap.Controls.Add(this.lFrom);
-            this.tbHeatMap.Controls.Add(this.lGenerateHeatMap);
             this.tbHeatMap.Controls.Add(this.pHeatMap);
-            this.tbHeatMap.Controls.Add(this.bGenerate);
-            this.tbHeatMap.Controls.Add(this.mtbEnd);
-            this.tbHeatMap.Controls.Add(this.mtbBegin);
+            this.tbHeatMap.Controls.Add(this.pnlHeatMap);
             this.tbHeatMap.Location = new System.Drawing.Point(4, 22);
             this.tbHeatMap.Margin = new System.Windows.Forms.Padding(2);
             this.tbHeatMap.Name = "tbHeatMap";
@@ -440,7 +436,7 @@ namespace Server
             // lTo
             // 
             this.lTo.AutoSize = true;
-            this.lTo.Location = new System.Drawing.Point(20, 93);
+            this.lTo.Location = new System.Drawing.Point(42, 56);
             this.lTo.Name = "lTo";
             this.lTo.Size = new System.Drawing.Size(20, 13);
             this.lTo.TabIndex = 6;
@@ -449,29 +445,21 @@ namespace Server
             // lFrom
             // 
             this.lFrom.AutoSize = true;
-            this.lFrom.Location = new System.Drawing.Point(20, 62);
+            this.lFrom.Location = new System.Drawing.Point(42, 25);
             this.lFrom.Name = "lFrom";
             this.lFrom.Size = new System.Drawing.Size(30, 13);
             this.lFrom.TabIndex = 5;
             this.lFrom.Text = "From";
             // 
-            // lGenerateHeatMap
-            // 
-            this.lGenerateHeatMap.AutoSize = true;
-            this.lGenerateHeatMap.Location = new System.Drawing.Point(20, 28);
-            this.lGenerateHeatMap.Name = "lGenerateHeatMap";
-            this.lGenerateHeatMap.Size = new System.Drawing.Size(98, 13);
-            this.lGenerateHeatMap.TabIndex = 4;
-            this.lGenerateHeatMap.Text = "Generate heat map";
-            // 
             // pHeatMap
             // 
             this.pHeatMap.BackColor = System.Drawing.Color.DarkGray;
             this.pHeatMap.Controls.Add(this.pbHeatMap);
-            this.pHeatMap.Location = new System.Drawing.Point(248, 13);
+            this.pHeatMap.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pHeatMap.Location = new System.Drawing.Point(300, 0);
             this.pHeatMap.Name = "pHeatMap";
             this.pHeatMap.Padding = new System.Windows.Forms.Padding(3);
-            this.pHeatMap.Size = new System.Drawing.Size(860, 655);
+            this.pHeatMap.Size = new System.Drawing.Size(820, 680);
             this.pHeatMap.TabIndex = 3;
             // 
             // pbHeatMap
@@ -479,15 +467,15 @@ namespace Server
             this.pbHeatMap.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbHeatMap.Location = new System.Drawing.Point(3, 3);
             this.pbHeatMap.Name = "pbHeatMap";
-            this.pbHeatMap.Size = new System.Drawing.Size(854, 649);
+            this.pbHeatMap.Size = new System.Drawing.Size(814, 674);
             this.pbHeatMap.TabIndex = 0;
             this.pbHeatMap.TabStop = false;
             // 
             // bGenerate
             // 
-            this.bGenerate.Location = new System.Drawing.Point(23, 125);
+            this.bGenerate.Location = new System.Drawing.Point(45, 88);
             this.bGenerate.Name = "bGenerate";
-            this.bGenerate.Size = new System.Drawing.Size(197, 28);
+            this.bGenerate.Size = new System.Drawing.Size(169, 28);
             this.bGenerate.TabIndex = 2;
             this.bGenerate.Text = "Generate heat map";
             this.bGenerate.UseVisualStyleBackColor = true;
@@ -495,7 +483,7 @@ namespace Server
             // 
             // mtbEnd
             // 
-            this.mtbEnd.Location = new System.Drawing.Point(69, 90);
+            this.mtbEnd.Location = new System.Drawing.Point(91, 53);
             this.mtbEnd.Mask = "00/00/0000 90:00:00";
             this.mtbEnd.Name = "mtbEnd";
             this.mtbEnd.Size = new System.Drawing.Size(123, 20);
@@ -505,7 +493,7 @@ namespace Server
             // 
             // mtbBegin
             // 
-            this.mtbBegin.Location = new System.Drawing.Point(69, 59);
+            this.mtbBegin.Location = new System.Drawing.Point(91, 22);
             this.mtbBegin.Mask = "00/00/0000 90:00:00";
             this.mtbBegin.Name = "mtbBegin";
             this.mtbBegin.Size = new System.Drawing.Size(123, 20);
@@ -1440,6 +1428,19 @@ namespace Server
             this.tcMain.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tcMain_Selecting);
             this.tcMain.Selected += new System.Windows.Forms.TabControlEventHandler(this.tcMain_Selected);
             // 
+            // pnlHeatMap
+            // 
+            this.pnlHeatMap.Controls.Add(this.mtbEnd);
+            this.pnlHeatMap.Controls.Add(this.lTo);
+            this.pnlHeatMap.Controls.Add(this.mtbBegin);
+            this.pnlHeatMap.Controls.Add(this.lFrom);
+            this.pnlHeatMap.Controls.Add(this.bGenerate);
+            this.pnlHeatMap.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnlHeatMap.Location = new System.Drawing.Point(0, 0);
+            this.pnlHeatMap.Name = "pnlHeatMap";
+            this.pnlHeatMap.Size = new System.Drawing.Size(300, 680);
+            this.pnlHeatMap.TabIndex = 7;
+            // 
             // frmServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1456,7 +1457,6 @@ namespace Server
             this.pSettings.ResumeLayout(false);
             this.pSettings.PerformLayout();
             this.tbHeatMap.ResumeLayout(false);
-            this.tbHeatMap.PerformLayout();
             this.pHeatMap.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbHeatMap)).EndInit();
             this.tbWIFILocation.ResumeLayout(false);
@@ -1491,6 +1491,8 @@ namespace Server
             this.tbOnlineList.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.tcMain.ResumeLayout(false);
+            this.pnlHeatMap.ResumeLayout(false);
+            this.pnlHeatMap.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1617,7 +1619,7 @@ namespace Server
         private System.Windows.Forms.PictureBox pbHeatMap;
         private System.Windows.Forms.Label lTo;
         private System.Windows.Forms.Label lFrom;
-        private System.Windows.Forms.Label lGenerateHeatMap;
+        private System.Windows.Forms.Panel pnlHeatMap;
     }
 }
 
