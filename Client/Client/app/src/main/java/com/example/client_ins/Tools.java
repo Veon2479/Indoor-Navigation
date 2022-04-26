@@ -7,12 +7,20 @@ import android.text.Editable;
 import androidx.annotation.RequiresApi;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.time.Instant;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -32,7 +40,7 @@ public class Tools {
     public static int AttemptsToRegistrate;
     public static int BufferSize;
     public static int UdpPacketDelay;
-    public static int ResponseBufferSize;
+    public static int NumberOfWiFi;
 
     private static final String SettingFile = "Settings.xml";
 
@@ -53,6 +61,7 @@ public class Tools {
             UdpPacketDelay = Integer.parseInt(root.getElementsByTagName("UdpPacketDelay").item(0).getTextContent());
             serverPortTcp = Integer.parseInt(root.getElementsByTagName("ServerPortTcp").item(0).getTextContent());
             serverPortUdp = Integer.parseInt(root.getElementsByTagName("ServerPortUdp").item(0).getTextContent());
+            NumberOfWiFi = Integer.parseInt(root.getElementsByTagName("NumberOfWiFi").item(0).getTextContent());
         }
         catch (Exception e)
         {
@@ -62,6 +71,7 @@ public class Tools {
             AttemptsToRegistrate = 3;
             BufferSize = 28;
             UdpPacketDelay = 1000;
+            NumberOfWiFi = 64;
             writeToFile(context);
         }
 
@@ -101,6 +111,10 @@ public class Tools {
         Element elUdpPacketDelay = doc.createElement("UdpPacketDelay");
         elUdpPacketDelay.setTextContent(Integer.toString(UdpPacketDelay));
         root.appendChild(elUdpPacketDelay);
+
+        Element elNumberOfWiFi = doc.createElement("NumberOfWiFi");
+        elUdpPacketDelay.setTextContent(Integer.toString(NumberOfWiFi));
+        root.appendChild(elNumberOfWiFi);
 
         Transformer tr = TransformerFactory.newInstance().newTransformer();
         tr.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -142,20 +156,21 @@ public class Tools {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static byte[] setCustomBufferWithInts(int[] prms)
     {
-        byte[] res = new byte[ prms.length * 4 ];
+        byte[] res = new byte[ prms.length * 4 + 8 ];
         ByteBuffer buff = ByteBuffer.wrap( res );
         int i;
         for ( i = 0; i < prms.length; i++ )
         {
-            buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, prms[i] );
+            buff.order(ByteOrder.LITTLE_ENDIAN).putInt( i*4, prms[i] );
         }
+        buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, Instant.now().getEpochSecond() );
         return res;
     }
 
     public static void getResponseBuffer(Engine engine, byte[] buff)
     {
         ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
-        engine.UserId = (int) tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getInt(0 );
+        engine.UserId = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getInt(0 );
         engine.Crd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 4 );
         engine.Crd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 12 );
     }
@@ -167,5 +182,35 @@ public class Tools {
         ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 4, crd1 );
         ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).putDouble( 12, crd2 );
         ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).putLong( 20, Instant.now().getEpochSecond() );
+    }
+
+    public static void fillWiFiInfo(Engine engine, String info) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        InputSource is = new InputSource(new StringReader(info));
+        Document doc = builder.parse(is);
+        doc.normalizeDocument();
+
+        Element root = doc.getDocumentElement();
+        System.out.println("Parsing xml with wifi info");
+
+        NodeList list = doc.getElementsByTagName("WIFISpot");
+
+        for (int i = 0; i < list.getLength(); i++ )
+        {
+            Node node = list.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE)
+            {
+                Element element = (Element) node;
+                String SSID = element.getAttribute("name");
+                String MAC = element.getElementsByTagName("mac").item(0).getTextContent();
+                double X = Double.parseDouble( element.getElementsByTagName("x").item(0).getTextContent() );
+                double Y = Double.parseDouble( element.getElementsByTagName("y").item(0).getTextContent() );
+                double Power = Double.parseDouble( element.getElementsByTagName("power").item(0).getTextContent() );
+
+                System.out.println("Get info about spot " + SSID);
+                engine.WiFi_List.add( new WiFi( SSID, MAC, Power, X, Y ) );
+            }
+        }
     }
 }

@@ -12,7 +12,9 @@ import java.io.OutputStream;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.List;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Engine implements Runnable{
 
     public int UserId = 0;
@@ -22,7 +24,7 @@ public class Engine implements Runnable{
     public boolean isAlive = false;
     public boolean isBLocked = false;
 
-    public Pair< WiFi[], Double> WiFi_List;
+    public List<WiFi> WiFi_List;
 
     private static Engine instance;
     public static Context context;
@@ -140,7 +142,7 @@ public class Engine implements Runnable{
 
                 System.out.println("Getting additional info");
 
-                int[] reqBuffer = { 1, 0 };       //request for Wifi's list
+                int[] reqBuffer = { 1, UserId };       //request for Wifi's list
                 sock_outs.write(setCustomBufferWithInts(reqBuffer));
 
                 byte[] textBuffer = new byte[256];
@@ -149,7 +151,7 @@ public class Engine implements Runnable{
                     WiFi_infoBuffer += new String(textBuffer, StandardCharsets.UTF_8);
                 }
 
-                //TODO: parse WiFi info to a WiFi_list (through xml)
+                fillWiFiInfo(this, WiFi_infoBuffer);
             }
             else {
                 RESULT = false;
