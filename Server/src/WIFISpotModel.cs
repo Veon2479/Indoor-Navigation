@@ -279,7 +279,7 @@ namespace Server
                 //Get atributes QRID, QRName
                 xmlContent[i].WIFISpotID = xmlNode.Attributes[0].Value;
                 xmlContent[i].WIFISpotName = xmlNode.Attributes[1].Value;
-                xmlContent[i].WIFISpotMAC = xmlNode.ChildNodes[2].Value;
+                xmlContent[i].WIFISpotMAC = xmlNode.ChildNodes[3].InnerText;
 
                 //Get Coordinate x and y
                 try
@@ -484,7 +484,7 @@ namespace Server
             foreach (char c in MACAddress){
                 switch (state){
                     case 0: 
-                        if (!(c >= '0' && c <= '9' || c >= 'A' && c <= 'F' )){
+                        if (!(c >= '0' && c <= '9' || c >= 'A' && c <= 'F')){
                             state = -1;
                          }
                        count ++;

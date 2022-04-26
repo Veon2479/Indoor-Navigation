@@ -56,7 +56,6 @@ namespace Server
 
             //update view
             QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
-            QRLocation.DrawQRMap(pb);
 
             //update QR Images
             QRModel.QRModelXmlContent[] contents = null;

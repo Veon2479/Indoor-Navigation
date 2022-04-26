@@ -21,7 +21,7 @@ namespace Server
 
             //set up server settings
             CheckForIllegalCrossThreadCalls = false;
-            ServerManage.SetUpServer(LogMessage, ref lvQRList, pbQRLocation);
+            ServerManage.SetUpServer(LogMessage, ref lvQRList, pbQRLocation, ref lvWIFIList, pbWIFIMap);
         }
 
         // blocking settings controls except for the btnDownloadImage
@@ -346,23 +346,6 @@ namespace Server
             {
                 WIFILocation.DrawWIFIMap(pbWIFIMap);
             }
-            else if (e.TabPage == tpOnline)
-            {
-                tmrOnlineViewUpdate.Interval = OnlineView.UPDATE_ONLINE_VIEW_INTERVAL;
-                if (MapInfo.bitmap == null)
-                {
-                    return;
-                }
-                else
-                {
-                    OnlineView.DrawMap(pbOnline);
-                    tmrOnlineViewUpdate.Start();
-                }
-            }
-            else
-            {
-                tmrOnlineViewUpdate.Stop();
-            }
         }
 
         //add QR point
@@ -393,7 +376,7 @@ namespace Server
             if (QRLocation.selectedPoint.QRID != null)
             {
                 //show tip, select point
-                QRLocation.SelectPoint(QRLocation.selectedPoint, ttQR, pbQRLocation, pbQR);
+                QRLocation.SelectPoint(QRLocation.selectedPoint, ttInfo, pbQRLocation, pbQR);
             }
             else
             {
@@ -437,9 +420,30 @@ namespace Server
             if (uData.ID > 0)
             {
                 string uInfo = $"ID: {uData.ID}\n" +
-                    $"X:" + (uData.x).ToString("N3") + "\n" +
-                    $"Y:" + (uData.y).ToString("N3");
+                    $"X: " + (uData.x).ToString("N3") + "\n" +
+                    $"Y: " + (uData.y).ToString("N3");
                 ttOnlineUser.SetToolTip(pbOnline, uInfo);
+            }
+        }
+
+        private void tbServerManage_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage == tbOnlineMap)
+            {
+                tmrOnlineViewUpdate.Interval = OnlineView.UPDATE_ONLINE_VIEW_INTERVAL;
+                if (MapInfo.bitmap == null)
+                {
+                    return;
+                }
+                else
+                {
+                    OnlineView.DrawMap(pbOnline);
+                    tmrOnlineViewUpdate.Start();
+                }
+            }
+            else
+            {
+                tmrOnlineViewUpdate.Stop();
             }
         }
 
@@ -447,6 +451,7 @@ namespace Server
         * Wi-Fi location tab
         */
 
+        //open Wi-Fi congig
         private void btnWIFIOpen_Click(object sender, EventArgs e)
         {
             if (dlgOpenFile.ShowDialog() == DialogResult.Cancel)
@@ -454,11 +459,156 @@ namespace Server
             WIFILocation.OpenWIFIConfig(dlgOpenFile.FileName, ref lvWIFIList, pbWIFIMap);
         }
 
+        //create Wi-Fi config
         private void btnWIFICreate_Click(object sender, EventArgs e)
         {
             if (dlgSaveFile.ShowDialog() == DialogResult.Cancel)
                 return;
             WIFILocation.OpenWIFIConfig(dlgSaveFile.FileName, ref lvWIFIList, pbWIFIMap);
+        }
+
+        //select Wi-Fi in list view
+        private void lvWIFIList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            WIFILocation.selectedItem = lvWIFIList.SelectedItems.Count > 0 ? lvWIFIList.SelectedItems : null;
+
+            if (WIFILocation.selectedItem != null)
+            {
+                tbWIFIID.Text = WIFILocation.selectedItem[0].Text;
+                tbWIFIName.Text = WIFILocation.selectedItem[0].SubItems[1].Text;
+                tbMAC.Text = WIFILocation.selectedItem[0].SubItems[2].Text;
+                tbWIFIPower.Text = WIFILocation.selectedItem[0].SubItems[3].Text;
+                tbWIFIX.Text = WIFILocation.selectedItem[0].SubItems[4].Text;
+                tbWIFIY.Text = WIFILocation.selectedItem[0].SubItems[5].Text;
+            }
+        }
+
+        //add Wi-Fi spot to config
+        private void btnWIFIAdd_Click(object sender, EventArgs e)
+        {
+            int Result = WIFILocation.AddWIFI(tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, tbWIFIX.Text, tbWIFIY.Text, ref lvWIFIList, pbWIFIMap);
+
+            //processing Result
+
+            if (Result >= 0)
+            {
+                WIFILocation.DrawWIFIMap(pbWIFIMap);
+                WIFILocation.adding = false;
+            }
+        }
+
+        //edit Wi-Fi spot in config
+        private void btnWIFIEdit_Click(object sender, EventArgs e)
+        {
+            int Result = -1;
+
+            //select in list view
+            if (WIFILocation.selectedItem != null && WIFILocation.selectedItem.Count > 0)
+            {
+                Result = WIFILocation.EditWIFI(WIFILocation.selectedItem[0].Text, tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, tbWIFIX.Text, tbWIFIY.Text, ref lvWIFIList, pbWIFIMap);
+            }
+
+            //select in QR map
+            else if (WIFILocation.selectedPoint.WIFISpotID != null)
+                Result = WIFILocation.EditWIFI(WIFILocation.selectedPoint.WIFISpotID, tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, tbWIFIX.Text, tbWIFIY.Text, ref lvWIFIList, pbWIFIMap);
+
+            //processing Result
+        }
+
+        //delete Wi-Fi spot from config
+        private void btnWIFIDelete_Click(object sender, EventArgs e)
+        {
+            int Result = -1;
+
+            //select in list view
+            if (WIFILocation.selectedItem != null)
+            {
+                Result = WIFILocation.DeleteWIFI(WIFILocation.selectedItem[0].Text, ref lvWIFIList, pbWIFIMap);
+            }
+
+            //select in QR map
+            else if (WIFILocation.selectedPoint.WIFISpotID!= null)
+                Result = WIFILocation.DeleteWIFI(WIFILocation.selectedPoint.WIFISpotID, ref lvWIFIList, pbWIFIMap);
+
+            //processing Result
+        }
+
+        //adding Wi-Fi spot by mouse
+        private void pbWIFIMap_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (!WIFILocation.adding)
+            {
+                WIFILocation.DrawWIFIMap(pbWIFIMap);
+                WIFILocation.DrawWIFIPoint(pbWIFIMap, Color.Red, (e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient, (e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient);
+
+                tbWIFIX.Text = ((e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient).ToString("0.00");
+                tbWIFIY.Text = ((e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient).ToString("0.00");
+                WIFILocation.adding = true;
+            }
+        }
+
+        //follow mouse coordinates
+        private void pbWIFIMap_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (WIFILocation.adding)
+                return;
+
+            if (WIFILocation.selecting && e.Button == MouseButtons.None)
+            {
+                tbWIFIX.Text = WIFILocation.selectedPoint.X;
+                tbWIFIY.Text = WIFILocation.selectedPoint.Y;
+            }
+            else
+            {
+                tbWIFIX.Text = ((e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient).ToString("0.00");
+                tbWIFIY.Text = ((e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient).ToString("0.00");
+            }
+        }
+
+        //select Wi-Fi spot by mouse
+        private void pbWIFIMap_MouseDown(object sender, MouseEventArgs e)
+        {
+            //check hitting
+            WIFILocation.selectedPoint = WIFILocation.HitPoint(e.X, e.Y);
+
+            //update text boxes
+            tbWIFIID.Text = WIFILocation.selectedPoint.WIFISpotID;
+            tbWIFIName.Text = WIFILocation.selectedPoint.WIFISpotName;
+            tbMAC.Text = WIFILocation.selectedPoint.WIFISpotMAC;
+            tbWIFIPower.Text = WIFILocation.selectedPoint.WIFISpotPower;
+            tbWIFIX.Text = WIFILocation.selectedPoint.X;
+            tbWIFIY.Text = WIFILocation.selectedPoint.Y;
+
+            if (WIFILocation.selectedPoint.WIFISpotID != null)
+            {
+                //show tip, select point
+                WIFILocation.SelectPoint(WIFILocation.selectedPoint, ttInfo, pbWIFIMap);
+            }
+            else
+            {
+                //no hitting
+                WIFILocation.DrawWIFIMap(pbWIFIMap);
+                WIFILocation.adding = false;
+                WIFILocation.selecting = false;
+            }
+        }
+
+        //drag Wi-Fi spot by mouse
+        private void pbWIFIMap_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (WIFILocation.selectedPoint.WIFISpotID!= null)
+            {
+                double x = double.Parse(WIFILocation.selectedPoint.X, System.Globalization.CultureInfo.InvariantCulture);
+                double y = double.Parse(WIFILocation.selectedPoint.Y, System.Globalization.CultureInfo.InvariantCulture);
+
+                //new location of a QR point
+                if (WIFILocation.selecting && Math.Abs(e.X - (x / MapInfo.SizeCoefficient + MapInfo.PointX1)) > QRLocation.QRPointRadius && Math.Abs(e.Y - (y / MapInfo.SizeCoefficient + MapInfo.PointY1)) > WIFILocation.WIFIRadius)
+                {
+                    WIFILocation.EditWIFI(WIFILocation.selectedPoint.WIFISpotID, tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, ((e.X - MapInfo.PointX1) * MapInfo.SizeCoefficient).ToString("0.00"), ((e.Y - MapInfo.PointY1) * MapInfo.SizeCoefficient).ToString("0.00"), ref lvWIFIList, pbWIFIMap);
+                    WIFILocation.DrawWIFIMap(pbQRLocation);
+                    WIFILocation.selecting = false;
+                }
+            }
         }
     }
 }

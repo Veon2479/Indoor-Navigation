@@ -50,12 +50,19 @@ namespace Server
         }
 
         //set up server
-        public static void SetUpServer(Server.LogMessageDelegate log, ref ListView QRView, PictureBox pb)
+        public static void SetUpServer(Server.LogMessageDelegate log, ref ListView QRView, PictureBox pbQR, ref ListView WIFIList, PictureBox pbWIFI)
         {
             Server.LogMessage = log;
+
+            //default QR Model
             Server.qrModel = new QRModel();
-            QRLocation.OpenQRConfig(Server.qrModel._xmlFileName, ref QRView, pb);
-            QRLocation.UpdateQRView(Server.qrModel, ref QRView, pb);
+            QRLocation.OpenQRConfig(Server.qrModel._xmlFileName, ref QRView, pbQR);
+            QRLocation.UpdateQRView(Server.qrModel, ref QRView, pbQR);
+
+            //default Wi-Fi Model
+            Server.wifiSpotModel = new WIFISpotModel();
+            WIFILocation.OpenWIFIConfig(Server.wifiSpotModel._xmlFileName, ref WIFIList, pbWIFI);
+            WIFILocation.UpdateWIFIView(Server.wifiSpotModel, ref WIFIList, pbWIFI);
         }
     }
 }
