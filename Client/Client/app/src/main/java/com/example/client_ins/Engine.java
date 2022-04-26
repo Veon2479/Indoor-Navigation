@@ -29,9 +29,11 @@ import java.util.List;
 public class Engine implements Runnable{
 
     public int UserId = 0;
+
     public int QrId;
-    public double Crd1, Crd2;
+    public double Crd1, Crd2, Azimuth;
     public double accX, accY;
+  
     public boolean isAlive = false;
     public boolean isBLocked = false;
 

@@ -3,11 +3,22 @@ package com.example.client_ins;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -19,6 +30,10 @@ import android.widget.TextView;
 import static com.example.client_ins.Tools.*;
 
 
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +53,9 @@ public class MainActivity extends AppCompatActivity {
 
     Engine engine;
 
+
     double x=0, y=0, z=0; //correct when it possible
+
     double accX = 0, accY = 0, accZ = 0;
     double angleX = 0, angleY = 0, angleZ = 0;
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -71,6 +88,40 @@ public class MainActivity extends AppCompatActivity {
       
         textScroll.setText("\rLog started!\r\n");
 
+        WifiModule wifi = new WifiModule(getApplicationContext());
+
+      
+        if(arguments!=null) {
+            String qrcode = arguments.getString("1");
+            editText1.setText(qrcode);
+            System.out.println(qrcode);
+            String[] helpStr = qrcode.split("[\n\\t]");
+            System.out.println("Nice "+helpStr.length);
+            try {
+                Tools.serverAddr = helpStr[0];
+                Tools.serverPortTcp = Integer.parseInt(helpStr[1]);
+                Tools.serverPortUdp = Integer.parseInt(helpStr[2]);
+                engine.Azimuth = Double.parseDouble(helpStr[3]);
+                engine.Crd1 = Double.parseDouble(helpStr[4]);
+                engine.Crd2 = Double.parseDouble(helpStr[5]);
+            }
+            catch (Exception ex) {
+                Tools.serverAddr = "192.168.50.145";
+                Tools.serverPortTcp = 4444;
+                Tools.serverPortUdp = 4445;
+                engine.Azimuth = 0;
+                engine.Crd1 = 0;
+                engine.Crd2 = 0;
+            }
+            System.out.println("Ok "+engine.Crd2);
+        }
+        //editText1.getText(); //взять текст из первой строки
+        //editText2.getText(); //взять текст из второй строки
+
+
+        x = engine.Crd1;
+        y = engine.Crd2;
+
   
         editTextQrID = findViewById(R.id.editTextTextPersonName1);
         editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
@@ -85,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //wifi.arrWifiNames.add(String.valueOf(editText1.getText()));
+                //wifi.run();
                 //context.startForegroundService( intent );
                 buttonStart.setEnabled(false);
                 engine.QrId = Integer.parseInt( editTextQrID.getText().toString() );
@@ -117,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         buttonQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //System.out.println(wifi.arrWifiPowers.size());
                 //add method for third button
                 Intent intent = new Intent(getApplicationContext(), MainActivity2.class);
                 startActivity(intent);
