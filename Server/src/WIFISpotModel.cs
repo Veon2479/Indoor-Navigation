@@ -67,7 +67,7 @@ namespace Server
             }
 
             //Change xml document to default or create new
-            CreateNessaryFiles();
+            CreateNecessaryFiles();
 
             //Check chosen
             if (CheckXmlFileContent(ref xmlDocument) < 0)
@@ -142,6 +142,7 @@ namespace Server
             }
 
             //Check power (greater then 0) and MAC address
+            MACAddress = MACAddress.Trim();
             if (dblPower <= 0 || !CheckMACAddress(MACAddress)){
                 return (int)AddWIFISpotRecordErrorCode.INCORRECT_PARAMETER;                
             }
@@ -410,7 +411,7 @@ namespace Server
             return 0;
         }
 
-        private int CreateNessaryFiles()
+        private int CreateNecessaryFiles()
         {
             XmlDocument xmlDoc = new XmlDocument();
 
@@ -486,7 +487,7 @@ namespace Server
                     case 0: 
                         if (!(c >= '0' && c <= '9' || c >= 'A' && c <= 'F')){
                             state = -1;
-                         }
+                        }
                        count ++;
                         if (count == 2){
                             state = 1;
