@@ -95,16 +95,18 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Failed to change settings file: " + e );
                 }
                 engine.startTracking();
-
+                buttonStop.setEnabled(true);
             }
         });
-
+        //buttonStop.setEnabled(false);
         buttonStop = findViewById(R.id.button3);
         buttonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                buttonStop.setEnabled(false);
                 engine.stopTracking();
                 //add method for second button
+                buttonStart.setEnabled(true);
                
             }
         });

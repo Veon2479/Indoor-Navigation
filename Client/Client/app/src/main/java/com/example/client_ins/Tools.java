@@ -75,7 +75,7 @@ public class Tools {
             serverAddr = "10.144.52.41";
             serverPortTcp = 4444;
             serverPortUdp = 4445;
-            AttemptsToRegistrate = 3;
+            AttemptsToRegistrate = 9;
             BufferSize = 28;
             UdpPacketDelay = 1000;
             NumberOfWiFi = 64;
@@ -178,8 +178,8 @@ public class Tools {
     {
         ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
         engine.UserId = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getInt(0 );
-        engine.Crd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 4 );
-        engine.Crd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 12 );
+        engine.Crd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 4 );
+        engine.Crd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

@@ -87,51 +87,56 @@ public class Engine implements Runnable{
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startTracking()
     {
-        isBLocked = true;
-        boolean flag = false;
-        int i = 0;
-        while ( i < AttemptsToRegistrate && !flag ) {
-            System.out.println("Trying to registrate");
-            flag = Registrate();
-            if (!flag)
-                UserId = 0;
-            i++;
 
-        }
-        if (flag)
-        {
-            flag = false;
-            i = 0;
-            while ( i < AttemptsToRegistrate && !flag ) {
-                System.out.println("Trying to get wifi info");
-                flag = getWiFiInfo();
-
+        if (!isAlive) {
+            isBLocked = true;
+            boolean flag = false;
+            int i = 0;
+            while (i < AttemptsToRegistrate && !flag) {
+                System.out.println("Trying to registrate");
+                flag = Registrate();
+                if (!flag)
+                    UserId = 0;
                 i++;
 
             }
+            if (flag) {
+                flag = false;
+                i = 0;
+                while (i < AttemptsToRegistrate && !flag) {
+                    System.out.println("Trying to get wifi info");
+                    flag = getWiFiInfo();
+
+                    i++;
+
+                }
+            }
+            isAlive = flag;
+
+            if (isAlive) {
+                System.out.println("Registration was successful");
+
+
+
+
+
+                //create 2 streams - first to compute coordinates
+                //second - to send them
+                //but they're don't working yet
+            } else {
+                System.out.println("Failed to registrate");
+                isBLocked = false;
+            }
         }
-        isAlive = flag;
-
-        if (isAlive) {
-            System.out.println("Registration was successful");
-
-
-            dataSender.Enable();
-      
-
-            //create 2 streams - first to compute coordinates
-            //second - to send them
-            //but they're don't working yet
-        } else {
-            System.out.println("Failed to registrate");
-            isBLocked = false;
+        if (isBLocked) {
+            dataSender.EnableUdp();
+            clientMath.Unpause();
         }
-
-        clientMath.Unpause();
     }
 
     public void stopTracking(){
         clientMath.Pause();
+        dataSender.DisableUdp();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -184,10 +189,6 @@ public class Engine implements Runnable{
             RESULT = false;
         }
 
-
-
-        if ( UserId < 0 )
-            RESULT = false;
         return RESULT;
     }
 
