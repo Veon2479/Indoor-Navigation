@@ -26,6 +26,9 @@ namespace Server
         //Defaul directory to save accumulated data
         private const string _defaultDir = "Default session";
 
+        //Directory that contains all sessions
+        internal static string _sessionsDir { get; private set; } = "Sessions";
+
         //Const that define ID as "Free"
         private const int NO_ID = -1;
 
@@ -40,7 +43,7 @@ namespace Server
 
         //Directory that accumulate data anout users in current session
         internal string _sessionDir {get; private set; } = "";
-        
+
         /// <summary>
         ///     Create object
         /// </summary>
