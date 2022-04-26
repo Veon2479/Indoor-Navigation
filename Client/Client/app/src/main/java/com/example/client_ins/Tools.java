@@ -19,9 +19,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class Tools {
 
 
+    Engine engine = Engine.getInstance();
     //these values will be read from file
 
     public static String serverAddr;
@@ -30,6 +32,7 @@ public class Tools {
     public static int AttemptsToRegistrate;
     public static int BufferSize;
     public static int UdpPacketDelay;
+    public static int ResponseBufferSize;
 
     private static final String SettingFile = "Settings.xml";
 
@@ -134,6 +137,27 @@ public class Tools {
         engine.Crd2 = ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
         return ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getLong( 20 );
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static byte[] setCustomBufferWithInts(int[] prms)
+    {
+        byte[] res = new byte[ prms.length * 4 ];
+        ByteBuffer buff = ByteBuffer.wrap( res );
+        int i;
+        for ( i = 0; i < prms.length; i++ )
+        {
+            buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, prms[i] );
+        }
+        return res;
+    }
+
+    public static void getResponseBuffer(Engine engine, byte[] buff)
+    {
+        ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
+        engine.UserId = (int) tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getInt(0 );
+        engine.Crd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 4 );
+        engine.Crd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getFloat( 12 );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

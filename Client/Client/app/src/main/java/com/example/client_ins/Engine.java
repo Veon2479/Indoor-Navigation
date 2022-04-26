@@ -4,20 +4,25 @@ import static com.example.client_ins.Tools.*;
 import android.content.Context;
 import android.os.Build;
 import android.os.StrictMode;
+import android.util.Pair;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 public class Engine implements Runnable{
 
     public int UserId = 0;
+    public int QrId;
     public double Crd1, Crd2;
     public double accX, accY;
     public boolean isAlive = false;
     public boolean isBLocked = false;
+
+    public Pair< WiFi[], Double> WiFi_List;
 
     private static Engine instance;
     public static Context context;
@@ -119,20 +124,37 @@ public class Engine implements Runnable{
             InputStream sock_ins = clientTcp.getInputStream();
             OutputStream sock_outs = clientTcp.getOutputStream();
 
+            int[] regBuffer = {0, QrId};       //request for registration
+            sock_outs.write( setCustomBufferWithInts(regBuffer) );
 
-            byte[] buffer = setInfoBufferWithLongs( UserId, 0, 0); //TODO: par1 is ID of qr of place
+            byte[] buffer = new byte[ 4 + 2 * 8 ];
+            sock_ins.read( buffer );
 
-
-            System.out.println("Sending data");
-            sock_outs.write(buffer);
-            System.out.println("Receiving data");
-            sock_ins.read(buffer);
-
-            long timeStamp = getInfoBuffer( this, buffer );
-            System.out.println("Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
+            getResponseBuffer( this, buffer );
             System.out.println( "new ID is "+UserId);
             System.out.println( "new crd1 is "+Crd1);
             System.out.println( "new crd2 is "+Crd2);
+
+
+            if ( UserId > 0 ) {
+
+                System.out.println("Getting additional info");
+
+                int[] reqBuffer = { 1, 0 };       //request for Wifi's list
+                sock_outs.write(setCustomBufferWithInts(reqBuffer));
+
+                byte[] textBuffer = new byte[256];
+                String WiFi_infoBuffer = "";
+                while (sock_ins.read(textBuffer) > 0) {
+                    WiFi_infoBuffer += new String(textBuffer, StandardCharsets.UTF_8);
+                }
+
+                //TODO: parse WiFi info to a WiFi_list (through xml)
+            }
+            else {
+                RESULT = false;
+                System.out.println("Server refused to distribute UserId");
+            }
 
             try {
                 sock_ins.close();
