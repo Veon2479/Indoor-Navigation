@@ -159,9 +159,11 @@ namespace Server
         // save current settings to file 
         private void btnSave_Click(object sender, EventArgs e)
         {
-            SettingsModel.MessageView(SettingsModel.SaveSettings());
-            UpdatePointText();
-            MapInfo.isMapChanged = false;
+            if (SettingsModel.MessageView(SettingsModel.SaveSettings()) == SettingsModel.MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY)
+            {
+                UpdatePointText();
+                MapInfo.isMapChanged = false;
+            }
         }
 
         // save select point 
@@ -181,7 +183,11 @@ namespace Server
         // checking the save before switching to another tab
         private void tcMain_Selecting(object sender, TabControlCancelEventArgs e)
         {
-            SettingsModel.CheckSaving(tcMain);
+            if (SettingsModel.CheckSaving(tcMain) == SettingsModel.MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY)
+            {
+                UpdatePointText();
+                MapInfo.isMapChanged = false;
+            }
         }
 
         /*
