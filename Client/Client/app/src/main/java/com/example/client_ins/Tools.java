@@ -137,6 +137,35 @@ public class Tools {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+    public static byte[] setCustomBufferWithLongs(long[] prms)
+    {
+        ByteBuffer buff = ByteBuffer.allocate( prms.length * 4 /* + 4 */ );
+        int i;
+        for ( i = 0; i < prms.length; i++ )
+        {
+            buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, prms[i] );
+        }
+        //buff.order(ByteOrder.LITTLE_ENDIAN).putLong( i*4, Instant.now().getEpochSecond() );
+        byte[] res = new byte[ prms.length * 4 /* + 4 */];
+        buff.get(res);
+        return res;
+    }
+
+    public static long[] getCustomBufferWithLongs(byte[] buff)
+    {
+        long[] res = new long[ buff.length / 4 ];
+        ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
+        int i;
+        for ( i = 0; i < res.length; i++ )
+        {
+            res[i] = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getLong( i*4 );
+        }
+
+
+        return res;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void updateInfoBuffer(byte[] buffer, int userID, double crd1, double crd2)
     {
         ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).putInt( 0, userID );
