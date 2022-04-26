@@ -123,19 +123,7 @@ public class Engine implements Runnable{
             InputStream sock_ins = clientTcp.getInputStream();
             OutputStream sock_outs = clientTcp.getOutputStream();
 
-
-//            byte[] buffer = setInfoBufferWithLongs( UserId, 0, 0); //TODO: par1 is ID of qr of place
-//
-//
-//            System.out.println("Sending data");
-//            sock_outs.write(buffer);
-//            System.out.println("Receiving data");
-//            sock_ins.read(buffer);
-//
-//            long timeStamp = getInfoBuffer( this, buffer );
-//            System.out.println("Now: "+ Instant.now().getEpochSecond()+", time of sending: "+timeStamp);
-
-            long[] regBuffer = {0, QrId};
+            long[] regBuffer = {0, QrId};       //request for registration
             sock_outs.write( setCustomBufferWithLongs(regBuffer) );
 
             long[] responseBuffer;
@@ -147,14 +135,26 @@ public class Engine implements Runnable{
             System.out.println( "new crd1 is "+Crd1);
             System.out.println( "new crd2 is "+Crd2);
 
-            byte[] textBuffer = new byte[256];
-            String WiFi_infoBuffer = "";
-            while (sock_ins.read(textBuffer) > 0)
-            {
-                WiFi_infoBuffer += new String(textBuffer, StandardCharsets.UTF_8);
-            }
 
-            //TODO: parse WiFi info to a list
+            if ( UserId > 0 ) {
+
+                System.out.println("Getting additional info");
+
+                long[] reqBuffer = {1};       //request for Wifi's list
+                sock_outs.write(setCustomBufferWithLongs(reqBuffer));
+
+                byte[] textBuffer = new byte[256];
+                String WiFi_infoBuffer = "";
+                while (sock_ins.read(textBuffer) > 0) {
+                    WiFi_infoBuffer += new String(textBuffer, StandardCharsets.UTF_8);
+                }
+
+                //TODO: parse WiFi info to a WiFi_list (through xml)
+            }
+            else {
+                RESULT = false;
+                System.out.println("Server refused to distribute UserId");
+            }
 
             try {
                 sock_ins.close();
