@@ -39,7 +39,7 @@ namespace Server
         internal UserModelTempStorageEl[] userModelTempStorage;
 
         //Directory that accumulate data anout users in current session
-        internal string _sessionDir = "";
+        internal string _sessionDir {get; private set; } = "";
         
         /// <summary>
         ///     Create object
