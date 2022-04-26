@@ -248,26 +248,36 @@ class Matrix{
     public Matrix Sqrt(){
         if(a != b)
             return null;
-        Matrix R = new Matrix(a, a, MatrixType.UNDEFINED);
+        Matrix R = new Matrix(a, a, MatrixType.IDENTITY);
+
+        double[] D = new double[this.a];
+
+        for(int i = 0; i<a; i++)
+        {
+            double sum;
+
+            for(int j = 0; j<=i; j++)
+            {
+                if(i>j){
+                    sum = 0;
+                    for(int k = 0; k < j; k++){
+                        sum += R.matrix[i][k] * R.matrix[j][k] * D[k];
+                    }
+                    R.matrix[i][j] = (matrix[i][j] - sum)/D[j];
+                }
+            }
+            sum = 0;
+            for(int k = 0; k < i; k++){
+                sum += R.matrix[i][k] * R.matrix[i][k] * D[k];
+            }
+            D[i] = matrix[i][i] - sum;
+        }
 
         for(int i = 0; i<a; i++)
         {
             for(int j = 0; j<b; j++)
             {
-                float sum = 0;
-                for(int k = 0; k < j; k++){
-                    sum += R.matrix[i][k] * R.matrix[j][k];
-                }
-
-                if(i == j)
-                    R.matrix[i][j] = Math.sqrt(matrix[i][i] - sum);
-                else
-                    if (R.matrix[j][j] != 0)
-                        R.matrix[i][j] = (1.0f/R.matrix[j][j] * (matrix[i][j] - sum));
-                    else
-                        R.matrix[i][j] = 0;
-                if(R.matrix[i][j] != R.matrix[i][j])
-                    R.matrix[i][j] = 0;
+                R.matrix[i][j] *= Math.sqrt(D[j]);
             }
         }
 
@@ -357,7 +367,7 @@ public class ClientMath implements Runnable{
 
     public double Latitude = 0;
     public double Longitude = 0;
-    public double itudeAccur = 1;
+    public double itudeAccur = 0.1f;
 
     public ClientMath(Engine engine) {
         this.mainEngine = engine;
@@ -480,7 +490,7 @@ __________________________________
     private int beta = 2;
     private double u = alpha*alpha*(L + k) - L;
     private double wm0 = u/(L + u);
-    private double wc0 = u/(L + u) + (1 - alpha*alpha + beta);
+    private double wc0 = u/(L + u)+ (1 - alpha*alpha + beta); //
     private double wm = 1 / (2*(L + u));
     private double wc = wm;
     private Matrix[] sigmaPoints = new Matrix[2*L+1];
@@ -527,15 +537,15 @@ __________________________________
 
         sigmaPoints[0].Copy(currX);
         P1.Copy(P);
-        P1.Scale(L+u);
         P1 = P1.Sqrt();
+        P1.Scale(Math.sqrt(L+u));
         for(int i = 1; i<=L; i++){
             for(int j = 0; j<sigmaPoints[i].a; j++)
-                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[i-1][j];
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[j][i-1];
         }
         for(int i = L+1; i<=2*L; i++){
             for(int j = 0; j<sigmaPoints[i].a; j++)
-                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[i-L-1][j];
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[j][i-L-1];
         }
 
         predX = Matrix.Mul(F, sigmaPoints[0]);
@@ -559,15 +569,15 @@ __________________________________
 
         sigmaPoints[0].Copy(predX);
         P1.Copy(P);
-        P1.Scale(L+u);
         P1 = P1.Sqrt();
+        P1.Scale(Math.sqrt(L+u));
         for(int i = 1; i<=L; i++){
             for(int j = 0; j<sigmaPoints[i].a; j++)
-                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[i-1][j];
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[j][i-1];
         }
         for(int i = L+1; i<=2*L; i++){
             for(int j = 0; j<sigmaPoints[i].a; j++)
-                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[i-L-1][j];
+                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[j][i-L-1];
         }
 
         for(int i = 0; i<=2*L; i++){
@@ -631,17 +641,32 @@ __________________________________
         H.matrix[2][2] = 1;
         H.matrix[3][5] = 1;
         P = new Matrix(6, 6, MatrixType.ALL_ZERO);
-        P.matrix[0][0] = 0;
-        P.matrix[1][1] = 0;
-        P.matrix[2][2] = 0;
-        P.matrix[3][3] = 0;
-        P.matrix[4][4] = 0;
-        P.matrix[5][5] = 0;
+        /*
+        P.matrix[0][0] = 0.1f; P.matrix[0][1] = 0.01f; P.matrix[0][2] = 0.01f;
+        P.matrix[1][0] = 0.01f; P.matrix[1][1] = 0.1f; P.matrix[1][2] = 0.01f;
+        P.matrix[2][0] = 0.01f; P.matrix[2][1] = 0.01f; P.matrix[2][2] = 0.1f;
+        P.matrix[3][0] = 0.01f; P.matrix[3][1] = 0.01f; P.matrix[3][2] = 0.01f;
+        P.matrix[4][0] = 0.01f; P.matrix[4][1] = 0.01f; P.matrix[4][2] = 0.01f;
+        P.matrix[5][0] = 0.01f; P.matrix[5][1] = 0.01f; P.matrix[5][2] = 0.01f;
+        P.matrix[0][3] = 0.01f; P.matrix[0][4] = 0.01f; P.matrix[0][5] = 0.01f;
+        P.matrix[1][3] = 0.01f; P.matrix[1][4] = 0.01f; P.matrix[1][5] = 0.01f;
+        P.matrix[2][3] = 0.01f; P.matrix[2][4] = 0.01f; P.matrix[2][5] = 0.01f;
+        P.matrix[3][3] = 0.1f; P.matrix[3][4] = 0.01f; P.matrix[3][5] = 0.01f;
+        P.matrix[4][3] = 0.01f; P.matrix[4][4] = 0.1f; P.matrix[4][5] = 0.01f;
+        P.matrix[5][3] = 0.01f; P.matrix[5][4] = 0.01f; P.matrix[5][5] = 0.1f;
+
+         */
+        P.matrix[0][0] = 0.1f;
+        P.matrix[1][1] = 0.1f;
+        P.matrix[2][2] = 0.1f;
+        P.matrix[3][3] = 0.1f;
+        P.matrix[4][4] = 0.1f;
+        P.matrix[5][5] = 0.1f;
         P1 = new Matrix(6,6, MatrixType.UNDEFINED);
         F = new Matrix(6,6, MatrixType.IDENTITY);
         R = new Matrix(4, 4, MatrixType.ALL_ZERO);
-        R.matrix[0][0] = 1;
-        R.matrix[1][1] = 1;
+        R.matrix[0][0] = 0.01f;
+        R.matrix[1][1] = 0.01f;
         R.matrix[2][2] = 0.16f;
         R.matrix[3][3] = 0.16f;
         Q = new Matrix(6,6, MatrixType.ALL_ZERO);
