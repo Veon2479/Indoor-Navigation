@@ -95,11 +95,13 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println("Failed to change settings file: " + e );
                 }
                 engine.startTracking();
-                buttonStop.setEnabled(true);
+                if (engine.isBLocked)
+                    buttonStop.setEnabled(true);
             }
         });
-        //buttonStop.setEnabled(false);
+
         buttonStop = findViewById(R.id.button3);
+        buttonStop.setEnabled(false);
         buttonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
