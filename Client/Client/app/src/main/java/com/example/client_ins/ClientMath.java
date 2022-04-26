@@ -61,9 +61,9 @@ class Matrix{
         if(a != A.a - 1 || b != A.b - 1 || r >= A.a || r < 0 || c >= A.b || c < 0)
             return;
 
-        for(int i = 0; i<a; i++)
+        for(int i = 0; i<A.a; i++)
         {
-            for(int j = 0; j<b; j++)
+            for(int j = 0; j<A.b; j++)
             {
                 if(i != r && j != c){
                     int n = i<r?i:i-1;
@@ -82,6 +82,24 @@ class Matrix{
                 matrix[i][j] = x*matrix[i][j];
             }
         }
+    }
+
+    public Matrix AlgAddMatrix(){
+        Matrix R = new Matrix(a, b, MatrixType.UNDEFINED);
+
+        Matrix temp = new Matrix(a - 1, a - 1, MatrixType.UNDEFINED);
+        for(int i = 0; i<a; i++)
+        {
+            for(int j = 0; j<b; j++)
+            {
+                temp.Minor(this, i, j);
+                double x = (2+j+i) % 2 == 0?1:-1;
+                x *= temp.Determinant();
+                R.matrix[i][j] = x;
+            }
+        }
+
+        return R;
     }
 
     public double Determinant(){
@@ -121,7 +139,8 @@ class Matrix{
     }
 
     public Matrix Invert(){
-        Matrix R = this.Transpose();
+        Matrix R = this.AlgAddMatrix();
+        R = R.Transpose();
         double x = 1/this.Determinant();
         R.Scale(x);
         return R;
@@ -329,9 +348,35 @@ public class ClientMath implements Runnable{
     public boolean fPhysics = false;
     Engine mainEngine;
 
+    public double initLatitude = 0;
+    public double initLongitude = 0;
+
+    final static double RADIUS_MAJOR = 6378137.0;
+    final static double RADIUS_MINOR = 6356752.3142;
+    private double Radius = 0;
+
+    public double Latitude = 0;
+    public double Longitude = 0;
+    public double itudeAccur = 1;
+
     public ClientMath(Engine engine) {
         this.mainEngine = engine;
         linAccQuat.w = 0;
+    }
+
+    public void CorrectInitCoordinates(){
+        double x = Math.cos(Math.toRadians(initLongitude));
+        x *= x;
+        x /= RADIUS_MAJOR * RADIUS_MAJOR;
+        double y = Math.sin(Math.toRadians(initLongitude));
+        y *= y;
+        y /= RADIUS_MINOR * RADIUS_MINOR;
+        Radius = Math.sqrt(1/(x+y));
+    }
+
+    public void CorrectCoordinates(){
+        z.matrix[0][0] = Math.toRadians(Latitude - initLatitude) * Radius;
+        z.matrix[1][0] = Math.toRadians(Longitude - initLongitude) * Radius;
     }
 
     public Quaternion tempQuat = new Quaternion();
@@ -362,8 +407,8 @@ public class ClientMath implements Runnable{
 
         //accX = tempQuat.x;
         //accY = tempQuat.y;
-        z.matrix[0][0] = tempQuat.x;
-        z.matrix[1][0] = tempQuat.y;
+        z.matrix[2][0] = tempQuat.x;
+        z.matrix[3][0] = tempQuat.y;
         mainEngine.accX = tempQuat.x;
         mainEngine.accY = tempQuat.y;
         //accZ = tempQuat.z;
@@ -423,7 +468,7 @@ __________________________________
 
     private Matrix predX;
     private Matrix tempX;
-    public Matrix currX;
+    public Matrix currX = new Matrix(6, 1, MatrixType.ALL_ZERO);
 
     private Matrix z;
     private Matrix zt;
@@ -476,6 +521,9 @@ __________________________________
         F.matrix[1][2] = deltaTime;
         F.matrix[3][4] = deltaTime;
         F.matrix[4][5] = deltaTime;
+
+        R.matrix[0][0] = itudeAccur;
+        R.matrix[1][1] = itudeAccur;
 
         sigmaPoints[0].Copy(currX);
         P1.Copy(P);
@@ -559,8 +607,6 @@ __________________________________
         currX = Matrix.Add(predX, Matrix.Mul(K, z.Sub(zt)));
 
         P = P.Sub(Matrix.Mul(Matrix.Mul(K, St), K.Transpose()));
-        if(P.matrix[2][2] < 0)
-            P.matrix[2][2] = Math.abs(P.matrix[2][2]);
     }
 
     public void Disable(){
@@ -578,10 +624,12 @@ __________________________________
 
     public void run()
     {
-        z = new Matrix(2, 1, MatrixType.ALL_ZERO);
-        H = new Matrix(2, 6, MatrixType.ALL_ZERO);
-        H.matrix[0][2] = 1;
-        H.matrix[1][5] = 1;
+        z = new Matrix(4, 1, MatrixType.ALL_ZERO);
+        H = new Matrix(4, 6, MatrixType.ALL_ZERO);
+        H.matrix[0][0] = 1;
+        H.matrix[1][3] = 1;
+        H.matrix[2][2] = 1;
+        H.matrix[3][5] = 1;
         P = new Matrix(6, 6, MatrixType.ALL_ZERO);
         P.matrix[0][0] = 0;
         P.matrix[1][1] = 0;
@@ -591,11 +639,12 @@ __________________________________
         P.matrix[5][5] = 0;
         P1 = new Matrix(6,6, MatrixType.UNDEFINED);
         F = new Matrix(6,6, MatrixType.IDENTITY);
-        R = new Matrix(2, 2, MatrixType.ALL_ZERO);
-        R.matrix[0][0] = 0.16f;
-        R.matrix[1][1] = 0.16f;
+        R = new Matrix(4, 4, MatrixType.ALL_ZERO);
+        R.matrix[0][0] = 1;
+        R.matrix[1][1] = 1;
+        R.matrix[2][2] = 0.16f;
+        R.matrix[3][3] = 0.16f;
         Q = new Matrix(6,6, MatrixType.ALL_ZERO);
-        currX = new Matrix(6, 1, MatrixType.ALL_ZERO);
         predX = new Matrix(6, 1, MatrixType.ALL_ZERO);
         zt = new Matrix(z.a, z.b, MatrixType.UNDEFINED);
         tempZ = new Matrix(z.a, z.b, MatrixType.UNDEFINED);
