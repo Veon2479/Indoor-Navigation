@@ -41,7 +41,7 @@ namespace Server
         protected const string _defaultName = "DefaultQRData.xml";
 
         //Default data that contain QR code
-        protected string _defaultQRCodeData = "Default data";
+        protected string _defaultQRCodeData = $"10.144.52.41\n{Server.DEFAULT_TCP_PORT}\n{Server.DEFAULT_UDP_PORT}\n{MapInfo.Azimuth}";
 
         //Amount of pixels on one module
         protected int _pixelsPerModule = 6;

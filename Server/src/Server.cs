@@ -12,8 +12,8 @@ namespace Server
     public class Server
     {
         //read default settings from App.config
-        private static int DEFAULT_TCP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TCP_PORT"));
-        private static int DEFAULT_UDP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_UDP_PORT"));
+        internal static int DEFAULT_TCP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TCP_PORT"));
+        internal static int DEFAULT_UDP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_UDP_PORT"));
 
         internal static int DEFAULT_TABLE_CAPACITY = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TABLE_CAPACITY"));
 
@@ -200,6 +200,8 @@ namespace Server
                             Console.WriteLine($"[TCP    send] Wi-Fi file: {Server.wifiSpotModel._xmlFileName}");
                             LogMessage($"[TCP    send] Wi-Fi file: {Server.wifiSpotModel._xmlFileName}");
                         }
+                        else
+                            response = buffer;
                         break;
                     default:
                         response = buffer;
