@@ -82,6 +82,7 @@ public class ClientService extends Service {
         engine.dataSender = new DataSender(engine);
         Thread udpSender = new Thread(engine.dataSender);
         udpSender.start();
+
         //engine.startTracking();
         return START_STICKY;
 
