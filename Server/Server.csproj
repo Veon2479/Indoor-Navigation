@@ -85,8 +85,8 @@
     <EmbeddedResource Include="ServerForm.resx">
       <DependentUpon>ServerForm.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="configs\packages.config" />
     <None Include="configs\App.config" />
+    <None Include="configs\packages.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
