@@ -521,8 +521,8 @@ __________________________________
         Q.matrix[3][4] = tempT;
         Q.matrix[4][3] = tempT;
         tempT *= deltaTime/2;
-        Q.matrix[0][0] = tempT;
-        Q.matrix[3][3] = tempT;
+        Q.matrix[0][0] = tempT + 2;
+        Q.matrix[3][3] = tempT + 2;
         Q.Scale(dispA);
         tempT = deltaTime*deltaTime/2;
         F.matrix[0][2] = tempT;
