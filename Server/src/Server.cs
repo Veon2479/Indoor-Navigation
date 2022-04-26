@@ -312,7 +312,7 @@ namespace Server
             //getting coordinates successfully
             if (Result >= 0)
             {
-                //try to get iserID 
+                //try to get userID 
                 packet.userID = Server.userIDModel.GetUserID(regTime, Server.userModel);
                 packet.time = regTime;
 
