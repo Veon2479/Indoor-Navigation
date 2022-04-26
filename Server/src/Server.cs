@@ -31,6 +31,7 @@ namespace Server
         internal static UserModel userModel = null;
         internal static QRModel qrModel = null;
         internal static WIFISpotModel wifiSpotModel = null;
+        internal static byte[] wifiBuffer = null;
 
         //thread for listeners
         private static Task tcpListener;
@@ -171,34 +172,43 @@ namespace Server
                 NetworkStream stream = handler.GetStream();
 
                 //receive data from user
-                byte[] buffer = new byte[UserPacket.PACKET_SIZE];
+                byte[] buffer = new byte[Packet.CommandPacket.CMD_PACKET_SIZE];
                 await stream.ReadAsync(buffer, 0, buffer.Length);
 
-                RegPacket regPacket= RegPacket.getStruct(buffer);
-                Console.WriteLine("[TCP receive] {0}", regPacket.ToString());
-                LogMessage($"[TCP receive] {regPacket.ToString()}");
+                //get struct of the command
+                Packet.CommandPacket cmdPacket = Packet.CommandPacket.getStruct(buffer);
 
-                //if user not authorized
-                UserPacket userPacket = new UserPacket();
-                if (!userIDModel.ExistUserID(regPacket.userID, userModel))
+                Console.WriteLine($"[TCP receive] {cmdPacket.ToString()}");
+                LogMessage($"[TCP receive] {cmdPacket.ToString()}");
+
+                //get server response
+                byte[] response;
+                switch ((Packet.CommandCode)cmdPacket.command)
                 {
-                    //try to get userID
-                    userPacket.userID = userIDModel.GetUserID(regPacket.time, userModel);
-                    userPacket.time = regPacket.time;
-                    Server.qrModel.GetQRCoord((int)regPacket.QRID, ref userPacket.x, ref userPacket.y);                    
+                    //user registration
+                    case Packet.CommandCode.USER_REGISTRATION:
+                        response = UserRegistration(cmdPacket.parameter, cmdPacket.time);
+                        Console.WriteLine($"[TCP    send] {Packet.UDPPacket.getStruct(response).ToString()}");
+                        LogMessage($"[TCP    send] {Packet.UDPPacket.getStruct(response).ToString()}");
+                        break;
+
+                    //Wi-Fi request
+                    case Packet.CommandCode.WIFI_REQUEST:
+                        response = WIFIRequest(cmdPacket.parameter);
+                        if (response != null)
+                        {
+                            Console.WriteLine($"[TCP    send] Wi-Fi file: {Server.wifiSpotModel._xmlFileName}");
+                            LogMessage($"[TCP    send] Wi-Fi file: {Server.wifiSpotModel._xmlFileName}");
+                        }
+                        break;
+                    default:
+                        response = buffer;
+                        break;
                 }
 
-                //try to add user to UserModel
-                userModel.AddUserID(userPacket.userID, userPacket.x, userPacket.y, userPacket.time);
-
                 //send answer to user
-                byte[] answer = UserPacket.getBytes(userPacket);
-
-                await stream.WriteAsync(answer, 0, answer.Length);
+                await stream.WriteAsync(response, 0, response.Length);
                 await stream.FlushAsync();
-
-                Console.WriteLine("[TCP    send] {0}", userPacket.ToString());
-                LogMessage($"[TCP    send] {userPacket.ToString()}");
             }
 
             catch (Exception e)
@@ -264,7 +274,7 @@ namespace Server
                 //receive data from cliet
                 byte[] data = listener.EndReceive(ar, ref endPoint);
 
-                UserPacket packet = UserPacket.getStruct(data);
+                Packet.UDPPacket packet = Packet.UDPPacket.getStruct(data);
 
                 //userID exist
                 if (userIDModel.ExistUserID(packet.userID, userModel))
@@ -288,5 +298,51 @@ namespace Server
                 Console.WriteLine(e.ToString(), e);
             }
         }
+
+        //user registration on server
+        private static byte[] UserRegistration(int QRID, long regTime)
+        {
+            Packet.UDPPacket packet = new Packet.UDPPacket();
+
+            //try to get QR coordinates
+            int Result = Server.qrModel.GetQRCoord(QRID, ref packet.x, ref packet.y);
+
+            //getting coordinates successfully
+            if (Result >= 0)
+            {
+                //try to get iserID 
+                packet.userID = Server.userIDModel.GetUserID(regTime, Server.userModel);
+                packet.time = regTime;
+
+                //try to add user to UserModel
+                Server.userModel.AddUserID(packet.userID, packet.x, packet.y, packet.time);
+            }
+            else
+            {
+                packet.userID = -1;
+                packet.time = -1;
+            }
+
+            //answer to user
+            byte[] answer = Packet.UDPPacket.getBytes(packet);
+
+            return answer;
+        }
+
+        private static byte[] WIFIRequest(int userID) 
+        {
+            byte[] answer = null;
+
+            //check user registration
+            if (Server.userIDModel.ExistUserID(userID, Server.userModel))
+            {
+                //get wifi buffer
+                if (Server.wifiBuffer != null)
+                    answer = Server.wifiBuffer;
+            }
+            return answer;
+        }
     }
+
+    
 }

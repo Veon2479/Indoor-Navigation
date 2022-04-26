@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Server
 {
@@ -38,7 +39,8 @@ namespace Server
         {
             timer.Start();
             Server.userIDModel = new IDModel(Server.DEFAULT_TABLE_CAPACITY);
-            Server.userModel = new UserModel(Server.DEFAULT_TABLE_CAPACITY, 2);
+            Server.userModel = new UserModel(Server.DEFAULT_TABLE_CAPACITY, 2, DateTimeOffset.Now.ToUnixTimeSeconds());
+            Server.wifiBuffer = File.ReadAllBytes(Server.wifiSpotModel._xmlFileName);
             Server.Start();
         }
 

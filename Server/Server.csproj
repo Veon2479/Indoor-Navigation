@@ -68,12 +68,11 @@
     </Compile>
     <Compile Include="src\WIFISpotModel.cs" />
     <Compile Include="src\MapInfo.cs" />
-    <Compile Include="src\RegPacket.cs" />
     <Compile Include="src\IDModel.cs" />
     <Compile Include="src\QRModel.cs" />
     <Compile Include="src\Server.cs" />
     <Compile Include="src\UserModel.cs" />
-    <Compile Include="src\UserPacket.cs" />
+    <Compile Include="src\Packet.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
