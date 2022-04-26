@@ -363,10 +363,10 @@ namespace Server
             return 0;
         }
 
-        public enum GetQrRecordListErrorCode
+        public enum GetQRRecordListErrorCode
         {
             CORRUPTED_FILE = -1,
-            PARCE_TO_DOUBLE_ERROR = -2
+            PARSE_TO_DOUBLE_ERROR = -2
         }
         /// <summary>
         ///     Chade QR record in xml file according received ID or Name
@@ -384,10 +384,7 @@ namespace Server
         ///             </term>
         ///         </listheader>
         ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
-        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
-        ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (0 > QRID) or alredy exist</item>
-        ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
-        ///     <item>-5 (NAME_NOT_FOUND): name of QR record is not exists</item>
+        ///     <item>-2 (PARSE_TO_DOUBLE_ERROR): Error in parcing data from xml table to double</item>
         ///     </list>
         /// </returns>
         public int GetQRRecordList(ref QRModelXmlContent[] xmlContent)
@@ -397,7 +394,7 @@ namespace Server
             //Check for correct file content
             if (CheckXmlFileContent(ref xmlDoc) < 0)
             {
-                return (int)GetQrRecordListErrorCode.CORRUPTED_FILE;
+                return (int)GetQRRecordListErrorCode.CORRUPTED_FILE;
             }
 
             XmlElement xmlRoot = xmlDoc.DocumentElement;
@@ -428,7 +425,7 @@ namespace Server
                 }
                 catch
                 {
-                    return (int)GetQRCoordErrorCode.PARSE_TO_DOUBLE_ERROR;
+                    return (int)GetQRRecordListErrorCode.PARSE_TO_DOUBLE_ERROR;
                 }
             }
             return 0;
