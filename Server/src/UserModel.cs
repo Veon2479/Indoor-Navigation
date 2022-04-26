@@ -53,9 +53,9 @@ namespace Server
         {
             //Chouse session directory name
             if (sessionDir  != -1){
-                this._sessionDir = sessionDir.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                this._sessionDir = _sessionsDir + "\\" +  sessionDir.ToString(System.Globalization.CultureInfo.InvariantCulture);
             }else{
-                this._sessionDir = _defaultDir;
+                this._sessionDir = _sessionsDir + "\\" + _defaultDir;
             }
 
             //Create temp storage
