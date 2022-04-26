@@ -33,9 +33,9 @@ public class WifiModule implements Runnable {
                 wifiManager.startScan();
                 String s;
                 arrWifiPowers.clear();
-                for (int i = 0; i < wifiManager.getScanResults().size(); i++) {
-                    for (int j = 0; j < arrWifiNames.size(); j++) {
-                        s = arrWifiNames.get(j);
+                for (int j = 0; j < arrWifiNames.size(); j++) {
+                    s = arrWifiNames.get(j);
+                    for (int i = 0; i < wifiManager.getScanResults().size(); i++) {
                         if(s.equals(wifiManager.getScanResults().get(i).SSID)) arrWifiPowers.add(Math.abs(wifiManager.getScanResults().get(i).level));
                         else System.out.println(wifiManager.getScanResults().get(i).SSID);
                     }
