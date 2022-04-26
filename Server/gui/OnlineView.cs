@@ -46,6 +46,8 @@ namespace Server
 
         private static void GetUserList()
         {
+            if (Server.userModel == null)
+                return;
             UserData userData;
             // long time = DateTimeOffset.Now.ToUnixTimeSeconds();
             UserList.Clear();

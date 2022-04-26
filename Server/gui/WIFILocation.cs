@@ -85,6 +85,7 @@ namespace Server
             pb.Image = WIFIMap;
         }
 
+        /*
         public static int AddWIFI(ref ListView list, PictureBox pb)
         {
             int addResult = Server.wifiSpotModel.AddWIFIRecord();
@@ -117,5 +118,6 @@ namespace Server
             }
             return delResult;
         }
+        */
     }
 }
