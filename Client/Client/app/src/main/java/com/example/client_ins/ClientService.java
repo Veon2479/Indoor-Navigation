@@ -76,13 +76,12 @@ public class ClientService extends Service {
         System.out.println("Background service is starting!");
 
         engine.clientMath = new ClientMath(engine);
-        if (engine.mathThread != null)
-            engine.mathThread.stop();
+    //    if (engine.mathThread != null)
+  //          engine.mathThread.stop();
         engine.mathThread = new Thread(engine.clientMath);
         engine.mathThread.start();
 
         SensorReader sensorReader = new SensorReader(engine, getBaseContext(), engine.clientMath);
-
 
         engine.dataSender = new DataSender(engine);
         Thread udpSender = new Thread(engine.dataSender);

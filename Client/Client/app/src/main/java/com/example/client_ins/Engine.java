@@ -32,7 +32,7 @@ public class Engine implements Runnable{
     public int UserId = 0;
 
     public int QrId;
-    public double ReceivedCrd1, receivedCrd2, Azimuth;  // received coordinates, they stores the same point all time the program runs
+    public double ReceivedCrd1 = 0, receivedCrd2 = 0, Azimuth = 0;  // received coordinates, they stores the same point all time the program runs
     public double accX, accY;
 
     public double Crd1, Crd2; //the resulting coordinates, they'll be sent to the server
@@ -107,8 +107,9 @@ public class Engine implements Runnable{
             while (i < AttemptsToRegistrate && !flag) {
                 System.out.println("Trying to registrate");
                 flag = Registrate();
-                if (!flag)
+                if (!flag) {
                     UserId = 0;
+                }
                 i++;
 
             }

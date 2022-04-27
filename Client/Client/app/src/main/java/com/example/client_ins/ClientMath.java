@@ -2,6 +2,10 @@ package com.example.client_ins;
 
 import static java.lang.Math.sqrt;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 enum MatrixType{
     ALL_ZERO,
     IDENTITY, //Единичная матрица
@@ -354,7 +358,7 @@ class Quaternion{
 public class ClientMath implements Runnable{
 
     boolean isActive = true;
-    boolean fPause = false;
+    boolean fPause = true;
     public boolean fPhysics = false;
     Engine mainEngine;
 
@@ -374,6 +378,13 @@ public class ClientMath implements Runnable{
         linAccQuat.w = 0;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void TransformCoordinates(){
+        double angle = Math.toRadians(mainEngine.Azimuth);
+        mainEngine.Crd1 = mainEngine.ReceivedCrd1 + currX.matrix[0][0] * Math.cos(angle) - currX.matrix[3][0] * Math.sin(angle);
+        mainEngine.Crd2 = mainEngine.receivedCrd2 - (currX.matrix[0][0] * Math.sin(angle) + currX.matrix[3][0] * Math.cos(angle));
+    }
+
     public void CorrectInitCoordinates(){
         double x = Math.cos(Math.toRadians(initLongitude));
         x *= x;
@@ -385,8 +396,8 @@ public class ClientMath implements Runnable{
     }
 
     public void CorrectCoordinates(){
-        z.matrix[0][0] = Math.toRadians(Latitude - initLatitude) * Radius;
-        z.matrix[1][0] = Math.toRadians(Longitude - initLongitude) * Radius;
+        GPSX = Math.toRadians(Latitude - initLatitude) * Radius;
+        GPSY = Math.toRadians(Longitude - initLongitude) * Radius;
     }
 
     public Quaternion tempQuat = new Quaternion();
@@ -394,15 +405,10 @@ public class ClientMath implements Runnable{
 
     public Quaternion linAccQuat = new Quaternion();
 
-    public double accX = 0;
-    public double accY = 0;
-
-    public double velX = 0;
-    public double velY = 0;
-
     private double time;
     private double deltaTime;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void UpdateGlobalAcc()
     {
         tempQuat.x = rotQuat.x;
@@ -410,129 +416,90 @@ public class ClientMath implements Runnable{
         tempQuat.z = rotQuat.z;
         tempQuat.w = rotQuat.w;
 
-        //tempQuat.Invert();
-        //tempQuat.MulVec(linAccQuat);
         tempQuat.Mul(linAccQuat);
         tempQuat.MulWithInverted(rotQuat);
 
-        //accX = tempQuat.x;
-        //accY = tempQuat.y;
         z.matrix[2][0] = tempQuat.x;
         z.matrix[3][0] = tempQuat.y;
         mainEngine.accX = tempQuat.x;
         mainEngine.accY = tempQuat.y;
-        //accZ = tempQuat.z;
-    }
-
-    void PhysicsProc(){
-        mainEngine.Crd1 += velX * deltaTime + accX * deltaTime * deltaTime / 2;
-        mainEngine.Crd2 += velY * deltaTime + accY * deltaTime * deltaTime / 2;
-
-        velX += accX * deltaTime;
-        velY += accY * deltaTime;
     }
 
 /*
-    x(n+1) = F * x(n)
-        |1   t  0.5t^2  0   0   0    |
-    F = |0   1   t      0   0   0    |
-        |0   0   1      0   0   0    |
-        |0   0   0      1   t  0.5t^2|
-        |0   0   0      0   1   t    |
-        |0   0   0      0   0   1    |
-__________________________________
-    p(n+1) = F*P*F.Transpose + Q
-        |t^4 / 4   t^3 / 2   t^2 / 2   0         0         0      |
-    Q = |t^3 / 2   t^2       t         0         0         0      |
-        |t^2 / 2   t         1         0         0         0      | * disp(a)^2
-        |0         0         0         t^4 / 4   t^3 / 2   t^2 / 2|
-        |0         0         0         t^3 / 2   t^2       t      |
-        |0         0         0         t^2 / 2   t         1      |
-----------------------------------
-   z = H * x + v
-   x = |x | z = |ax|
-       |vx|     |ay|
-       |ax|
-       |y |
-       |vy|
-       |ay|
 
-  H = |0 0 1 0 0 0|
-      |0 0 0 0 0 1|
-----------------------------------
-   K = P * H.Transpose * (H * P * H.Transpose + R)^-1
-   R = |disp(ax) 0       |
-       |0        disp(ay)|
-----------------------------------
-   x(n) = x(n-1) + K * (z - H * x(n-1))
-----------------------------------
-   P(n) = (I - K*H)*P(n-1) * (I - K*H).Transpose + K*R * K.Transpose
 */
-    private Matrix H;
-    public Matrix P;
-    private Matrix P1;
-    private Matrix F;
-    private Matrix R;
-    private Matrix Q;
-    private Matrix K;
+    private Matrix H = new Matrix(4,6, MatrixType.ALL_ZERO); // Observation matrix
+    public Matrix P = new Matrix(6, 6, MatrixType.ALL_ZERO); // Covariance Matrix
+    private Matrix P1  = new Matrix(6,6, MatrixType.UNDEFINED); // Copy of covariance matrix
+    private Matrix F = new Matrix(6,6, MatrixType.IDENTITY); // State transition matrix
+    private Matrix R = new Matrix(4, 4, MatrixType.ALL_ZERO);// Measurement covariance matrix
+    private Matrix Q = new Matrix(6,6, MatrixType.ALL_ZERO);// Process Noise Matrix
+    private Matrix K; // Kalman Gain
 
-    private Matrix predX;
+    private Matrix predX = new Matrix(6, 1, MatrixType.ALL_ZERO); //Predicted system state
     private Matrix tempX;
-    public Matrix currX = new Matrix(6, 1, MatrixType.ALL_ZERO);
+    public Matrix currX = new Matrix(6, 1, MatrixType.ALL_ZERO); //Estimated system state
 
-    public Matrix z;
-    private Matrix zt;
-    private Matrix tempZ;
+    public Matrix z = new Matrix(4, 1, MatrixType.ALL_ZERO); // Measurement matrix
+    private Matrix zt = new Matrix(z.a, z.b, MatrixType.UNDEFINED);// Mean optimal prediction
+    private Matrix tempZ = new Matrix(z.a, z.b, MatrixType.UNDEFINED);
 
-    private int L = 6;
-    private int k = 1;
-    private double alpha = 0.001f;
-    private int beta = 2;
-    private double u = alpha*alpha*(L + k) - L;
-    private double wm0 = u/(L + u);
-    private double wc0 = u/(L + u)+ (1 - alpha*alpha + beta); //
-    private double wm = 1 / (2*(L + u));
-    private double wc = wm;
+    private double GPSX = 0;
+    private double GPSY = 0;
+
+    private int L = 6;                                          //Number of dimensions
+    private int k = 1;                                          //Used to calculate the weighs
+    private double alpha = 0.001f;                              //Used to calculate the weighs
+    private int beta = 2;                                       //Used to calculate the weighs
+    private double u = alpha*alpha*(L + k) - L;                 //Used to calculate the weighs and sigma points
+    private double wm0 = u/(L + u);                             //Weighs
+    private double wc0 = u/(L + u)+ (1 - alpha*alpha + beta);   //Weighs
+    private double wm = 1 / (2*(L + u));                        //Weighs
+    private double wc = wm;                                     //Weighs
     private Matrix[] sigmaPoints = new Matrix[2*L+1];
-    private Matrix[] Zt = new Matrix[2*L+1];
-    private Matrix St;
-    private Matrix Pxz;
+    private Matrix[] Zt = new Matrix[2*L+1];                    //Optimal prediction sigma points
+    private Matrix St;                                          //Used to calculate K
+    private Matrix Pxz;                                         //Used to calculate K
 
-    private double dispA = 1;
+    private double dispA = 1;           //Dispersion of acceleration random changes
+    private double dispX = 2;           //Dispersion of coordinates random changes
+    private double errorA = 0.16f;      //Error of measurement of acceleration
 
     void KalmanFilter(){
         Q.matrix[2][2] = 1;
         Q.matrix[5][5] = 1;
         Q.matrix[2][1] = deltaTime;
         Q.matrix[1][2] = deltaTime;
-        Q.matrix[5][4] = deltaTime;
+        Q.matrix[5][4] = deltaTime;          // Q = Qa + Qv + Qx
         Q.matrix[4][5] = deltaTime;
-        double tempT = deltaTime * deltaTime;
+        double tempT = deltaTime * deltaTime;// Qv = 0;
         Q.matrix[1][1] = tempT;
-        Q.matrix[4][4] = tempT;
-        tempT /= 2;
-        Q.matrix[0][2] = tempT;
-        Q.matrix[2][0] = tempT;
-        Q.matrix[3][5] = tempT;
-        Q.matrix[5][3] = tempT;
+        Q.matrix[4][4] = tempT;              //     |dt^4 / 4   dt^3 / 2   dt^2 / 2   0         0         0      |
+        tempT /= 2;                          //     |dt^3 / 2   dt^2       dt         0         0         0      |
+        Q.matrix[0][2] = tempT;              //Qa = |dt^2 / 2   dt         1          0         0         0      | * disp(a)^2
+        Q.matrix[2][0] = tempT;              //     |0          0          0       dt^4 / 4   dt^3 / 2   dt^2 / 2|
+        Q.matrix[3][5] = tempT;              //     |0          0          0       dt^3 / 2   dt^2       dt      |
+        Q.matrix[5][3] = tempT;              //     |0          0          0       dt^2 / 2   dt          1      |
         tempT *= deltaTime/2;
-        Q.matrix[0][1] = tempT;
-        Q.matrix[1][0] = tempT;
-        Q.matrix[3][4] = tempT;
-        Q.matrix[4][3] = tempT;
-        tempT *= deltaTime/2;
-        Q.matrix[0][0] = tempT + 2;
+        Q.matrix[0][1] = tempT;              //     |1   0   0   0   0   0|
+        Q.matrix[1][0] = tempT;              //     |0   0   0   0   0   0|
+        Q.matrix[3][4] = tempT;              //Qx = |0   0   0   0   0   0| * disp(x)^2
+        Q.matrix[4][3] = tempT;              //     |0   0   0   1   0   0|
+        tempT *= deltaTime/2;                //     |0   0   0   0   0   0|
+        Q.matrix[0][0] = tempT + 2;          //     |0   0   0   0   0   0|
         Q.matrix[3][3] = tempT + 2;
         Q.Scale(dispA);
+        Q.matrix[0][0] += dispX;
+        Q.matrix[3][3] += dispX;
         tempT = deltaTime*deltaTime/2;
-        F.matrix[0][2] = tempT;
-        F.matrix[3][5] = tempT;
-        F.matrix[0][1] = deltaTime;
-        F.matrix[1][2] = deltaTime;
-        F.matrix[3][4] = deltaTime;
-        F.matrix[4][5] = deltaTime;
+        F.matrix[0][2] = tempT;     //     |1   dt  0.5dt^2  0   0   0      |
+        F.matrix[3][5] = tempT;     //     |0   1   dt       0   0   0      |
+        F.matrix[0][1] = deltaTime; // F = |0   0   1        0   0   0      |
+        F.matrix[1][2] = deltaTime; //     |0   0   0        1   dt  0.5dt^2|
+        F.matrix[3][4] = deltaTime; //     |0   0   0        0   1   dt     |
+        F.matrix[4][5] = deltaTime; //     |0   0   0        0   0   1      |
 
-        R.matrix[0][0] = itudeAccur;
+        R.matrix[0][0] = itudeAccur; //Error of measurement of GPS
         R.matrix[1][1] = itudeAccur;
 
         sigmaPoints[0].Copy(currX);
@@ -632,15 +599,25 @@ __________________________________
         fPause = false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void EstimateMeasuredCoords(){
+        z.matrix[0][0] = GPSX + mainEngine.WiFiCrd1 / 2;
+        z.matrix[1][0] = GPSY + mainEngine.WiFiCrd2 / 2;
+    }
+
+    public void UpdateMeasuredCoords(){
+        z.matrix[0][0] = GPSX;
+        z.matrix[1][0] = GPSY;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void run()
     {
-        z = new Matrix(4, 1, MatrixType.ALL_ZERO);
-        H = new Matrix(4, 6, MatrixType.ALL_ZERO);
-        H.matrix[0][0] = 1;
-        H.matrix[1][3] = 1;
-        H.matrix[2][2] = 1;
-        H.matrix[3][5] = 1;
-        P = new Matrix(6, 6, MatrixType.ALL_ZERO);
+        H.matrix[0][0] = 1;//       |1 0 0 0 0 0|
+        H.matrix[1][3] = 1;//   H = |0 0 0 1 0 0|
+        H.matrix[2][2] = 1;//       |0 0 1 0 0 0|
+        H.matrix[3][5] = 1;//       |0 0 0 0 0 1|
+
         /*
         P.matrix[0][0] = 0.1f; P.matrix[0][1] = 0.01f; P.matrix[0][2] = 0.01f;
         P.matrix[1][0] = 0.01f; P.matrix[1][1] = 0.1f; P.matrix[1][2] = 0.01f;
@@ -654,60 +631,42 @@ __________________________________
         P.matrix[3][3] = 0.1f; P.matrix[3][4] = 0.01f; P.matrix[3][5] = 0.01f;
         P.matrix[4][3] = 0.01f; P.matrix[4][4] = 0.1f; P.matrix[4][5] = 0.01f;
         P.matrix[5][3] = 0.01f; P.matrix[5][4] = 0.01f; P.matrix[5][5] = 0.1f;
-
          */
-        P.matrix[0][0] = 0.1f;
-        P.matrix[1][1] = 0.1f;
-        P.matrix[2][2] = 0.1f;
-        P.matrix[3][3] = 0.1f;
-        P.matrix[4][4] = 0.1f;
-        P.matrix[5][5] = 0.1f;
-        P1 = new Matrix(6,6, MatrixType.UNDEFINED);
-        F = new Matrix(6,6, MatrixType.IDENTITY);
-        R = new Matrix(4, 4, MatrixType.ALL_ZERO);
-        R.matrix[0][0] = 0.01f;
-        R.matrix[1][1] = 0.01f;
-        R.matrix[2][2] = 0.16f;
-        R.matrix[3][3] = 0.16f;
-        Q = new Matrix(6,6, MatrixType.ALL_ZERO);
-        predX = new Matrix(6, 1, MatrixType.ALL_ZERO);
-        zt = new Matrix(z.a, z.b, MatrixType.UNDEFINED);
-        tempZ = new Matrix(z.a, z.b, MatrixType.UNDEFINED);
+
+        P.matrix[0][0] = 0.1f;//        |0.1  0   0   0   0   0 |
+        P.matrix[1][1] = 0.1f;//        | 0  0.1  0   0   0   0 |
+        P.matrix[2][2] = 0.1f;//   P0 = | 0   0  0.1  0   0   0 |
+        P.matrix[3][3] = 0.1f;//        | 0   0   0  0.1  0   0 |
+        P.matrix[4][4] = 0.1f;//        | 0   0   0   0  0.1  0 |
+        P.matrix[5][5] = 0.1f;//        | 0   0   0   0   0  0.1|
+
+                                //      | ox   0    0    0  |
+                                //  R = | 0    oy   0    0  |
+        R.matrix[2][2] = errorA;//      | 0    0   oax   0  | oax = const
+        R.matrix[3][3] = errorA;//      | 0    0    0   oay | oay = const
+
         for(int i = 0; i<2*L + 1; i++){
             Zt[i] = new Matrix(z.a, z.b, MatrixType.ALL_ZERO);
             sigmaPoints[i] = new Matrix(currX.a, currX.b, MatrixType.ALL_ZERO);
         }
-
-        sigmaPoints[0].Copy(currX);
-        P1.Copy(P);
-        P1.Scale(L+u);
-        P1 = P1.Sqrt();
-        for(int i = 1; i<=L; i++){
-            for(int j = 0; j<sigmaPoints[i].a; j++)
-                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] + P1.matrix[j][i-1];
-        }
-        for(int i = L+1; i<=2*L; i++){
-            for(int j = 0; j<sigmaPoints[i].a; j++)
-                sigmaPoints[i].matrix[j][0] = sigmaPoints[0].matrix[j][0] - P1.matrix[j][i-L-1];
-        }
-
 
         time = System.nanoTime();
         while(isActive)
         {
             if(!fPause){
                 deltaTime = ((float)System.nanoTime()) / 1000000000 - time;
-                //System.out.println(deltaTime);
                 if(deltaTime < 0){
                     time += deltaTime;
                 }
                 else if(deltaTime > 0.00001){
                     if(fPhysics) {
                         time += deltaTime;
+                        if(mainEngine.isWiFiDetermined)
+                            EstimateMeasuredCoords();
+                        else
+                            UpdateMeasuredCoords();
                         KalmanFilter();
-                        //PhysicsProc();
-                        mainEngine.Crd1 = currX.matrix[0][0];
-                        mainEngine.Crd2 = currX.matrix[3][0];
+                        TransformCoordinates();
                         fPhysics = false;
                     }
                 }

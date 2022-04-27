@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     TextView text1;
     TextView text2;
     TextView text3;
-    public static TextView textScroll;
 
   
     Button buttonStart;
@@ -93,22 +92,22 @@ public class MainActivity extends AppCompatActivity {
         engineThread.start();
 
 //
-//        System.out.println("Calling background service to start");
-//        Intent intent = new Intent(this, ClientService.class);
-//        Context context = getApplicationContext();
-//        context.startForegroundService( intent );
+        System.out.println("Calling background service to start");
+        Intent intent = new Intent(this, ClientService.class);
+        Context context = getApplicationContext();
+        context.startForegroundService( intent );
 
 
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
-        textScroll = findViewById(R.id.textScroll);
-      
-        textScroll.setText("\rLog started!\r\n");
 
-        //WifiModule wifi = new WifiModule(getApplicationContext());
 
-      
+        editTextQrID = findViewById(R.id.editTextTextPersonName1);
+        editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
+
+
+
         if(arguments != null) {
             String qrcode = arguments.getString("1");
             System.out.println(qrcode);
@@ -120,8 +119,8 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverPortUdp = Integer.parseInt(helpStr[2]);
                 engine.Azimuth = Double.parseDouble(helpStr[3]);
                 engine.QrId = Integer.parseInt(helpStr[4]);
-                engine.Crd1 = Double.parseDouble(helpStr[5]);
-                engine.Crd2 = Double.parseDouble(helpStr[6]);
+                engine.ReceivedCrd1 = Double.parseDouble(helpStr[5]);
+                engine.ReceivedCrd1 = Double.parseDouble(helpStr[6]);
 
             }
             catch (Exception ex) {
@@ -130,8 +129,12 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverPortUdp = 4445;
                 engine.Azimuth = 0;
                 engine.QrId = 0;
-                engine.Crd1 = 0;
-                engine.Crd2 = 0;
+                engine.ReceivedCrd1 = 0;
+                engine.receivedCrd2 = 0;
+            }
+            finally {
+                editTextQrID.setText( Integer.toString( engine.QrId ) );
+                editTextServerAddr.setText( serverAddr );
             }
             System.out.println("Ok "+engine.Crd2);
         }
@@ -143,10 +146,7 @@ public class MainActivity extends AppCompatActivity {
         y = engine.Crd2;
 
   
-        editTextQrID = findViewById(R.id.editTextTextPersonName1);
-        editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
 
-        editTextQrID.setText("0");
         editTextServerAddr.setText(serverAddr);
 
         //editText1.getText(); //взять текст из первой строки
@@ -197,12 +197,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
-        text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
-        text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
-        MainActivity.textScroll.append("Log ended!"+"\n");
+//        text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
+//        text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
+//        text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
 
-        //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
 
         CountDownTimer countDownTimer = new CountDownTimer(2000, 2000) {
             @Override
@@ -210,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+            @SuppressLint("DefaultLocale")
             @Override
             public void onFinish() {
                 x = engine.Crd1;
@@ -226,9 +225,9 @@ public class MainActivity extends AppCompatActivity {
                             engine.clientMath.P.matrix[2][2], engine.clientMath.P.matrix[3][3],
                             engine.clientMath.P.matrix[4][4], engine.clientMath.P.matrix[5][5]));
                     text3.setText( String.format("Accelerometer\nX: %.2f\nY: %.2f\nZ: %.2f\n" +
-                            "GPS:\nLong: %.4f\nLat: %.4f\n"+
-                            "MeasCoord:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
-                            , engine.clientMath.z.matrix[0][0], engine.clientMath.z.matrix[1][0]));
+                            "GPS:\nLong: %.5f\nLat: %.5f\n"+
+                            "MapCoords:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
+                            , engine.Crd1, engine.Crd2));
                 }
 
           /*      text1.setText(String.format("Coordinates\nX: %.2f\nY: %.2f\nZ: %.2f", x, y, z));
