@@ -93,10 +93,10 @@ public class MainActivity extends AppCompatActivity {
         engineThread.start();
 
 //
-//        System.out.println("Calling background service to start");
-//        Intent intent = new Intent(this, ClientService.class);
-//        Context context = getApplicationContext();
-//        context.startForegroundService( intent );
+        System.out.println("Calling background service to start");
+        Intent intent = new Intent(this, ClientService.class);
+        Context context = getApplicationContext();
+        context.startForegroundService( intent );
 
 
         text1 = findViewById(R.id.text1);
@@ -227,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
                             engine.clientMath.P.matrix[4][4], engine.clientMath.P.matrix[5][5]));
                     text3.setText( String.format("Accelerometer\nX: %.2f\nY: %.2f\nZ: %.2f\n" +
                             "GPS:\nLong: %.4f\nLat: %.4f\n"+
-                            "MeasCoord:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
-                            , engine.clientMath.z.matrix[0][0], engine.clientMath.z.matrix[1][0]));
+                            "MapCoords:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
+                            , engine.Crd1, engine.Crd2));
                 }
 
           /*      text1.setText(String.format("Coordinates\nX: %.2f\nY: %.2f\nZ: %.2f", x, y, z));
