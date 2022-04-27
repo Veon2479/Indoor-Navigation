@@ -13,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.content.Context.*;
 import android.location.Location;
+import android.location.LocationRequest;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
