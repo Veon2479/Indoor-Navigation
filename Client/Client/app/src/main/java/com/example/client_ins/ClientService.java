@@ -83,6 +83,14 @@ public class ClientService extends Service {
 
         SensorReader sensorReader = new SensorReader(engine, getBaseContext(), engine.clientMath);
 
+
+        engine.dataSender = new DataSender(engine);
+        Thread udpSender = new Thread(engine.dataSender);
+        udpSender.start();
+
+        engine.wifiModule = new WifiModule(engine.context);
+        engine.wifiModule.run();
+
         //engine.startTracking();
         return START_STICKY;
 

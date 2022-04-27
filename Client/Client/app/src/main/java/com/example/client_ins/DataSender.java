@@ -15,11 +15,11 @@ class DataSender implements Runnable {
     Engine mainEngine;
     private boolean isActive;
 
-    public boolean fSend = true;
+    public boolean fSend = false;
 
     public DataSender(Engine engine){
         this.mainEngine = engine;
-        this.isActive = false;
+        this.isActive = true;
     }
 
     public void Enable() { isActive = true; }
@@ -27,6 +27,9 @@ class DataSender implements Runnable {
     public void Disable(){
         isActive = false;
     }
+
+    public void EnableUdp() { fSend = true; }
+    public void DisableUdp() { fSend = false; }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void run(){
