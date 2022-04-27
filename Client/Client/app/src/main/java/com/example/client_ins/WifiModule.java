@@ -23,6 +23,7 @@ public class WifiModule implements Runnable {
     }
     @Override
     public void run() {
+        System.out.println("WiFi module is running..");
         wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         wifiScanReceiver = new BroadcastReceiver() {
             @SuppressLint("MissingPermission")

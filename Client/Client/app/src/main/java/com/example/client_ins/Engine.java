@@ -46,6 +46,7 @@ public class Engine implements Runnable{
     public ClientMath clientMath;
     public Thread mathThread;
     public  DataSender dataSender;
+    public WifiModule wifiModule;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Engine(Context context)
