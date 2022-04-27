@@ -103,13 +103,13 @@ public class MainActivity extends AppCompatActivity {
         text3 = findViewById(R.id.text3);
 
 
-        //WifiModule wifi = new WifiModule(getApplicationContext());
-
 
 
         editTextQrID = findViewById(R.id.editTextTextPersonName1);
         editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
-      
+
+
+
         if(arguments != null) {
             String qrcode = arguments.getString("1");
             System.out.println(qrcode);
@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 engine.ReceivedCrd1 = Double.parseDouble(helpStr[5]);
                 engine.ReceivedCrd2 = Double.parseDouble(helpStr[6]);
 
+
             }
             catch (Exception ex) {
                 Tools.serverAddr = "10.144.52.41";
@@ -136,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             }
             finally {
                 editTextQrID.setText( Integer.toString(engine.QrId));
+
                 editTextServerAddr.setText( serverAddr );
             }
         }
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         y = engine.ReceivedCrd2;
 
 
-        editTextQrID.setText("0");
+
         editTextServerAddr.setText(serverAddr);
 
         //editText1.getText(); //взять текст из первой строки
@@ -197,12 +199,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//
-//        text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
-//        text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
-//        text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
 
-        //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
+
 
         CountDownTimer countDownTimer = new CountDownTimer(2000, 2000) {
             @Override
@@ -227,9 +225,9 @@ public class MainActivity extends AppCompatActivity {
                             engine.clientMath.P.matrix[2][2], engine.clientMath.P.matrix[3][3],
                             engine.clientMath.P.matrix[4][4], engine.clientMath.P.matrix[5][5]));
                     text3.setText( String.format("Accelerometer\nX: %.2f\nY: %.2f\nZ: %.2f\n" +
-                            "GPS:\nLong: %.4f\nLat: %.4f\n"+
-                            "MeasCoord:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
-                            , engine.clientMath.z.matrix[0][0], engine.clientMath.z.matrix[1][0]));
+                            "GPS:\nLong: %.5f\nLat: %.5f\n"+
+                            "MapCoords:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
+                            , engine.Crd1, engine.Crd2));
                 }
 
           /*      text1.setText(String.format("Coordinates\nX: %.2f\nY: %.2f\nZ: %.2f", x, y, z));

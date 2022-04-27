@@ -1,18 +1,14 @@
 package com.example.client_ins;
 
-import static android.content.Context.LOCATION_SERVICE;
-
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.content.Context.*;
 import android.location.Location;
+import android.location.LocationRequest;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -21,8 +17,6 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -122,7 +116,8 @@ public class SensorReader {
                 }
             });
 
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
+      //  fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 }
