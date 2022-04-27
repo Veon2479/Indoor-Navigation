@@ -107,8 +107,9 @@ public class Engine implements Runnable{
             while (i < AttemptsToRegistrate && !flag) {
                 System.out.println("Trying to registrate");
                 flag = Registrate();
-                if (!flag)
+                if (!flag) {
                     UserId = 0;
+                }
                 i++;
 
             }

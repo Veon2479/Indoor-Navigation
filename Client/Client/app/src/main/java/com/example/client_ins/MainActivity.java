@@ -103,8 +103,11 @@ public class MainActivity extends AppCompatActivity {
         text3 = findViewById(R.id.text3);
 
 
+        editTextQrID = findViewById(R.id.editTextTextPersonName1);
+        editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
 
-      
+
+
         if(arguments != null) {
             String qrcode = arguments.getString("1");
             System.out.println(qrcode);
@@ -116,8 +119,8 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverPortUdp = Integer.parseInt(helpStr[2]);
                 engine.Azimuth = Double.parseDouble(helpStr[3]);
                 engine.QrId = Integer.parseInt(helpStr[4]);
-                engine.Crd1 = Double.parseDouble(helpStr[5]);
-                engine.Crd2 = Double.parseDouble(helpStr[6]);
+                engine.ReceivedCrd1 = Double.parseDouble(helpStr[5]);
+                engine.ReceivedCrd1 = Double.parseDouble(helpStr[6]);
 
             }
             catch (Exception ex) {
@@ -126,8 +129,12 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverPortUdp = 4445;
                 engine.Azimuth = 0;
                 engine.QrId = 0;
-                engine.Crd1 = 0;
-                engine.Crd2 = 0;
+                engine.ReceivedCrd1 = 0;
+                engine.receivedCrd2 = 0;
+            }
+            finally {
+                editTextQrID.setText( Integer.toString( engine.QrId ) );
+                editTextServerAddr.setText( serverAddr );
             }
             System.out.println("Ok "+engine.Crd2);
         }
@@ -139,10 +146,7 @@ public class MainActivity extends AppCompatActivity {
         y = engine.Crd2;
 
   
-        editTextQrID = findViewById(R.id.editTextTextPersonName1);
-        editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
 
-        editTextQrID.setText("0");
         editTextServerAddr.setText(serverAddr);
 
         //editText1.getText(); //взять текст из первой строки
