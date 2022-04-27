@@ -73,12 +73,11 @@ public class MainActivity extends AppCompatActivity {
         Thread engineThread = new Thread(engine);
         engineThread.start();
 
-
-        System.out.println("Calling background service to start");
-        //ClientService clientService = new ClientService(engine);
-        Intent intent = new Intent(this, ClientService.class);
-        Context context = getApplicationContext();
-        context.startForegroundService( intent );
+//
+//        System.out.println("Calling background service to start");
+//        Intent intent = new Intent(this, ClientService.class);
+//        Context context = getApplicationContext();
+//        context.startForegroundService( intent );
 
 
         text1 = findViewById(R.id.text1);
@@ -88,12 +87,11 @@ public class MainActivity extends AppCompatActivity {
       
         textScroll.setText("\rLog started!\r\n");
 
-        WifiModule wifi = new WifiModule(getApplicationContext());
+        //WifiModule wifi = new WifiModule(getApplicationContext());
 
       
-        if(arguments!=null) {
+        if(arguments != null) {
             String qrcode = arguments.getString("1");
-            editText1.setText(qrcode);
             System.out.println(qrcode);
             String[] helpStr = qrcode.split("[\n\\t]");
             System.out.println("Nice "+helpStr.length);
@@ -101,14 +99,16 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverAddr = helpStr[0];
                 Tools.serverPortTcp = Integer.parseInt(helpStr[1]);
                 Tools.serverPortUdp = Integer.parseInt(helpStr[2]);
-                engine.Azimuth = Double.parseDouble(helpStr[3]);
-                engine.Crd1 = Double.parseDouble(helpStr[4]);
-                engine.Crd2 = Double.parseDouble(helpStr[5]);
+                engine.QrId = Integer.parseInt(helpStr[3]);
+                engine.Azimuth = Double.parseDouble(helpStr[4]);
+                engine.Crd1 = Double.parseDouble(helpStr[5]);
+                engine.Crd2 = Double.parseDouble(helpStr[6]);
             }
             catch (Exception ex) {
-                Tools.serverAddr = "192.168.50.145";
+                Tools.serverAddr = "10.144.52.41";
                 Tools.serverPortTcp = 4444;
                 Tools.serverPortUdp = 4445;
+                engine.QrId = 0;
                 engine.Azimuth = 0;
                 engine.Crd1 = 0;
                 engine.Crd2 = 0;

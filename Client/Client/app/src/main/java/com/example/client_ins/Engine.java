@@ -2,6 +2,7 @@ package com.example.client_ins;
 
 import static com.example.client_ins.Tools.*;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.StrictMode;
 import android.util.Pair;
@@ -172,6 +173,12 @@ public class Engine implements Runnable{
             if ( UserId < 0 ) {
                 RESULT = false;
                 System.out.println("Server refused to distribute UserId");
+            }
+            else
+            {
+                System.out.println("Calling background service to start");
+                Intent intent = new Intent(context, ClientService.class);
+                context.startForegroundService( intent );
             }
 
             try {
