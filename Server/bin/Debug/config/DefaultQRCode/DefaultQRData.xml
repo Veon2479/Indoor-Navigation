@@ -25,6 +25,7 @@
     <x>524.00</x>
     <y>281.00</y>
   </QRCode>
+<<<<<<< HEAD
   <QRCode id="7" name="Room10">
     <x>452</x>
     <y>187</y>
@@ -32,5 +33,18 @@
   <QRCode id="23" name="вв">
     <x>313.00</x>
     <y>331.00</y>
+=======
+  <QRCode id="8" name="Room18Purple">
+    <x>225.00</x>
+    <y>281.00</y>
+>>>>>>> Server
+  </QRCode>
+  <QRCode id="9" name="Zero">
+    <x>0</x>
+    <y>0</y>
+  </QRCode>
+  <QRCode id="10" name="Center">
+    <x>324</x>
+    <y>378.5</y>
   </QRCode>
 </QRCodes>
