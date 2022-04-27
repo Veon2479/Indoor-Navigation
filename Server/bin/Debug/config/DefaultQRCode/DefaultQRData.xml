@@ -26,11 +26,11 @@
     <y>281.00</y>
   </QRCode>
   <QRCode id="7" name="Room10">
-    <x>452.00</x>
-    <y>187.00</y>
+    <x>452</x>
+    <y>187</y>
   </QRCode>
-  <QRCode id="8" name="Room18Purple">
-    <x>225.00</x>
-    <y>281.00</y>
+  <QRCode id="23" name="вв">
+    <x>313.00</x>
+    <y>331.00</y>
   </QRCode>
 </QRCodes>

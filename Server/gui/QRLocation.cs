@@ -76,7 +76,7 @@ namespace Server
             //add QRRecord into a file
             int addResult = Server.qrModel.AddQRRecord(QRID, Name, x, y);
 
-            if (addResult == 0)
+            if (addResult >= 0)
             {
                 QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
 
@@ -98,7 +98,7 @@ namespace Server
 
             int editResult = Server.qrModel.ChangeQRRecord(oldQRID, QRID, QRName, x, y);
 
-            if (editResult == 0)
+            if (editResult >= 0)
             {
                 //update view
                 QRLocation.UpdateQRView(Server.qrModel, ref view, pb);
@@ -126,7 +126,7 @@ namespace Server
 
             int delResult = Server.qrModel.DeleteQRRecord(QRID);
 
-            if (delResult == 0)
+            if (delResult >= 0)
             {
 
                 //update view

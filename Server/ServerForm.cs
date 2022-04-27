@@ -206,12 +206,6 @@ namespace Server
             ServerManage.StopServer(ref tmrListUpdate);
         }
 
-        //flush the server temp storage
-        private void btnFlush_Click(object sender, EventArgs e)
-        {
-            Server.Flush();
-        }
-
         //print log message
         private void LogMessage(string msg)
         {
@@ -611,6 +605,9 @@ namespace Server
             }
         }
 
+        /*
+         * Heat map tab
+         */
         private void bGenerate_Click(object sender, EventArgs e)
         {
             string BeginDateTime;
