@@ -83,7 +83,6 @@ public class ClientService extends Service {
 
         SensorReader sensorReader = new SensorReader(engine, getBaseContext(), engine.clientMath);
 
-
         engine.dataSender = new DataSender(engine);
         Thread udpSender = new Thread(engine.dataSender);
         udpSender.start();

@@ -2,6 +2,10 @@ package com.example.client_ins;
 
 import static java.lang.Math.sqrt;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 enum MatrixType{
     ALL_ZERO,
     IDENTITY, //Единичная матрица
@@ -354,7 +358,7 @@ class Quaternion{
 public class ClientMath implements Runnable{
 
     boolean isActive = true;
-    boolean fPause = false;
+    boolean fPause = true;
     public boolean fPhysics = false;
     Engine mainEngine;
 
@@ -374,6 +378,13 @@ public class ClientMath implements Runnable{
         linAccQuat.w = 0;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void TransformCoordinates(){
+        double angle = Math.toRadians(mainEngine.Azimuth);
+        mainEngine.Crd1 = mainEngine.ReceivedCrd1 + currX.matrix[0][0] * Math.cos(angle) - currX.matrix[3][0] * Math.sin(angle);
+        mainEngine.Crd2 = mainEngine.receivedCrd2 - (currX.matrix[0][0] * Math.sin(angle) + currX.matrix[3][0] * Math.cos(angle));
+    }
+
     public void CorrectInitCoordinates(){
         double x = Math.cos(Math.toRadians(initLongitude));
         x *= x;
@@ -385,8 +396,8 @@ public class ClientMath implements Runnable{
     }
 
     public void CorrectCoordinates(){
-        z.matrix[0][0] = Math.toRadians(Latitude - initLatitude) * Radius;
-        z.matrix[1][0] = Math.toRadians(Longitude - initLongitude) * Radius;
+        GPSX = Math.toRadians(Latitude - initLatitude) * Radius;
+        GPSY = Math.toRadians(Longitude - initLongitude) * Radius;
     }
 
     public Quaternion tempQuat = new Quaternion();
@@ -403,6 +414,7 @@ public class ClientMath implements Runnable{
     private double time;
     private double deltaTime;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void UpdateGlobalAcc()
     {
         tempQuat.x = rotQuat.x;
@@ -424,6 +436,7 @@ public class ClientMath implements Runnable{
         //accZ = tempQuat.z;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     void PhysicsProc(){
         mainEngine.Crd1 += velX * deltaTime + accX * deltaTime * deltaTime / 2;
         mainEngine.Crd2 += velY * deltaTime + accY * deltaTime * deltaTime / 2;
@@ -483,6 +496,9 @@ __________________________________
     public Matrix z;
     private Matrix zt;
     private Matrix tempZ;
+
+    private double GPSX = 0;
+    private double GPSY = 0;
 
     private int L = 6;
     private int k = 1;
@@ -632,6 +648,18 @@ __________________________________
         fPause = false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void EstimateMeasuredCoords(){
+        z.matrix[0][0] = GPSX + mainEngine.WiFiCrd1 / 2;
+        z.matrix[1][0] = GPSY + mainEngine.WiFiCrd2 / 2;
+    }
+
+    public void UpdateMeasuredCoords(){
+        z.matrix[0][0] = GPSX;
+        z.matrix[1][0] = GPSY;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void run()
     {
         z = new Matrix(4, 1, MatrixType.ALL_ZERO);
@@ -697,17 +725,18 @@ __________________________________
         {
             if(!fPause){
                 deltaTime = ((float)System.nanoTime()) / 1000000000 - time;
-                //System.out.println(deltaTime);
                 if(deltaTime < 0){
                     time += deltaTime;
                 }
                 else if(deltaTime > 0.00001){
                     if(fPhysics) {
                         time += deltaTime;
+                        if(mainEngine.isWiFiDetermined)
+                            EstimateMeasuredCoords();
+                        else
+                            UpdateMeasuredCoords();
                         KalmanFilter();
-                        //PhysicsProc();
-                        mainEngine.Crd1 = currX.matrix[0][0];
-                        mainEngine.Crd2 = currX.matrix[3][0];
+                        TransformCoordinates();
                         fPhysics = false;
                     }
                 }
