@@ -99,17 +99,18 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverAddr = helpStr[0];
                 Tools.serverPortTcp = Integer.parseInt(helpStr[1]);
                 Tools.serverPortUdp = Integer.parseInt(helpStr[2]);
-                engine.QrId = Integer.parseInt(helpStr[3]);
-                engine.Azimuth = Double.parseDouble(helpStr[4]);
+                engine.Azimuth = Double.parseDouble(helpStr[3]);
+                engine.QrId = Integer.parseInt(helpStr[4]);
                 engine.Crd1 = Double.parseDouble(helpStr[5]);
                 engine.Crd2 = Double.parseDouble(helpStr[6]);
+
             }
             catch (Exception ex) {
                 Tools.serverAddr = "10.144.52.41";
                 Tools.serverPortTcp = 4444;
                 Tools.serverPortUdp = 4445;
-                engine.QrId = 0;
                 engine.Azimuth = 0;
+                engine.QrId = 0;
                 engine.Crd1 = 0;
                 engine.Crd2 = 0;
             }

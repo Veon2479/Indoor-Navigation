@@ -154,8 +154,8 @@ public class Tools {
     public static long getInfoBuffer( Engine engine, byte[] buffer )
     {
         engine.UserId = ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getInt( 0 );
-        engine.Crd1 = ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getDouble( 4 );
-        engine.Crd2 = ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
+        engine.ReceivedCrd1 = ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getDouble( 4 );
+        engine.ReceivedCrd1 = ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
         return ByteBuffer.wrap( buffer ).order(ByteOrder.LITTLE_ENDIAN).getLong( 20 );
 
     }
@@ -178,8 +178,8 @@ public class Tools {
     {
         ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
         engine.UserId = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getInt(0 );
-        engine.Crd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 4 );
-        engine.Crd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
+        engine.ReceivedCrd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 4 );
+        engine.ReceivedCrd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

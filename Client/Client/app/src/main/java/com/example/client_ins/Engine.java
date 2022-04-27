@@ -32,8 +32,16 @@ public class Engine implements Runnable{
     public int UserId = 0;
 
     public int QrId;
-    public double Crd1, Crd2, Azimuth;
+    public double ReceivedCrd1, receivedCrd2, Azimuth;  // received coordinates, they stores the same point all time the program runs
     public double accX, accY;
+
+    public double Crd1, Crd2; //the resulting coordinates, they'll be sent to the server
+
+    public double WiFiCrd1, WiFiCrd2; //coordinates, according to the triangulation - TODO: what we should do, if they aren't determined?
+    //this flag should solve previous problem
+    public boolean isWiFiDetermined = false;
+    public double WiFiAccuracy = 1; // 1 - numbers ARE NOT ACCURATE AT ALL, 0 - they are accurate without 
+
   
     public boolean isAlive = false;
     public boolean isBLocked = false;
@@ -46,6 +54,7 @@ public class Engine implements Runnable{
     public ClientMath clientMath;
     public Thread mathThread;
     public  DataSender dataSender;
+    public WifiModule wifiModule;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private Engine(Context context)
@@ -166,8 +175,8 @@ public class Engine implements Runnable{
 
             getResponseBuffer( this, buffer );
             System.out.println( "new ID is "+UserId);
-            System.out.println( "new crd1 is "+Crd1);
-            System.out.println( "new crd2 is "+Crd2);
+            System.out.println( "new crd1 is "+ReceivedCrd1);
+            System.out.println( "new crd2 is "+receivedCrd2);
 
 
             if ( UserId < 0 ) {

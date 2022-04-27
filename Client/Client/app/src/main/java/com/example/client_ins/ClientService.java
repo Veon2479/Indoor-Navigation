@@ -83,6 +83,9 @@ public class ClientService extends Service {
         Thread udpSender = new Thread(engine.dataSender);
         udpSender.start();
 
+        engine.wifiModule = new WifiModule(engine.context);
+        engine.wifiModule.run();
+
         //engine.startTracking();
         return START_STICKY;
 
