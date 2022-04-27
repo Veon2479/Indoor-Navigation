@@ -5,7 +5,7 @@ public class WiFi {
     private String SSID;
     private String MAC;
     private double NominalPower;
-    private double Power;
+    private double Level;
     private double X;
     private double Y;
     private double Distance;
@@ -15,7 +15,7 @@ public class WiFi {
         this.setSSID(SSID);
         this.setMAC(MAC);
         this.setNominalPower(NominalPower);
-        this.setPower(0);
+        this.setLevel(0);
         this.setX(X);
         this.setY(Y);
         this.setDistance(0);
@@ -37,12 +37,12 @@ public class WiFi {
         NominalPower = nominalPower;
     }
 
-    public double getPower() {
-        return Power;
+    public double getLevel() {
+        return Level;
     }
 
-    public void setPower(double power) {
-        Power = power;
+    public void setLevel(double level) {
+        Level = level;
     }
 
     public String getMAC() {
