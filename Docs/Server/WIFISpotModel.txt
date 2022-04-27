@@ -112,9 +112,9 @@ Public:
 	Возвращаемые значения:
 		>= 0 всё ок, иначе ошибка
 	Коды ошибок:
-		-1 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
-		-2 (INCORRECT_PARAMET): Передан неверный параметр (не тот тип, не то содержимое ...)
-		-3 (QRID_INCORRECT): ID WIFI-утсройства не верен, (0 > newWIFISpotID), либо не сущесвует в xml файле  
+		-1 (INCORRECT_PARAMET): Передан неверный параметр (не тот тип, не то содержимое ...)
+		-2 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-3 (WIFISPOTID_INCORRECT): ID WIFI-утсройства не верен, (0 > newWIFISpotID), либо не сущесвует в xml файле  
 		-4 (NAME_OCCUPIED): WIFI-устройство с таким именем уже существует
 		-5 (NAME_NOT_FOUND): WIFI-устройства c таким именем не найдено
 ----------------------------------------------------
@@ -177,3 +177,21 @@ Private:
 	Возвращаетмые значения:
 		TRUE: MAC адрес корректен
 		FALSE: MAC адрес не кореектен
+----------------------------------------------------
+	private int CheckNewWIFISpotParametrs(string WIFISpotID, string WIFISpotName, string x, string y, string power, string MACAddress, XmlDocument xmlDoc)
+	Описание:
+		Проверяет верны ли переданные параметры
+	Параметры:
+		string WIFISpotID - ID WIFI-устройства
+		string WIFISpotName - Имя WIFI-устройства
+		string x, y - Координаты WIFI-устройства
+		string power - Мощность WIFI-устройства
+		string MACAddress - MAC адрес WIFI-усройства
+	Возвращаемые значения:
+		>= 0 всё ок, иначе ошибка
+	Коды ошибок:
+		-1 (INCORRECT_PARAMET): Передан неверный параметр (не тот тип, не то содержимое ...)
+		-2 (CORRUPTED_FILE): Xml файл не существует, или был повреждён
+		-3 (WIFISPOTID_INCORRECT): ID WIFI-устройства невернен, или занят
+		-4 (NAME_OCCUPIED): Имя занято, уже существует запись с таким именем
+		-5 (MACADDRESS_OCCUPED): MAC адерес занят, уже существует запись с таким именем
