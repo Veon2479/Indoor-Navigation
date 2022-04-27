@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     TextView text1;
     TextView text2;
     TextView text3;
-    public static TextView textScroll;
 
   
     Button buttonStart;
@@ -92,22 +91,24 @@ public class MainActivity extends AppCompatActivity {
         Thread engineThread = new Thread(engine);
         engineThread.start();
 
-//
-//        System.out.println("Calling background service to start");
-//        Intent intent = new Intent(this, ClientService.class);
-//        Context context = getApplicationContext();
-//        context.startForegroundService( intent );
+
+        System.out.println("Calling background service to start");
+        Intent intent = new Intent(this, ClientService.class);
+        Context context = getApplicationContext();
+        context.startForegroundService( intent );
 
 
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
-        textScroll = findViewById(R.id.textScroll);
-      
-        textScroll.setText("\rLog started!\r\n");
+
 
         //WifiModule wifi = new WifiModule(getApplicationContext());
 
+
+
+        editTextQrID = findViewById(R.id.editTextTextPersonName1);
+        editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
       
         if(arguments != null) {
             String qrcode = arguments.getString("1");
@@ -120,8 +121,8 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverPortUdp = Integer.parseInt(helpStr[2]);
                 engine.Azimuth = Double.parseDouble(helpStr[3]);
                 engine.QrId = Integer.parseInt(helpStr[4]);
-                engine.Crd1 = Double.parseDouble(helpStr[5]);
-                engine.Crd2 = Double.parseDouble(helpStr[6]);
+                engine.ReceivedCrd1 = Double.parseDouble(helpStr[5]);
+                engine.ReceivedCrd2 = Double.parseDouble(helpStr[6]);
 
             }
             catch (Exception ex) {
@@ -130,21 +131,21 @@ public class MainActivity extends AppCompatActivity {
                 Tools.serverPortUdp = 4445;
                 engine.Azimuth = 0;
                 engine.QrId = 0;
-                engine.Crd1 = 0;
-                engine.Crd2 = 0;
+                engine.ReceivedCrd1 = 0;
+                engine.ReceivedCrd2 = 0;
             }
-            System.out.println("Ok "+engine.Crd2);
+            finally {
+                editTextQrID.setText( Integer.toString(engine.QrId));
+                editTextServerAddr.setText( serverAddr );
+            }
         }
         //editText1.getText(); //взять текст из первой строки
         //editText2.getText(); //взять текст из второй строки
 
 
-        x = engine.Crd1;
-        y = engine.Crd2;
+        x = engine.ReceivedCrd1;
+        y = engine.ReceivedCrd2;
 
-  
-        editTextQrID = findViewById(R.id.editTextTextPersonName1);
-        editTextServerAddr = findViewById(R.id.editTextTextPersonName2);
 
         editTextQrID.setText("0");
         editTextServerAddr.setText(serverAddr);
@@ -196,11 +197,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
-        text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
-        text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
-        MainActivity.textScroll.append("Log ended!"+"\n");
+//
+//        text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
+//        text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
+//        text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
 
         //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
 
@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+            @SuppressLint("DefaultLocale")
             @Override
             public void onFinish() {
                 x = engine.Crd1;

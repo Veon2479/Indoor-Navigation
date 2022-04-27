@@ -32,7 +32,7 @@ public class Engine implements Runnable{
     public int UserId = 0;
 
     public int QrId;
-    public double ReceivedCrd1, receivedCrd2, Azimuth;  // received coordinates, they stores the same point all time the program runs
+    public double ReceivedCrd1, ReceivedCrd2, Azimuth;  // received coordinates, they stores the same point all time the program runs
     public double accX, accY;
 
     public double Crd1, Crd2; //the resulting coordinates, they'll be sent to the server
@@ -176,8 +176,7 @@ public class Engine implements Runnable{
             getResponseBuffer( this, buffer );
             System.out.println( "new ID is "+UserId);
             System.out.println( "new crd1 is "+ReceivedCrd1);
-            System.out.println( "new crd2 is "+receivedCrd2);
-
+            System.out.println( "new crd2 is "+ReceivedCrd2);
 
             if ( UserId < 0 ) {
                 RESULT = false;
