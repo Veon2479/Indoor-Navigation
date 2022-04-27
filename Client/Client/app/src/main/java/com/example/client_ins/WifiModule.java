@@ -44,6 +44,10 @@ public class WifiModule implements Runnable {
                 double exp = 0;
                 double level = 0;
                 arrWifiPowers.clear();
+                for (int i = 0; i < engine.WiFi_List.size(); i++)
+                {
+                    engine.WiFi_List.get(i).setLevel(0);
+                }
                 for (int j = 0; j < wifiManager.getScanResults().size(); j++) {
 
                     SSID = wifiManager.getScanResults().get(j).SSID;
@@ -53,10 +57,10 @@ public class WifiModule implements Runnable {
 
                     System.out.println("Analyzing WiFi " + SSID + " with MAC " + BSSID);
                     System.out.println("Level is " + level);
-
                     for (int i = 0; i <  engine.WiFi_List.size() ; i++) {
                         if ( SSID.equals( engine.WiFi_List.get(i).getSSID() ) )
                         {
+
                             //if ( BSSID.equals( engine.WiFi_List.get(i).getBSSID() ) )
                             engine.WiFi_List.get(i).setLevel( abs( wifiManager.getScanResults().get(j).level ) );
 
@@ -67,9 +71,8 @@ public class WifiModule implements Runnable {
                             System.out.println("WiFi "+ SSID + " matches");
                             System.out.println("Distance is " + distance );
                         }
-
-
                     }
+
 
                 }
             }
