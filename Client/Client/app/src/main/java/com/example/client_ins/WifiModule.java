@@ -54,7 +54,7 @@ public class WifiModule implements Runnable {
                     System.out.println("Analyzing WiFi " + SSID + " with MAC " + BSSID);
                     System.out.println("Level is " + level);
 
-                    for (int i = 0; i <  wifiManager.getScanResults().size() /*arrWifiNames.size()*/ ; i++) {
+                    for (int i = 0; i <  engine.WiFi_List.size() ; i++) {
                         if ( SSID.equals( engine.WiFi_List.get(i).getSSID() ) )
                         {
                             //if ( BSSID.equals( engine.WiFi_List.get(i).getBSSID() ) )
