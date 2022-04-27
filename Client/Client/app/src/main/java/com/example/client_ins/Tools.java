@@ -179,7 +179,7 @@ public class Tools {
         ByteBuffer tmpBuff = ByteBuffer.wrap(buff);
         engine.UserId = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getInt(0 );
         engine.ReceivedCrd1 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 4 );
-        engine.receivedCrd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
+        engine.ReceivedCrd2 = tmpBuff.order(ByteOrder.LITTLE_ENDIAN).getDouble( 12 );
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

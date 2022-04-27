@@ -382,7 +382,7 @@ public class ClientMath implements Runnable{
     public void TransformCoordinates(){
         double angle = Math.toRadians(mainEngine.Azimuth);
         mainEngine.Crd1 = mainEngine.ReceivedCrd1 + currX.matrix[0][0] * Math.cos(angle) - currX.matrix[3][0] * Math.sin(angle);
-        mainEngine.Crd2 = mainEngine.receivedCrd2 - (currX.matrix[0][0] * Math.sin(angle) + currX.matrix[3][0] * Math.cos(angle));
+        mainEngine.Crd2 = mainEngine.ReceivedCrd2 - (currX.matrix[0][0] * Math.sin(angle) + currX.matrix[3][0] * Math.cos(angle));
     }
 
     public void CorrectInitCoordinates(){
