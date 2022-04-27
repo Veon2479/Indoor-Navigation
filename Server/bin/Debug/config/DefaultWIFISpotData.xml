@@ -19,4 +19,10 @@
     <power>62742</power>
     <mac>11-22-33-44-55-66</mac>
   </WIFISpot>
+  <WIFISpot id="44" name="ва">
+    <x>3</x>
+    <y>4</y>
+    <power>2</power>
+    <mac>00-11-22-35-44-55</mac>
+  </WIFISpot>
 </WIFISpots>
