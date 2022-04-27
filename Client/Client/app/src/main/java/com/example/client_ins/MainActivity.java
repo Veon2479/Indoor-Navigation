@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static int REQUEST_FINE_LOCATION = 1;
     public static int REQUEST_BACKGROUND_LOCATION = 2;
+    public static int REQUEST_COARSE_LOCATION = 3;
 
     TextView text1;
     TextView text2;
@@ -45,8 +46,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
                 REQUEST_BACKGROUND_LOCATION);
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                REQUEST_COARSE_LOCATION);
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                REQUEST_FINE_LOCATION);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -135,7 +144,9 @@ public class MainActivity extends AppCompatActivity {
                             engine.clientMath.P.matrix[2][2], engine.clientMath.P.matrix[3][3],
                             engine.clientMath.P.matrix[4][4], engine.clientMath.P.matrix[5][5]));
                     text3.setText( String.format("Accelerometer\nX: %.2f\nY: %.2f\nZ: %.2f\n" +
-                            "GPS:\nLong: %.4f\nLat: %.4f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude));
+                            "GPS:\nLong: %.4f\nLat: %.4f\n"+
+                            "MeasCoord:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
+                            , engine.clientMath.z.matrix[0][0], engine.clientMath.z.matrix[1][0]));
                 }
                 this.start();
             }
@@ -150,28 +161,14 @@ public class MainActivity extends AppCompatActivity {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         boolean granted = true;
-        if (requestCode == REQUEST_FINE_LOCATION) {
-            if (grantResults.length > 0) {
-                for (int result : grantResults) {
-                    if (result != PackageManager.PERMISSION_GRANTED) {
-                        granted = false;
-                    }
+        if (grantResults.length > 0) {
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    granted = false;
                 }
-            } else {
-                granted = false;
             }
-        }
-        else
-        if (requestCode == REQUEST_BACKGROUND_LOCATION) {
-            if (grantResults.length > 0) {
-                for (int result : grantResults) {
-                    if (result != PackageManager.PERMISSION_GRANTED) {
-                        granted = false;
-                    }
-                }
-            } else {
-                granted = false;
-            }
+        } else {
+            granted = false;
         }
     }
 }

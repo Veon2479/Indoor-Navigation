@@ -480,7 +480,7 @@ __________________________________
     private Matrix tempX;
     public Matrix currX = new Matrix(6, 1, MatrixType.ALL_ZERO);
 
-    private Matrix z;
+    public Matrix z;
     private Matrix zt;
     private Matrix tempZ;
 
