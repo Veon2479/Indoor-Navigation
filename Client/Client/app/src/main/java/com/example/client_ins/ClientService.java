@@ -76,8 +76,6 @@ public class ClientService extends Service {
         System.out.println("Background service is starting!");
 
         engine.clientMath = new ClientMath(engine);
-    //    if (engine.mathThread != null)
-  //          engine.mathThread.stop();
         engine.mathThread = new Thread(engine.clientMath);
         engine.mathThread.start();
 
