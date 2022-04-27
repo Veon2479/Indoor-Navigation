@@ -54,13 +54,13 @@ public class WifiModule implements Runnable {
                     System.out.println("Analyzing WiFi " + SSID + " with MAC " + BSSID);
                     System.out.println("Level is " + level);
 
-                    for (int i = 0; i < arrWifiNames.size() ; i++) {
+                    for (int i = 0; i <  wifiManager.getScanResults().size() /*arrWifiNames.size()*/ ; i++) {
                         if ( SSID.equals( engine.WiFi_List.get(i).getSSID() ) )
                         {
                             //if ( BSSID.equals( engine.WiFi_List.get(i).getBSSID() ) )
                             engine.WiFi_List.get(i).setLevel( abs( wifiManager.getScanResults().get(j).level ) );
 
-                            exp =  (27.55 - (20.0 * Math.log10 (frequency)) + Math.abs( level ))/20.0;
+                            exp =  (27.55 - (20.0 * Math.log10 (frequency)) + Math.abs( level ))/20.0;  //first 20.0 is spot power
                             distance = Math.pow(10.0, exp);
                             engine.WiFi_List.get(i).setDistance( distance );
 
