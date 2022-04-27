@@ -470,7 +470,8 @@ namespace Server
             XmlNode xmlNode = xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)];
 
             //Create QR code data
-            string QRData = _defaultQRCodeData + "\n" +
+            string QRData = _defaultQRCodeData + "\n" + 
+                            xmlNode.Attributes[0].Value + "\n" + 
                             xmlNode.ChildNodes[0].InnerText + "\n" + 
                             xmlNode.ChildNodes[1].InnerText;
 
