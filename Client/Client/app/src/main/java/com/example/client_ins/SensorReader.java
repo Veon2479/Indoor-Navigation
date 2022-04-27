@@ -1,13 +1,33 @@
 package com.example.client_ins;
 
+import static android.content.Context.LOCATION_SERVICE;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.content.Context.*;
+import android.location.Location;
+import android.os.Build;
 
-public class SensorReader{
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+public class SensorReader {
     Context mContext;
     Engine mainEngine;
     ClientMath math;
@@ -16,7 +36,14 @@ public class SensorReader{
     private Sensor sensorLinearAcceleration;
     private Sensor sensorRotation;
 
-    public SensorReader(Engine engine, Context mContext, ClientMath math){
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
+    private LocationRequest locationRequest;
+
+    private LocationCallback locationCallback;
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    public SensorReader(Engine engine, Context mContext, ClientMath math) {
         this.mainEngine = engine;
         this.mContext = mContext;
         this.math = math;
@@ -28,8 +55,7 @@ public class SensorReader{
         SensorEventListener sensorListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                switch(sensorEvent.sensor.getType())
-                {
+                switch (sensorEvent.sensor.getType()) {
                     case Sensor.TYPE_ROTATION_VECTOR:
                         math.rotQuat.x = sensorEvent.values[0];
                         math.rotQuat.y = sensorEvent.values[1];
@@ -42,7 +68,7 @@ public class SensorReader{
                         math.linAccQuat.y = sensorEvent.values[1];
                         math.linAccQuat.z = sensorEvent.values[2];
                         math.fPhysics = true;
-                    math.UpdateGlobalAcc();
+                        math.UpdateGlobalAcc();
                 }
             }
 
@@ -54,5 +80,49 @@ public class SensorReader{
 
         sensorManager.registerListener(sensorListener, sensorRotation, SensorManager.SENSOR_DELAY_FASTEST);
         sensorManager.registerListener(sensorListener, sensorLinearAcceleration, SensorManager.SENSOR_DELAY_FASTEST);
+
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(100);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+
+                Location location = locationResult.getLastLocation();
+
+                math.Latitude = location.getLatitude();
+                math.Longitude = location.getLongitude();
+                if(location.hasAccuracy())
+                    math.itudeAccur = location.getAccuracy();
+                math.CorrectCoordinates();
+            }
+        };
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mContext);
+
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED
+        && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+        }else{
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(mContext.getMainExecutor(), new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if(location != null){
+                        math.initLongitude = location.getLongitude();
+                        math.initLatitude = location.getLatitude();
+                        math.Latitude = location.getLatitude();
+                        math.Longitude = location.getLongitude();
+                        math.CorrectInitCoordinates();
+                        math.CorrectCoordinates();
+                    }
+                }
+            });
+
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
     }
 }
