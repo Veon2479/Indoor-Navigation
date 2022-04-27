@@ -122,7 +122,8 @@ public class SensorReader {
                 }
             });
 
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
+      //  fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 }

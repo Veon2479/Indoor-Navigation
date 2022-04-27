@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     TextView text1;
     TextView text2;
     TextView text3;
-    public static TextView textScroll;
 
   
     Button buttonStart;
@@ -102,11 +101,8 @@ public class MainActivity extends AppCompatActivity {
         text1 = findViewById(R.id.text1);
         text2 = findViewById(R.id.text2);
         text3 = findViewById(R.id.text3);
-        textScroll = findViewById(R.id.textScroll);
-      
-        textScroll.setText("\rLog started!\r\n");
 
-        //WifiModule wifi = new WifiModule(getApplicationContext());
+
 
       
         if(arguments != null) {
@@ -197,12 +193,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
-        text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
-        text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
-        MainActivity.textScroll.append("Log ended!"+"\n");
+//        text1.setText("Coordinates\nX: "+x+"\nY: "+y+"\nZ: "+z);
+//        text2.setText("Rotation\nX: "+angleX+"\nY: "+angleY+"\nZ: "+angleZ);
+//        text3.setText( "Accelerometer\nX: "+accX+"\nY: "+accY+"\nZ: "+accZ);
 
-        //Чтобы добавлять логи, просто textScroll.append("nessesary info"+"\n");
 
         CountDownTimer countDownTimer = new CountDownTimer(2000, 2000) {
             @Override
@@ -210,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+            @SuppressLint("DefaultLocale")
             @Override
             public void onFinish() {
                 x = engine.Crd1;
@@ -226,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
                             engine.clientMath.P.matrix[2][2], engine.clientMath.P.matrix[3][3],
                             engine.clientMath.P.matrix[4][4], engine.clientMath.P.matrix[5][5]));
                     text3.setText( String.format("Accelerometer\nX: %.2f\nY: %.2f\nZ: %.2f\n" +
-                            "GPS:\nLong: %.4f\nLat: %.4f\n"+
+                            "GPS:\nLong: %.5f\nLat: %.5f\n"+
                             "MapCoords:\nX:%.2f\nY: %.2f", accX, accY, accZ, engine.clientMath.Longitude, engine.clientMath.Latitude
                             , engine.Crd1, engine.Crd2));
                 }
