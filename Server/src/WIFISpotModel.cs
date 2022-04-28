@@ -34,7 +34,7 @@ namespace Server
         //MAC - 6 oct. by 2 hex values and 5 smb '-'
         protected const int _WIFISpotMACLen = 17; 
 
-        //List that contain existing WIFISpotID
+        //List that contain existing WIFI spot ID
         List<int> _WIFISpotIDExist = new List<int>();
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1 (INCORRECT_PARAMET): Incorrect one of received parameters</item>
+        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
         ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
         ///     <item>-3 (WIFISPOTID_INCORRECT): WIFI spot ID incorrect (0 > WIFISpotID) or alredy exist</item>
         ///     <item>-4 (NAME_OCCUPIED): Name of WIFI spot record already occupied</item>
@@ -160,34 +160,16 @@ namespace Server
         /// </returns>
         public int AddWIFISpotRecord(string WIFISpotID, string WIFISpotName, string x, string y, string power, string MACAddress)
         {
-            //Check for correct input parametrs
-            double dblPower = 0;
-            try
-            {
-                x = x.Replace(',', '.');
-                y = y.Replace(',', '.');
-                power = power.Replace(',', '.');
-                double.Parse(x, System.Globalization.CultureInfo.InvariantCulture);
-                double.Parse(y, System.Globalization.CultureInfo.InvariantCulture);
-                dblPower = double.Parse(power, System.Globalization.CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                return (int)AddWIFISpotRecordErrorCode.INCORRECT_PARAMETER;
-            }
 
-            //Check power (greater then 0) and MAC address
-            MACAddress = MACAddress.Trim();
-            if (dblPower <= 0 || !CheckMACAddress(MACAddress)){
-                return (int)AddWIFISpotRecordErrorCode.INCORRECT_PARAMETER;                
-            }
             XmlDocument xmlDoc = new XmlDocument();
-
-            //Check for correct file content
-            if (CheckXmlFileContent(ref xmlDoc) < 0)
-            {
-                return (int)AddWIFISpotRecordErrorCode.CORRUPTED_FILE;
+            
+            //Check new parametrs
+            int iResult = CheckNewWIFISpotParametrs(WIFISpotID, WIFISpotName, ref x, ref y, ref power, ref MACAddress, xmlDoc);
+            if (iResult < 0){
+                return iResult;
             }
+            
+            XmlElement xmlRoot = xmlDoc.DocumentElement;
 
             //if WIFISpotID is empty then generate it 
             int iWIFISpotID = -1;
@@ -208,8 +190,6 @@ namespace Server
             {
                 return (int)AddWIFISpotRecordErrorCode.WIFISPOTID_INCORRECT;
             }
-
-            XmlElement xmlRoot = xmlDoc.DocumentElement;
 
             //Check for existing name and MACAddress
             Boolean isNameExist = false, isMACExist = false;
@@ -236,9 +216,10 @@ namespace Server
                 return (int)AddWIFISpotRecordErrorCode.MACADDRESS_OCCUPIED;
             }
 
+
             //Create new xml element, fill it, save changes
             XmlElement WIFISpot = xmlDoc.CreateElement("WIFISpot");
-            WIFISpot.SetAttribute("id", iWIFISpotID.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            WIFISpot.SetAttribute("id", WIFISpotID);
             WIFISpot.SetAttribute("name", WIFISpotName);
             XmlElement xmlX = xmlDoc.CreateElement("x");
             xmlX.InnerText = x;
@@ -269,13 +250,13 @@ namespace Server
         /// <summary>
         ///     Change WIFISpot record in xml file according received ID or Name
         /// </summary>
-        /// <param name="oldQRID_oldName">ID of WIFI spot record in xml file</param>
-        /// <param name="newQRID">New WIFI spot ID to change</param>
-        /// <param name="newQRName">New WIFI spot name to change</param>
+        /// <param name="oldWIFISpotID_WIFISpotName">ID of WIFI spot record in xml file</param>
+        /// <param name="newWIFISpotID">New WIFI spot ID to change</param>
+        /// <param name="newWIFISpotName">New WIFI spot name to change</param>
         /// <param name="newX">New coordinate x</param>
         /// <param name="newY">New coordinate y</param>
         /// <param name="newPower">New power of WIFI spot</param>
-        /// <param name="newMAC">NEW MAC address of WIFI spot</param>
+        /// <param name="newMACAddress">NEW MAC address of WIFI spot</param>
         /// <returns>
         ///     <list type="table">
         ///         <listheader>
@@ -285,24 +266,30 @@ namespace Server
         ///         </listheader>
         ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
         ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
-        ///     <item>-3 (WIFISPOTID_INCORRECT): WIFI spot ID incorrect (0 > WIFISpotID) or alredy exist</item>
+        ///     <item>-3 (WIFISPOTID_INCORRECT): WIFI spot ID incorrect (0 > newWIFISpotID) or alredy exist</item>
         ///     <item>-4 (NAME_OCCUPIED): Name of WIFI spot record already occupied</item>
         ///     <item>-5 (NAME_NOT_FOUND): name of WIFI spot record is not exists</item>
         ///     </list>
         /// </returns>
-        public int ChangeWIFISpotRecord(string oldQRID_oldName, string newQRID, string newQRName, string newX, string newY, 
-                                        string newPower, string newMAC)
+        public int ChangeWIFISpotRecord(string oldWIFISpotID_WIFISpotName, string newWIFISpotID, string newWIFISpotName, 
+                                        string newX, string newY, string newPower, string newMACAddress)
         {
             XmlDocument xmlDoc = new XmlDocument();
 
+            //Check new parametrs
+            int iResult = CheckNewWIFISpotParametrs(oldWIFISpotID_WIFISpotName, newWIFISpotName, ref newX, ref newY, ref newPower, ref newMACAddress, xmlDoc);
+            if (iResult < 0){
+                return iResult;
+            }
+
             //Try to delete old WIFISpot record
-            int QRID = DeleteWIFISpotRecord(oldQRID_oldName);  
-            if (QRID < 0){
+            int WIFISpotID = DeleteWIFISpotRecord(oldWIFISpotID_WIFISpotName);  
+            if (WIFISpotID < 0){
                 return (int)ChangeWIFISpotRecordErrorCode.INCORRECT_PARAMETR;
             }
 
             //Try to add new WIFISpot record
-            int iResult = AddWIFISpotRecord(newQRID, newQRName, newX, newY, newPower, newMAC); 
+            iResult = AddWIFISpotRecord(newWIFISpotID, newWIFISpotName, newX, newY, newPower, newMACAddress); 
             if (iResult < 0){
                 return iResult;
             }
@@ -326,7 +313,7 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file not found or damaged</item>
         ///     <item>-2 (PARSE_TO_DOUBLE_ERROR): Error in parcing data from xml table to double</item>
         ///     </list>
         /// </returns>
@@ -384,8 +371,7 @@ namespace Server
             UNKNOWN_ELEMENT_LV1_TAG = -3,
             INCORRECT_ATRIBUTES_LV1 = -4,
             INCORRECT_ELEMENT_LV2 = -5
-        }
-        
+        }        
         /// <summary>
         ///     Check xml file for incorrect content
         /// </summary>
@@ -672,6 +658,96 @@ namespace Server
                 isCorrectMAC = false;
             }
             return isCorrectMAC;
+        }
+
+        public enum CheckNewWIFISpotParametrsErrorCode{
+            INCORRECT_PARAMETER = -1,
+            CORRUPTED_FILE = -2,
+            WIFISPOTID_INCORRECT = -3,
+            NAME_OCCUPIED = -4,
+            MACADDRESS_OCCUPIED = -5
+        }
+        /// <summary>
+        ///     Check is New Element parametrs is correct
+        /// </summary>
+        /// <param name="WIFISpotID">ID of WIFI spot record to add</param>
+        /// <param name="WIFISpotName">Name of WIFI spot record to add</param>
+        /// <param name="x">Coordinate x</param>
+        /// <param name="y">Coordinate y</param>
+        /// <param name="power">Power of WIFI spot</param>
+        /// <param name="MACAddress">MAC address of WIFI spot </param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
+        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-3 (WIFISPOTID_INCORRECT): WIFI spot ID incorrect (0 > WIFISpotID) or alredy exist</item>
+        ///     <item>-4 (NAME_OCCUPIED): Name of WIFI spot record already occupied</item>
+        ///     <item>-5 (MACADDRESS_OCCUPIED): MAC address already occupied</item>
+        ///     </list>
+        /// </returns>
+        private int CheckNewWIFISpotParametrs(string WIFISpotID, string WIFISpotName, ref string x, ref string y, ref string power, 
+                                              ref string MACAddress, XmlDocument xmlDoc)
+        {
+            //Check for correct input parametrs
+            double dblPower = 0;
+            try
+            {
+                x = x.Replace(',', '.');
+                y = y.Replace(',', '.');
+                power = power.Replace(',', '.');
+                double.Parse(x, System.Globalization.CultureInfo.InvariantCulture);
+                double.Parse(y, System.Globalization.CultureInfo.InvariantCulture);
+                dblPower = double.Parse(power, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return (int)CheckNewWIFISpotParametrsErrorCode.INCORRECT_PARAMETER;
+            }
+
+            //Check power (greater then 0) and MAC address
+            MACAddress = MACAddress.Trim();
+            if (dblPower <= 0 || !CheckMACAddress(MACAddress)){
+                return (int)CheckNewWIFISpotParametrsErrorCode.INCORRECT_PARAMETER;                
+            }
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0)
+            {
+                return (int)CheckNewWIFISpotParametrsErrorCode.CORRUPTED_FILE;
+            }
+
+            //if WIFISpotID is empty then generate it 
+            int iWIFISpotID = -1;
+            if (!Int32.TryParse(WIFISpotID, out iWIFISpotID))
+            {
+                if (WIFISpotID == "")
+                {
+                    iWIFISpotID = 0;
+                    while (_WIFISpotIDExist.Contains(iWIFISpotID))
+                    {
+                        iWIFISpotID++;
+                    }
+                }
+            }
+
+            //Check for correct WIFISpotID
+            if (iWIFISpotID < 0)
+            {
+                return (int)CheckNewWIFISpotParametrsErrorCode.WIFISPOTID_INCORRECT;
+            }
+
+            //Check for not number not empty name
+            int i = -1;
+            if (!(!Int32.TryParse(WIFISpotName, out i) && WIFISpotName != null && WIFISpotName != "" )){
+                return (int)CheckNewWIFISpotParametrsErrorCode.INCORRECT_PARAMETER;
+            }
+
+            return 0;
         }
 
     }
