@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- QRData here-->
+<QRCodes>
+  <QRCode id="1" name="Meeteng Room">
+    <x>606.00</x>
+    <y>301.00</y>
+  </QRCode>
+  <QRCode id="0" name="Great Hall">
+    <x>170.00</x>
+    <y>507.00</y>
+  </QRCode>
+  <QRCode id="3" name="Exhibition">
+    <x>200</x>
+    <y>100</y>
+  </QRCode>
+  <QRCode id="2" name="Galery">
+    <x>90</x>
+    <y>90</y>
+  </QRCode>
+</QRCodes>
