@@ -14,6 +14,7 @@ namespace Server
         //read default settings from App.config
         internal static int DEFAULT_TCP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TCP_PORT"));
         internal static int DEFAULT_UDP_PORT = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_UDP_PORT"));
+        internal static string SERVER_IP = ConfigurationManager.AppSettings.Get("SERVER_IP");
 
         internal static int DEFAULT_TABLE_CAPACITY = int.Parse(ConfigurationManager.AppSettings.Get("DEFAULT_TABLE_CAPACITY"));
 
