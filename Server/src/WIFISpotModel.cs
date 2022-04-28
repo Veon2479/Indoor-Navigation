@@ -162,12 +162,60 @@ namespace Server
         {
 
             XmlDocument xmlDoc = new XmlDocument();
-            int iResult = CheckNewWIFISpotParametrs(WIFISpotID, WIFISpotName, x, y, power, MACAddress, xmlDoc);
+            
+            //Check new parametrs
+            int iResult = CheckNewWIFISpotParametrs(WIFISpotID, WIFISpotName, ref x, ref y, ref power, ref MACAddress, xmlDoc);
             if (iResult < 0){
                 return iResult;
             }
             
             XmlElement xmlRoot = xmlDoc.DocumentElement;
+
+            //if WIFISpotID is empty then generate it 
+            int iWIFISpotID = -1;
+            if (!Int32.TryParse(WIFISpotID, out iWIFISpotID))
+            {
+                if (WIFISpotID == "")
+                {
+                    iWIFISpotID = 0;
+                    while (_WIFISpotIDExist.Contains(iWIFISpotID))
+                    {
+                        iWIFISpotID++;
+                    }
+                }
+            }
+
+            //Check for correct WIFISpotID
+            if (iWIFISpotID < 0 || _WIFISpotIDExist.Contains(iWIFISpotID))
+            {
+                return (int)AddWIFISpotRecordErrorCode.WIFISPOTID_INCORRECT;
+            }
+
+            //Check for existing name and MACAddress
+            Boolean isNameExist = false, isMACExist = false;
+            int i = 0;
+            while (i < xmlRoot.ChildNodes.Count && !isNameExist && !isMACExist)
+            {
+                if (xmlRoot.ChildNodes[i].Attributes[1].Value == WIFISpotName)
+                {
+                    isNameExist = true;
+                }
+                if (xmlRoot.ChildNodes[i].ChildNodes[3].InnerText == MACAddress){
+                    isMACExist = true;
+                }
+                i++;
+            }
+            if (isNameExist)
+            {
+                return (int)AddWIFISpotRecordErrorCode.NAME_OCCUPIED;
+            }
+            if (!(!Int32.TryParse(WIFISpotName, out i) && WIFISpotName != null && WIFISpotName != "" )){
+                return (int)AddWIFISpotRecordErrorCode.INCORRECT_PARAMETER;
+            }
+            if (isMACExist){
+                return (int)AddWIFISpotRecordErrorCode.MACADDRESS_OCCUPIED;
+            }
+
 
             //Create new xml element, fill it, save changes
             XmlElement WIFISpot = xmlDoc.CreateElement("WIFISpot");
@@ -229,7 +277,7 @@ namespace Server
             XmlDocument xmlDoc = new XmlDocument();
 
             //Check new parametrs
-            int iResult = CheckNewWIFISpotParametrs(oldWIFISpotID_WIFISpotName, newWIFISpotID, newX, newY, newPower, newMACAddress, xmlDoc);
+            int iResult = CheckNewWIFISpotParametrs(oldWIFISpotID_WIFISpotName, newWIFISpotName, ref newX, ref newY, ref newPower, ref newMACAddress, xmlDoc);
             if (iResult < 0){
                 return iResult;
             }
@@ -642,8 +690,8 @@ namespace Server
         ///     <item>-5 (MACADDRESS_OCCUPIED): MAC address already occupied</item>
         ///     </list>
         /// </returns>
-        private int CheckNewWIFISpotParametrs(string WIFISpotID, string WIFISpotName, string x, string y, string power, 
-                                              string MACAddress, XmlDocument xmlDoc)
+        private int CheckNewWIFISpotParametrs(string WIFISpotID, string WIFISpotName, ref string x, ref string y, ref string power, 
+                                              ref string MACAddress, XmlDocument xmlDoc)
         {
             //Check for correct input parametrs
             double dblPower = 0;
@@ -688,37 +736,17 @@ namespace Server
             }
 
             //Check for correct WIFISpotID
-            if (iWIFISpotID < 0 || _WIFISpotIDExist.Contains(iWIFISpotID))
+            if (iWIFISpotID < 0)
             {
                 return (int)CheckNewWIFISpotParametrsErrorCode.WIFISPOTID_INCORRECT;
             }
 
-            XmlElement xmlRoot = xmlDoc.DocumentElement;
-
-            //Check for existing name and MACAddress
-            Boolean isNameExist = false, isMACExist = false;
-            int i = 0;
-            while (i < xmlRoot.ChildNodes.Count && !isNameExist && !isMACExist)
-            {
-                if (xmlRoot.ChildNodes[i].Attributes[1].Value == WIFISpotName)
-                {
-                    isNameExist = true;
-                }
-                if (xmlRoot.ChildNodes[i].ChildNodes[3].InnerText == MACAddress){
-                    isMACExist = true;
-                }
-                i++;
-            }
-            if (isNameExist)
-            {
-                return (int)CheckNewWIFISpotParametrsErrorCode.NAME_OCCUPIED;
-            }
+            //Check for not number not empty name
+            int i = -1;
             if (!(!Int32.TryParse(WIFISpotName, out i) && WIFISpotName != null && WIFISpotName != "" )){
                 return (int)CheckNewWIFISpotParametrsErrorCode.INCORRECT_PARAMETER;
             }
-            if (isMACExist){
-                return (int)CheckNewWIFISpotParametrsErrorCode.MACADDRESS_OCCUPIED;
-            }
+
             return 0;
         }
 
