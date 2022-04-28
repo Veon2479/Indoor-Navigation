@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -236,71 +236,16 @@ namespace Server
         /// </returns>
         public int AddQRRecord(string QRID, string QRName, string x, string y)
         {
-            //Check for correct input parametrs
-            try
-            {
-                x = x.Replace(',', '.');
-                y = y.Replace(',', '.');
-                double.Parse(x, System.Globalization.CultureInfo.InvariantCulture);
-                double.Parse(y, System.Globalization.CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                return (int)AddQRRecordErrorCode.INCORRECT_PARAMETER;
-            }
-
             XmlDocument xmlDoc = new XmlDocument();
-
-            //Check for correct file content
-            if (CheckXmlFileContent(ref xmlDoc) < 0)
-            {
-                return (int)AddQRRecordErrorCode.CORRUPTED_FILE;
+            int iResult = CheckNewQRParametrs(QRID, QRName, ref x, ref y, xmlDoc);
+            if (iResult < 0){
+                return iResult;
             }
-
-            //if QRID is empty then generate it 
-            int iQRID = -1;
-            if (!Int32.TryParse(QRID, out iQRID))
-            {
-                if (QRID == "")
-                {
-                    iQRID = 0;
-                    while (_QRIDExist.Contains(iQRID))
-                    {
-                        iQRID++;
-                    }
-                }
-            }
-
-            //Check for correct QRID
-            if (iQRID < 0 || _QRIDExist.Contains(iQRID))
-            {
-                return (int)AddQRRecordErrorCode.QRID_INCORRECT;
-            }
-
             XmlElement xmlRoot = xmlDoc.DocumentElement;
-
-            //Check for existing name
-            Boolean isExist = false;
-            int i = 0;
-            while (i < xmlRoot.ChildNodes.Count && !isExist)
-            {
-                if (xmlRoot.ChildNodes[i].Attributes[1].Value == QRName)
-                {
-                    isExist = true;
-                }
-                i++;
-            }
-            if (isExist)
-            {
-                return (int)AddQRRecordErrorCode.NAME_OCCUPIED;
-            }
-            if (!(!Int32.TryParse(QRName, out i) && QRName != null && QRName != "" )){
-                return (int)AddQRRecordErrorCode.INCORRECT_PARAMETER;
-            }
 
             //Create new xml element, fill it, save changes
             XmlElement QRCode = xmlDoc.CreateElement("QRCode");
-            QRCode.SetAttribute("id", iQRID.ToString());
+            QRCode.SetAttribute("id", QRID);
             QRCode.SetAttribute("name", QRName);
             XmlElement xmlX = xmlDoc.CreateElement("x");
             xmlX.InnerText = x;
@@ -337,8 +282,8 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
-        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-2 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
         ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (0 > QRID) or alredy exist</item>
         ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
         ///     <item>-5 (NAME_NOT_FOUND): name of QR record is not exists</item>
@@ -348,6 +293,11 @@ namespace Server
         {
             XmlDocument xmlDoc = new XmlDocument();
 
+            int iResult = CheckNewQRParametrs(newQRID, newQRName, ref newX, ref newY, xmlDoc);
+            if (iResult < 0){
+                return iResult;
+            }
+
             //Try to delete old QR record
             int QRID = DeleteQRRecord(oldQRID_oldName);  
             if (QRID < 0){
@@ -355,7 +305,7 @@ namespace Server
             }
 
             //Try to add new QR record
-            int iResult = AddQRRecord(newQRID, newQRName, newX, newY); 
+            iResult = AddQRRecord(newQRID, newQRName, newX, newY); 
             if (iResult < 0){
                 return iResult;
             }
@@ -379,7 +329,7 @@ namespace Server
         ///                 >= 0 - no errors, else - error
         ///             </term>
         ///         </listheader>
-        ///     <item>-1 (INCORRECT_PARAMETR): Incorrect one of received parameters</item>
+        ///     <item>-1 (CORRUPTED_FILE): Xml file does not exist or corrupted</item>
         ///     <item>-2 (PARSE_TO_DOUBLE_ERROR): Error in parcing data from xml table to double</item>
         ///     </list>
         /// </returns>
@@ -470,8 +420,8 @@ namespace Server
             XmlNode xmlNode = xmlEl.ChildNodes[_QRIDExist.IndexOf(QRID)];
 
             //Create QR code data
-            string QRData = _defaultQRCodeData + "\n" + 
-                            xmlNode.Attributes[0].Value + "\n" + 
+            string QRData = _defaultQRCodeData + "\n" +
+                            xmlNode.Attributes[0].Value + "\n" +
                             xmlNode.ChildNodes[0].InnerText + "\n" + 
                             xmlNode.ChildNodes[1].InnerText;
 
@@ -800,6 +750,81 @@ namespace Server
                 }
             }
             return QRID;
+        }
+
+        private enum CheckNewQRParametrsErrorCode{
+            INCORRECT_PARAMETER = -1,
+            CORRUPTED_FILE = -2,
+            QRID_INCORRECT = -3,
+            NAME_OCCUPIED = -4
+        }
+        /// <summary>
+        ///     Check new QR parametrs
+        /// </summary>
+        /// <param name="QRID">ID of QR record to add</param>
+        /// <param name="QRName">Name of QR record to add</param>
+        /// <param name="x">Coordinate x</param>
+        /// <param name="y">Coordinate y</param>
+        /// <returns>
+        ///     <list type="table">
+        ///         <listheader>
+        ///             <term>
+        ///                 >= 0 - no errors, else - error
+        ///             </term>
+        ///         </listheader>
+        ///     <item>-1 (INCORRECT_PARAMET): Incorrect one of received parameters</item>
+        ///     <item>-2 (CORRUPTED_FILE): Xml file not exists or was corrupted</item>
+        ///     <item>-3 (QRID_INCORRECT): QR ID incorrect (0 > QRID) or alredy exist</item>
+        ///     <item>-4 (NAME_OCCUPIED): Name of QR record already occupied</item>
+        ///     </list>
+        /// </returns>
+        private int CheckNewQRParametrs(string QRID, string QRName,ref string x, ref string y, XmlDocument xmlDoc)
+        {
+            //Check for correct input parametrs
+            try
+            {
+                x = x.Replace(',', '.');
+                y = y.Replace(',', '.');
+                double.Parse(x, System.Globalization.CultureInfo.InvariantCulture);
+                double.Parse(y, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return (int)CheckNewQRParametrsErrorCode.INCORRECT_PARAMETER;
+            }
+
+            //Check for correct file content
+            if (CheckXmlFileContent(ref xmlDoc) < 0)
+            {
+                return (int)CheckNewQRParametrsErrorCode.CORRUPTED_FILE;
+            }
+
+            //if QRID is empty then generate it 
+            int iQRID = -1;
+            if (!Int32.TryParse(QRID, out iQRID))
+            {
+                if (QRID == "")
+                {
+                    iQRID = 0;
+                    while (_QRIDExist.Contains(iQRID))
+                    {
+                        iQRID++;
+                    }
+                }
+            }
+
+            //Check for correct QRID
+            if (iQRID < 0)
+            {
+                return (int)CheckNewQRParametrsErrorCode.QRID_INCORRECT;
+            }
+
+            int i = -1;
+            if (!(!Int32.TryParse(QRName, out i) && QRName != null && QRName != "" )){
+                return (int)CheckNewQRParametrsErrorCode.INCORRECT_PARAMETER;
+            }
+
+            return 0;
         }
     }
 }
