@@ -1,9 +1,0 @@
-
-*.jpeg
-*.exe
-Server/bin/Debug/Server.pdb
-*.pdb
-*.uinf
-*.exe
-.vs/Server/v17/.suo
-packages/QRCoder.1.4.3/.signature.p7s
