@@ -241,7 +241,48 @@ namespace Server
             if (iResult < 0){
                 return iResult;
             }
+            
             XmlElement xmlRoot = xmlDoc.DocumentElement;
+
+            //if QRID is empty then generate it 
+            int iQRID = -1;
+            if (!Int32.TryParse(QRID, out iQRID))
+            {
+                if (QRID == "")
+                {
+                    iQRID = 0;
+                    while (_QRIDExist.Contains(iQRID))
+                    {
+                        iQRID++;
+                    }
+                }
+            }
+
+            //Check for correct QRID
+            if (iQRID < 0 || _QRIDExist.Contains(iQRID))
+            {
+                return (int)AddQRRecordErrorCode.QRID_INCORRECT;
+            }
+
+            //Check for existing name
+            Boolean isExist = false;
+            int i = 0;
+            while (i < xmlRoot.ChildNodes.Count && !isExist)
+            {
+                if (xmlRoot.ChildNodes[i].Attributes[1].Value == QRName)
+                {
+                    isExist = true;
+                }
+                i++;
+            }
+            if (isExist)
+            {
+                return (int)AddQRRecordErrorCode.NAME_OCCUPIED;
+            }
+            if (!(!Int32.TryParse(QRName, out i) && QRName != null && QRName != "" )){
+                return (int)AddQRRecordErrorCode.INCORRECT_PARAMETER;
+            }
+
 
             //Create new xml element, fill it, save changes
             XmlElement QRCode = xmlDoc.CreateElement("QRCode");
