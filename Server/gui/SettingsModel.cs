@@ -50,8 +50,8 @@ namespace Server
         /// <param name="pictureBox">PictureBox for drowing</param>
         static void InitDrowSettings(PictureBox pictureBox)
         {
-            WidthBorder = (pictureBox.Width - pictureBox.Image.Width) / 2;
-            HeightBorder = (pictureBox.Height - pictureBox.Image.Height) / 2;
+            WidthBorder = 0; //(pictureBox.Width - pictureBox.Image.Width) / 2;
+            HeightBorder = 0; //(pictureBox.Height - pictureBox.Image.Height) / 2; 
         }
 
         static void SetDefaultPoints(PictureBox pictureBox)
@@ -426,11 +426,11 @@ namespace Server
                         MessageBox.Show("Error loading user settings", "Error", MessageBoxButtons.OK);
                     }
                     break;
-                case MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY:
+                /*case MESSAGE.USER_SETTINGS_SAVED_SUCCESSFULLY:
                     {
                         MessageBox.Show("Settings saved successfully", "Message", MessageBoxButtons.OK);
                     }
-                    break;
+                    break;*/
                 case MESSAGE.SAVE_USER_SETTINGS_ERROR:
                     {
                         MessageBox.Show("Error saving user settings", "Error", MessageBoxButtons.OK);

@@ -151,6 +151,9 @@ namespace Server
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.tcMain = new System.Windows.Forms.TabControl();
+            this.dbFrame = new System.Windows.Forms.GroupBox();
+            this.gbSettings = new System.Windows.Forms.GroupBox();
+            this.gbHeatMapDate = new System.Windows.Forms.GroupBox();
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
@@ -186,6 +189,9 @@ namespace Server
             this.tbOnlineList.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tcMain.SuspendLayout();
+            this.dbFrame.SuspendLayout();
+            this.gbSettings.SuspendLayout();
+            this.gbHeatMapDate.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -193,9 +199,9 @@ namespace Server
             tbSettings.Controls.Add(this.pImage);
             tbSettings.Controls.Add(this.pSettings);
             tbSettings.Location = new System.Drawing.Point(4, 25);
-            tbSettings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            tbSettings.Margin = new System.Windows.Forms.Padding(4);
             tbSettings.Name = "tbSettings";
-            tbSettings.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            tbSettings.Padding = new System.Windows.Forms.Padding(4);
             tbSettings.Size = new System.Drawing.Size(1496, 840);
             tbSettings.TabIndex = 0;
             tbSettings.Text = "Settings";
@@ -207,7 +213,7 @@ namespace Server
             this.pImage.Controls.Add(this.pbMapImage);
             this.pImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pImage.Location = new System.Drawing.Point(304, 4);
-            this.pImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pImage.Margin = new System.Windows.Forms.Padding(4);
             this.pImage.Name = "pImage";
             this.pImage.Padding = new System.Windows.Forms.Padding(7, 6, 7, 6);
             this.pImage.Size = new System.Drawing.Size(1188, 832);
@@ -219,10 +225,10 @@ namespace Server
             this.pbMapImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.pbMapImage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbMapImage.Location = new System.Drawing.Point(7, 6);
-            this.pbMapImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pbMapImage.Margin = new System.Windows.Forms.Padding(4);
             this.pbMapImage.Name = "pbMapImage";
             this.pbMapImage.Size = new System.Drawing.Size(1174, 820);
-            this.pbMapImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pbMapImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pbMapImage.TabIndex = 0;
             this.pbMapImage.TabStop = false;
             this.pbMapImage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbMapImage_MouseDown);
@@ -230,135 +236,123 @@ namespace Server
             // 
             // pSettings
             // 
-            this.pSettings.Controls.Add(this.tbAzimuth);
-            this.pSettings.Controls.Add(this.lAzimuth);
-            this.pSettings.Controls.Add(this.tbRealWidth);
-            this.pSettings.Controls.Add(this.tbRealLength);
-            this.pSettings.Controls.Add(this.tbCoordinateY2);
-            this.pSettings.Controls.Add(this.tbCoordinateX2);
-            this.pSettings.Controls.Add(this.tbCoordinateY1);
-            this.pSettings.Controls.Add(this.tbCoordinateX1);
-            this.pSettings.Controls.Add(this.lblRealLength);
-            this.pSettings.Controls.Add(this.lblRealWidth);
+            this.pSettings.Controls.Add(this.gbSettings);
+            this.pSettings.Controls.Add(this.dbFrame);
             this.pSettings.Controls.Add(this.btnSave);
-            this.pSettings.Controls.Add(this.lblCoordinateY2);
-            this.pSettings.Controls.Add(this.lblCoordinateX2);
-            this.pSettings.Controls.Add(this.lblCoordinateY1);
-            this.pSettings.Controls.Add(this.lblCoordinateX1);
             this.pSettings.Controls.Add(this.btnDownloadImage);
             this.pSettings.Dock = System.Windows.Forms.DockStyle.Left;
             this.pSettings.Location = new System.Drawing.Point(4, 4);
-            this.pSettings.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pSettings.Margin = new System.Windows.Forms.Padding(4);
             this.pSettings.Name = "pSettings";
             this.pSettings.Size = new System.Drawing.Size(300, 832);
             this.pSettings.TabIndex = 0;
             // 
             // tbAzimuth
             // 
-            this.tbAzimuth.Location = new System.Drawing.Point(27, 277);
+            this.tbAzimuth.Location = new System.Drawing.Point(6, 171);
             this.tbAzimuth.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbAzimuth.Name = "tbAzimuth";
-            this.tbAzimuth.Size = new System.Drawing.Size(237, 22);
-            this.tbAzimuth.TabIndex = 25;
+            this.tbAzimuth.Size = new System.Drawing.Size(244, 22);
+            this.tbAzimuth.TabIndex = 7;
             this.tbAzimuth.TextChanged += new System.EventHandler(this.tbAzimuth_TextChanged);
             this.tbAzimuth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
             // 
             // lAzimuth
             // 
             this.lAzimuth.AutoSize = true;
-            this.lAzimuth.Location = new System.Drawing.Point(23, 258);
+            this.lAzimuth.Location = new System.Drawing.Point(7, 153);
             this.lAzimuth.Name = "lAzimuth";
-            this.lAzimuth.Size = new System.Drawing.Size(128, 16);
+            this.lAzimuth.Size = new System.Drawing.Size(88, 16);
             this.lAzimuth.TabIndex = 24;
-            this.lAzimuth.Text = "Azimuth (in degrees)";
+            this.lAzimuth.Text = "Azimuth (deg)";
             // 
             // tbRealWidth
             // 
             this.tbRealWidth.Enabled = false;
-            this.tbRealWidth.Location = new System.Drawing.Point(27, 220);
-            this.tbRealWidth.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbRealWidth.Location = new System.Drawing.Point(7, 113);
+            this.tbRealWidth.Margin = new System.Windows.Forms.Padding(4);
             this.tbRealWidth.Name = "tbRealWidth";
-            this.tbRealWidth.Size = new System.Drawing.Size(237, 22);
-            this.tbRealWidth.TabIndex = 23;
+            this.tbRealWidth.Size = new System.Drawing.Size(243, 22);
+            this.tbRealWidth.TabIndex = 6;
             this.tbRealWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
             // 
             // tbRealLength
             // 
-            this.tbRealLength.Location = new System.Drawing.Point(27, 139);
-            this.tbRealLength.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbRealLength.Location = new System.Drawing.Point(8, 54);
+            this.tbRealLength.Margin = new System.Windows.Forms.Padding(4);
             this.tbRealLength.Name = "tbRealLength";
-            this.tbRealLength.Size = new System.Drawing.Size(237, 22);
-            this.tbRealLength.TabIndex = 22;
+            this.tbRealLength.Size = new System.Drawing.Size(242, 22);
+            this.tbRealLength.TabIndex = 5;
             this.tbRealLength.TextChanged += new System.EventHandler(this.tbRealLength_TextChanged);
             this.tbRealLength.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
             // 
             // tbCoordinateY2
             // 
-            this.tbCoordinateY2.Location = new System.Drawing.Point(195, 59);
-            this.tbCoordinateY2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateY2.Location = new System.Drawing.Point(182, 60);
+            this.tbCoordinateY2.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateY2.Name = "tbCoordinateY2";
             this.tbCoordinateY2.Size = new System.Drawing.Size(68, 22);
-            this.tbCoordinateY2.TabIndex = 21;
+            this.tbCoordinateY2.TabIndex = 4;
             this.tbCoordinateY2.TextChanged += new System.EventHandler(this.tbCoordinateY2_TextChanged);
             this.tbCoordinateY2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // tbCoordinateX2
             // 
-            this.tbCoordinateX2.Location = new System.Drawing.Point(195, 27);
-            this.tbCoordinateX2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateX2.Location = new System.Drawing.Point(182, 28);
+            this.tbCoordinateX2.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateX2.Name = "tbCoordinateX2";
             this.tbCoordinateX2.Size = new System.Drawing.Size(68, 22);
-            this.tbCoordinateX2.TabIndex = 20;
+            this.tbCoordinateX2.TabIndex = 3;
             this.tbCoordinateX2.TextChanged += new System.EventHandler(this.tbCoordinateX2_TextChanged);
             this.tbCoordinateX2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // tbCoordinateY1
             // 
-            this.tbCoordinateY1.Location = new System.Drawing.Point(61, 59);
-            this.tbCoordinateY1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateY1.Location = new System.Drawing.Point(48, 60);
+            this.tbCoordinateY1.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateY1.Name = "tbCoordinateY1";
             this.tbCoordinateY1.Size = new System.Drawing.Size(68, 22);
-            this.tbCoordinateY1.TabIndex = 19;
+            this.tbCoordinateY1.TabIndex = 2;
             this.tbCoordinateY1.TextChanged += new System.EventHandler(this.tbCoordinateY1_TextChanged);
             this.tbCoordinateY1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // tbCoordinateX1
             // 
-            this.tbCoordinateX1.Location = new System.Drawing.Point(61, 27);
-            this.tbCoordinateX1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbCoordinateX1.Location = new System.Drawing.Point(48, 28);
+            this.tbCoordinateX1.Margin = new System.Windows.Forms.Padding(4);
             this.tbCoordinateX1.Name = "tbCoordinateX1";
             this.tbCoordinateX1.Size = new System.Drawing.Size(68, 22);
-            this.tbCoordinateX1.TabIndex = 18;
+            this.tbCoordinateX1.TabIndex = 1;
             this.tbCoordinateX1.TextChanged += new System.EventHandler(this.tbCoordinateX1_TextChanged);
             this.tbCoordinateX1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // lblRealLength
             // 
             this.lblRealLength.AutoSize = true;
-            this.lblRealLength.Location = new System.Drawing.Point(23, 103);
+            this.lblRealLength.Location = new System.Drawing.Point(7, 34);
             this.lblRealLength.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblRealLength.Name = "lblRealLength";
-            this.lblRealLength.Size = new System.Drawing.Size(162, 32);
+            this.lblRealLength.Size = new System.Drawing.Size(182, 16);
             this.lblRealLength.TabIndex = 16;
-            this.lblRealLength.Text = "Length of the marked area\r\n(in meters):";
+            this.lblRealLength.Text = "Width of the marked area (m)";
             // 
             // lblRealWidth
             // 
             this.lblRealWidth.AutoSize = true;
-            this.lblRealWidth.Location = new System.Drawing.Point(23, 183);
+            this.lblRealWidth.Location = new System.Drawing.Point(5, 93);
             this.lblRealWidth.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblRealWidth.Name = "lblRealWidth";
-            this.lblRealWidth.Size = new System.Drawing.Size(156, 32);
+            this.lblRealWidth.Size = new System.Drawing.Size(183, 16);
             this.lblRealWidth.TabIndex = 14;
-            this.lblRealWidth.Text = "Width of the marked area\r\n(in meters):";
+            this.lblRealWidth.Text = "Height of the marked area (m)";
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(27, 358);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSave.Location = new System.Drawing.Point(14, 369);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(4);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(237, 31);
-            this.btnSave.TabIndex = 13;
+            this.btnSave.Size = new System.Drawing.Size(266, 31);
+            this.btnSave.TabIndex = 9;
             this.btnSave.Text = "Save settings";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -366,7 +360,7 @@ namespace Server
             // lblCoordinateY2
             // 
             this.lblCoordinateY2.AutoSize = true;
-            this.lblCoordinateY2.Location = new System.Drawing.Point(156, 62);
+            this.lblCoordinateY2.Location = new System.Drawing.Point(143, 63);
             this.lblCoordinateY2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCoordinateY2.Name = "lblCoordinateY2";
             this.lblCoordinateY2.Size = new System.Drawing.Size(26, 16);
@@ -376,7 +370,7 @@ namespace Server
             // lblCoordinateX2
             // 
             this.lblCoordinateX2.AutoSize = true;
-            this.lblCoordinateX2.Location = new System.Drawing.Point(156, 30);
+            this.lblCoordinateX2.Location = new System.Drawing.Point(143, 31);
             this.lblCoordinateX2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCoordinateX2.Name = "lblCoordinateX2";
             this.lblCoordinateX2.Size = new System.Drawing.Size(25, 16);
@@ -386,7 +380,7 @@ namespace Server
             // lblCoordinateY1
             // 
             this.lblCoordinateY1.AutoSize = true;
-            this.lblCoordinateY1.Location = new System.Drawing.Point(23, 62);
+            this.lblCoordinateY1.Location = new System.Drawing.Point(10, 63);
             this.lblCoordinateY1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCoordinateY1.Name = "lblCoordinateY1";
             this.lblCoordinateY1.Size = new System.Drawing.Size(26, 16);
@@ -396,7 +390,7 @@ namespace Server
             // lblCoordinateX1
             // 
             this.lblCoordinateX1.AutoSize = true;
-            this.lblCoordinateX1.Location = new System.Drawing.Point(23, 30);
+            this.lblCoordinateX1.Location = new System.Drawing.Point(10, 31);
             this.lblCoordinateX1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblCoordinateX1.Name = "lblCoordinateX1";
             this.lblCoordinateX1.Size = new System.Drawing.Size(25, 16);
@@ -405,11 +399,11 @@ namespace Server
             // 
             // btnDownloadImage
             // 
-            this.btnDownloadImage.Location = new System.Drawing.Point(27, 319);
-            this.btnDownloadImage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnDownloadImage.Location = new System.Drawing.Point(14, 330);
+            this.btnDownloadImage.Margin = new System.Windows.Forms.Padding(4);
             this.btnDownloadImage.Name = "btnDownloadImage";
-            this.btnDownloadImage.Size = new System.Drawing.Size(237, 31);
-            this.btnDownloadImage.TabIndex = 0;
+            this.btnDownloadImage.Size = new System.Drawing.Size(266, 31);
+            this.btnDownloadImage.TabIndex = 8;
             this.btnDownloadImage.Text = "Open Map";
             this.btnDownloadImage.UseVisualStyleBackColor = true;
             this.btnDownloadImage.Click += new System.EventHandler(this.btnDownloadImage_Click);
@@ -454,44 +448,42 @@ namespace Server
             this.pHeatMap.BackColor = System.Drawing.Color.DarkGray;
             this.pHeatMap.Controls.Add(this.pbHeatMap);
             this.pHeatMap.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pHeatMap.Location = new System.Drawing.Point(400, 0);
-            this.pHeatMap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pHeatMap.Location = new System.Drawing.Point(300, 0);
+            this.pHeatMap.Margin = new System.Windows.Forms.Padding(4);
             this.pHeatMap.Name = "pHeatMap";
-            this.pHeatMap.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.pHeatMap.Size = new System.Drawing.Size(1096, 840);
+            this.pHeatMap.Padding = new System.Windows.Forms.Padding(4);
+            this.pHeatMap.Size = new System.Drawing.Size(1196, 840);
             this.pHeatMap.TabIndex = 3;
             // 
             // pbHeatMap
             // 
             this.pbHeatMap.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbHeatMap.Location = new System.Drawing.Point(4, 4);
-            this.pbHeatMap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pbHeatMap.Margin = new System.Windows.Forms.Padding(4);
             this.pbHeatMap.Name = "pbHeatMap";
-            this.pbHeatMap.Size = new System.Drawing.Size(1088, 832);
+            this.pbHeatMap.Size = new System.Drawing.Size(1188, 832);
+            this.pbHeatMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbHeatMap.TabIndex = 0;
             this.pbHeatMap.TabStop = false;
             // 
             // pnlHeatMap
             // 
-            this.pnlHeatMap.Controls.Add(this.mtbEnd);
-            this.pnlHeatMap.Controls.Add(this.lTo);
-            this.pnlHeatMap.Controls.Add(this.mtbBegin);
-            this.pnlHeatMap.Controls.Add(this.lFrom);
+            this.pnlHeatMap.Controls.Add(this.gbHeatMapDate);
             this.pnlHeatMap.Controls.Add(this.bGenerate);
             this.pnlHeatMap.Dock = System.Windows.Forms.DockStyle.Left;
             this.pnlHeatMap.Location = new System.Drawing.Point(0, 0);
-            this.pnlHeatMap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pnlHeatMap.Margin = new System.Windows.Forms.Padding(4);
             this.pnlHeatMap.Name = "pnlHeatMap";
-            this.pnlHeatMap.Size = new System.Drawing.Size(400, 840);
+            this.pnlHeatMap.Size = new System.Drawing.Size(300, 840);
             this.pnlHeatMap.TabIndex = 7;
             // 
             // mtbEnd
             // 
-            this.mtbEnd.Location = new System.Drawing.Point(121, 65);
-            this.mtbEnd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.mtbEnd.Location = new System.Drawing.Point(7, 109);
+            this.mtbEnd.Margin = new System.Windows.Forms.Padding(4);
             this.mtbEnd.Mask = "00/00/0000 90:00:00";
             this.mtbEnd.Name = "mtbEnd";
-            this.mtbEnd.Size = new System.Drawing.Size(163, 22);
+            this.mtbEnd.Size = new System.Drawing.Size(262, 22);
             this.mtbEnd.TabIndex = 1;
             this.mtbEnd.Text = "30042022000000";
             this.mtbEnd.ValidatingType = typeof(System.DateTime);
@@ -499,20 +491,20 @@ namespace Server
             // lTo
             // 
             this.lTo.AutoSize = true;
-            this.lTo.Location = new System.Drawing.Point(56, 69);
+            this.lTo.Location = new System.Drawing.Point(4, 89);
             this.lTo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lTo.Name = "lTo";
-            this.lTo.Size = new System.Drawing.Size(24, 16);
+            this.lTo.Size = new System.Drawing.Size(52, 16);
             this.lTo.TabIndex = 6;
-            this.lTo.Text = "To";
+            this.lTo.Text = "Time to";
             // 
             // mtbBegin
             // 
-            this.mtbBegin.Location = new System.Drawing.Point(121, 27);
-            this.mtbBegin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.mtbBegin.Location = new System.Drawing.Point(7, 53);
+            this.mtbBegin.Margin = new System.Windows.Forms.Padding(4);
             this.mtbBegin.Mask = "00/00/0000 90:00:00";
             this.mtbBegin.Name = "mtbBegin";
-            this.mtbBegin.Size = new System.Drawing.Size(163, 22);
+            this.mtbBegin.Size = new System.Drawing.Size(262, 22);
             this.mtbBegin.TabIndex = 0;
             this.mtbBegin.Text = "26042022000000";
             this.mtbBegin.ValidatingType = typeof(System.DateTime);
@@ -520,19 +512,19 @@ namespace Server
             // lFrom
             // 
             this.lFrom.AutoSize = true;
-            this.lFrom.Location = new System.Drawing.Point(56, 31);
+            this.lFrom.Location = new System.Drawing.Point(4, 33);
             this.lFrom.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lFrom.Name = "lFrom";
-            this.lFrom.Size = new System.Drawing.Size(38, 16);
+            this.lFrom.Size = new System.Drawing.Size(67, 16);
             this.lFrom.TabIndex = 5;
-            this.lFrom.Text = "From";
+            this.lFrom.Text = "Time from";
             // 
             // bGenerate
             // 
-            this.bGenerate.Location = new System.Drawing.Point(60, 108);
-            this.bGenerate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.bGenerate.Location = new System.Drawing.Point(8, 163);
+            this.bGenerate.Margin = new System.Windows.Forms.Padding(4);
             this.bGenerate.Name = "bGenerate";
-            this.bGenerate.Size = new System.Drawing.Size(225, 34);
+            this.bGenerate.Size = new System.Drawing.Size(276, 34);
             this.bGenerate.TabIndex = 2;
             this.bGenerate.Text = "Generate heat map";
             this.bGenerate.UseVisualStyleBackColor = true;
@@ -560,7 +552,7 @@ namespace Server
             this.tbWIFI.Name = "tbWIFI";
             this.tbWIFI.SelectedIndex = 0;
             this.tbWIFI.Size = new System.Drawing.Size(1196, 840);
-            this.tbWIFI.TabIndex = 4;
+            this.tbWIFI.TabIndex = 11;
             // 
             // tbWIFIMap
             // 
@@ -620,6 +612,7 @@ namespace Server
             this.lvWIFIList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.lvWIFIList.Name = "lvWIFIList";
             this.lvWIFIList.Size = new System.Drawing.Size(1182, 807);
+            this.lvWIFIList.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvWIFIList.TabIndex = 0;
             this.lvWIFIList.UseCompatibleStateImageBehavior = false;
             this.lvWIFIList.View = System.Windows.Forms.View.Details;
@@ -730,7 +723,7 @@ namespace Server
             this.tbMAC.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbMAC.Name = "tbMAC";
             this.tbMAC.Size = new System.Drawing.Size(120, 22);
-            this.tbMAC.TabIndex = 15;
+            this.tbMAC.TabIndex = 4;
             // 
             // tbWIFIPower
             // 
@@ -738,12 +731,12 @@ namespace Server
             this.tbWIFIPower.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbWIFIPower.Name = "tbWIFIPower";
             this.tbWIFIPower.Size = new System.Drawing.Size(120, 22);
-            this.tbWIFIPower.TabIndex = 14;
+            this.tbWIFIPower.TabIndex = 5;
             // 
             // pictureBox3
             // 
             this.pictureBox3.Location = new System.Drawing.Point(11, 530);
-            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(274, 274);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -792,7 +785,7 @@ namespace Server
             this.tbWIFIName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbWIFIName.Name = "tbWIFIName";
             this.tbWIFIName.Size = new System.Drawing.Size(120, 22);
-            this.tbWIFIName.TabIndex = 8;
+            this.tbWIFIName.TabIndex = 3;
             // 
             // tbWIFIX
             // 
@@ -800,7 +793,7 @@ namespace Server
             this.tbWIFIX.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbWIFIX.Name = "tbWIFIX";
             this.tbWIFIX.Size = new System.Drawing.Size(120, 22);
-            this.tbWIFIX.TabIndex = 7;
+            this.tbWIFIX.TabIndex = 6;
             // 
             // tbWIFIY
             // 
@@ -808,7 +801,7 @@ namespace Server
             this.tbWIFIY.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbWIFIY.Name = "tbWIFIY";
             this.tbWIFIY.Size = new System.Drawing.Size(120, 22);
-            this.tbWIFIY.TabIndex = 6;
+            this.tbWIFIY.TabIndex = 7;
             // 
             // tbWIFIID
             // 
@@ -816,7 +809,7 @@ namespace Server
             this.tbWIFIID.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbWIFIID.Name = "tbWIFIID";
             this.tbWIFIID.Size = new System.Drawing.Size(120, 22);
-            this.tbWIFIID.TabIndex = 5;
+            this.tbWIFIID.TabIndex = 2;
             // 
             // btnWIFIDelete
             // 
@@ -824,7 +817,7 @@ namespace Server
             this.btnWIFIDelete.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWIFIDelete.Name = "btnWIFIDelete";
             this.btnWIFIDelete.Size = new System.Drawing.Size(247, 28);
-            this.btnWIFIDelete.TabIndex = 4;
+            this.btnWIFIDelete.TabIndex = 10;
             this.btnWIFIDelete.Text = "Delete Wi-Fi";
             this.btnWIFIDelete.UseVisualStyleBackColor = true;
             this.btnWIFIDelete.Click += new System.EventHandler(this.btnWIFIDelete_Click);
@@ -835,7 +828,7 @@ namespace Server
             this.btnWIFIEdit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWIFIEdit.Name = "btnWIFIEdit";
             this.btnWIFIEdit.Size = new System.Drawing.Size(247, 28);
-            this.btnWIFIEdit.TabIndex = 3;
+            this.btnWIFIEdit.TabIndex = 9;
             this.btnWIFIEdit.Text = "Edit Wi-Fi";
             this.btnWIFIEdit.UseVisualStyleBackColor = true;
             this.btnWIFIEdit.Click += new System.EventHandler(this.btnWIFIEdit_Click);
@@ -846,7 +839,7 @@ namespace Server
             this.btnWIFIAdd.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnWIFIAdd.Name = "btnWIFIAdd";
             this.btnWIFIAdd.Size = new System.Drawing.Size(247, 28);
-            this.btnWIFIAdd.TabIndex = 2;
+            this.btnWIFIAdd.TabIndex = 8;
             this.btnWIFIAdd.Text = "Add Wi-Fi";
             this.btnWIFIAdd.UseVisualStyleBackColor = true;
             this.btnWIFIAdd.Click += new System.EventHandler(this.btnWIFIAdd_Click);
@@ -876,7 +869,7 @@ namespace Server
             // pictureBox2
             // 
             this.pictureBox2.Location = new System.Drawing.Point(11, 530);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(274, 274);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -1033,7 +1026,7 @@ namespace Server
             this.tcQRLocation.Name = "tcQRLocation";
             this.tcQRLocation.SelectedIndex = 0;
             this.tcQRLocation.Size = new System.Drawing.Size(1196, 840);
-            this.tcQRLocation.TabIndex = 2;
+            this.tcQRLocation.TabIndex = 9;
             // 
             // tbQRMap
             // 
@@ -1070,7 +1063,7 @@ namespace Server
             this.tbQRList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbQRList.Name = "tbQRList";
             this.tbQRList.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tbQRList.Size = new System.Drawing.Size(1185, 808);
+            this.tbQRList.Size = new System.Drawing.Size(1188, 811);
             this.tbQRList.TabIndex = 1;
             this.tbQRList.Text = "QR List";
             this.tbQRList.UseVisualStyleBackColor = true;
@@ -1090,7 +1083,8 @@ namespace Server
             this.lvQRList.Location = new System.Drawing.Point(3, 2);
             this.lvQRList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.lvQRList.Name = "lvQRList";
-            this.lvQRList.Size = new System.Drawing.Size(1179, 804);
+            this.lvQRList.Size = new System.Drawing.Size(1182, 807);
+            this.lvQRList.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvQRList.TabIndex = 0;
             this.lvQRList.UseCompatibleStateImageBehavior = false;
             this.lvQRList.View = System.Windows.Forms.View.Details;
@@ -1142,7 +1136,7 @@ namespace Server
             // pbQR
             // 
             this.pbQR.Location = new System.Drawing.Point(11, 530);
-            this.pbQR.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pbQR.Margin = new System.Windows.Forms.Padding(4);
             this.pbQR.Name = "pbQR";
             this.pbQR.Size = new System.Drawing.Size(274, 274);
             this.pbQR.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -1191,7 +1185,7 @@ namespace Server
             this.tbQRName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbQRName.Name = "tbQRName";
             this.tbQRName.Size = new System.Drawing.Size(120, 22);
-            this.tbQRName.TabIndex = 8;
+            this.tbQRName.TabIndex = 3;
             // 
             // tbQRx
             // 
@@ -1199,7 +1193,7 @@ namespace Server
             this.tbQRx.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbQRx.Name = "tbQRx";
             this.tbQRx.Size = new System.Drawing.Size(120, 22);
-            this.tbQRx.TabIndex = 7;
+            this.tbQRx.TabIndex = 4;
             // 
             // tbQRy
             // 
@@ -1207,7 +1201,7 @@ namespace Server
             this.tbQRy.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbQRy.Name = "tbQRy";
             this.tbQRy.Size = new System.Drawing.Size(120, 22);
-            this.tbQRy.TabIndex = 6;
+            this.tbQRy.TabIndex = 5;
             // 
             // tbQRID
             // 
@@ -1215,7 +1209,7 @@ namespace Server
             this.tbQRID.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbQRID.Name = "tbQRID";
             this.tbQRID.Size = new System.Drawing.Size(120, 22);
-            this.tbQRID.TabIndex = 5;
+            this.tbQRID.TabIndex = 2;
             // 
             // btnDeleteQR
             // 
@@ -1223,7 +1217,7 @@ namespace Server
             this.btnDeleteQR.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnDeleteQR.Name = "btnDeleteQR";
             this.btnDeleteQR.Size = new System.Drawing.Size(247, 28);
-            this.btnDeleteQR.TabIndex = 4;
+            this.btnDeleteQR.TabIndex = 8;
             this.btnDeleteQR.Text = "Delete QR";
             this.btnDeleteQR.UseVisualStyleBackColor = true;
             this.btnDeleteQR.Click += new System.EventHandler(this.btnDeleteQR_Click);
@@ -1234,7 +1228,7 @@ namespace Server
             this.btnEditQR.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnEditQR.Name = "btnEditQR";
             this.btnEditQR.Size = new System.Drawing.Size(247, 28);
-            this.btnEditQR.TabIndex = 3;
+            this.btnEditQR.TabIndex = 7;
             this.btnEditQR.Text = "Edit QR";
             this.btnEditQR.UseVisualStyleBackColor = true;
             this.btnEditQR.Click += new System.EventHandler(this.btnEditQR_Click);
@@ -1245,7 +1239,7 @@ namespace Server
             this.btnAddQR.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnAddQR.Name = "btnAddQR";
             this.btnAddQR.Size = new System.Drawing.Size(247, 28);
-            this.btnAddQR.TabIndex = 2;
+            this.btnAddQR.TabIndex = 6;
             this.btnAddQR.Text = "Add QR";
             this.btnAddQR.UseVisualStyleBackColor = true;
             this.btnAddQR.Click += new System.EventHandler(this.btnAddQR_Click);
@@ -1277,9 +1271,9 @@ namespace Server
             this.tbManage.Controls.Add(this.tbServerManage);
             this.tbManage.Controls.Add(this.panel1);
             this.tbManage.Location = new System.Drawing.Point(4, 25);
-            this.tbManage.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbManage.Margin = new System.Windows.Forms.Padding(4);
             this.tbManage.Name = "tbManage";
-            this.tbManage.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbManage.Padding = new System.Windows.Forms.Padding(4);
             this.tbManage.Size = new System.Drawing.Size(1496, 840);
             this.tbManage.TabIndex = 1;
             this.tbManage.Text = "Management";
@@ -1323,14 +1317,15 @@ namespace Server
             this.txtbLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtbLog.Size = new System.Drawing.Size(1174, 799);
             this.txtbLog.TabIndex = 0;
+            this.txtbLog.TabStop = false;
             // 
             // tbOnlineMap
             // 
             this.tbOnlineMap.Controls.Add(this.pOnline);
             this.tbOnlineMap.Location = new System.Drawing.Point(4, 25);
-            this.tbOnlineMap.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbOnlineMap.Margin = new System.Windows.Forms.Padding(4);
             this.tbOnlineMap.Name = "tbOnlineMap";
-            this.tbOnlineMap.Size = new System.Drawing.Size(1177, 801);
+            this.tbOnlineMap.Size = new System.Drawing.Size(1180, 803);
             this.tbOnlineMap.TabIndex = 5;
             this.tbOnlineMap.Text = "Online Map";
             this.tbOnlineMap.UseVisualStyleBackColor = true;
@@ -1341,19 +1336,19 @@ namespace Server
             this.pOnline.Controls.Add(this.pbOnline);
             this.pOnline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pOnline.Location = new System.Drawing.Point(0, 0);
-            this.pOnline.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pOnline.Margin = new System.Windows.Forms.Padding(4);
             this.pOnline.Name = "pOnline";
-            this.pOnline.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.pOnline.Size = new System.Drawing.Size(1177, 801);
+            this.pOnline.Padding = new System.Windows.Forms.Padding(4);
+            this.pOnline.Size = new System.Drawing.Size(1180, 803);
             this.pOnline.TabIndex = 0;
             // 
             // pbOnline
             // 
             this.pbOnline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pbOnline.Location = new System.Drawing.Point(4, 4);
-            this.pbOnline.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pbOnline.Margin = new System.Windows.Forms.Padding(4);
             this.pbOnline.Name = "pbOnline";
-            this.pbOnline.Size = new System.Drawing.Size(1169, 793);
+            this.pbOnline.Size = new System.Drawing.Size(1172, 795);
             this.pbOnline.TabIndex = 0;
             this.pbOnline.TabStop = false;
             this.pbOnline.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbOnline_MouseDown);
@@ -1365,7 +1360,7 @@ namespace Server
             this.tbOnlineList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tbOnlineList.Name = "tbOnlineList";
             this.tbOnlineList.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tbOnlineList.Size = new System.Drawing.Size(1177, 801);
+            this.tbOnlineList.Size = new System.Drawing.Size(1180, 803);
             this.tbOnlineList.TabIndex = 1;
             this.tbOnlineList.Text = "Online List";
             this.tbOnlineList.UseVisualStyleBackColor = true;
@@ -1377,12 +1372,14 @@ namespace Server
             this.lastOnline});
             this.lvOnline.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvOnline.GridLines = true;
+            this.lvOnline.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lvOnline.HideSelection = false;
             this.lvOnline.Location = new System.Drawing.Point(3, 2);
             this.lvOnline.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.lvOnline.MultiSelect = false;
             this.lvOnline.Name = "lvOnline";
-            this.lvOnline.Size = new System.Drawing.Size(1171, 797);
+            this.lvOnline.Size = new System.Drawing.Size(1174, 799);
+            this.lvOnline.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.lvOnline.TabIndex = 0;
             this.lvOnline.UseCompatibleStateImageBehavior = false;
             this.lvOnline.View = System.Windows.Forms.View.Details;
@@ -1390,12 +1387,12 @@ namespace Server
             // userID
             // 
             this.userID.Text = "User ID";
-            this.userID.Width = 200;
+            this.userID.Width = 300;
             // 
             // lastOnline
             // 
             this.lastOnline.Text = "Last Online";
-            this.lastOnline.Width = 200;
+            this.lastOnline.Width = 500;
             // 
             // panel1
             // 
@@ -1439,13 +1436,58 @@ namespace Server
             this.tcMain.Controls.Add(this.tbHeatMap);
             this.tcMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tcMain.Location = new System.Drawing.Point(0, 0);
-            this.tcMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tcMain.Margin = new System.Windows.Forms.Padding(4);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
             this.tcMain.Size = new System.Drawing.Size(1504, 869);
             this.tcMain.TabIndex = 0;
             this.tcMain.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tcMain_Selecting);
             this.tcMain.Selected += new System.Windows.Forms.TabControlEventHandler(this.tcMain_Selected);
+            // 
+            // dbFrame
+            // 
+            this.dbFrame.Controls.Add(this.tbCoordinateY2);
+            this.dbFrame.Controls.Add(this.lblCoordinateX1);
+            this.dbFrame.Controls.Add(this.lblCoordinateY1);
+            this.dbFrame.Controls.Add(this.lblCoordinateX2);
+            this.dbFrame.Controls.Add(this.lblCoordinateY2);
+            this.dbFrame.Controls.Add(this.tbCoordinateX1);
+            this.dbFrame.Controls.Add(this.tbCoordinateX2);
+            this.dbFrame.Controls.Add(this.tbCoordinateY1);
+            this.dbFrame.Location = new System.Drawing.Point(15, 3);
+            this.dbFrame.Name = "dbFrame";
+            this.dbFrame.Size = new System.Drawing.Size(266, 100);
+            this.dbFrame.TabIndex = 26;
+            this.dbFrame.TabStop = false;
+            this.dbFrame.Text = "Frame ponts";
+            // 
+            // gbSettings
+            // 
+            this.gbSettings.Controls.Add(this.tbRealWidth);
+            this.gbSettings.Controls.Add(this.lblRealWidth);
+            this.gbSettings.Controls.Add(this.tbAzimuth);
+            this.gbSettings.Controls.Add(this.lblRealLength);
+            this.gbSettings.Controls.Add(this.lAzimuth);
+            this.gbSettings.Controls.Add(this.tbRealLength);
+            this.gbSettings.Location = new System.Drawing.Point(15, 109);
+            this.gbSettings.Name = "gbSettings";
+            this.gbSettings.Size = new System.Drawing.Size(265, 214);
+            this.gbSettings.TabIndex = 27;
+            this.gbSettings.TabStop = false;
+            this.gbSettings.Text = "Settings";
+            // 
+            // gbHeatMapDate
+            // 
+            this.gbHeatMapDate.Controls.Add(this.mtbBegin);
+            this.gbHeatMapDate.Controls.Add(this.mtbEnd);
+            this.gbHeatMapDate.Controls.Add(this.lFrom);
+            this.gbHeatMapDate.Controls.Add(this.lTo);
+            this.gbHeatMapDate.Location = new System.Drawing.Point(8, 4);
+            this.gbHeatMapDate.Name = "gbHeatMapDate";
+            this.gbHeatMapDate.Size = new System.Drawing.Size(276, 152);
+            this.gbHeatMapDate.TabIndex = 7;
+            this.gbHeatMapDate.TabStop = false;
+            this.gbHeatMapDate.Text = "Time interval";
             // 
             // frmServer
             // 
@@ -1454,20 +1496,19 @@ namespace Server
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(1504, 869);
             this.Controls.Add(this.tcMain);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmServer";
             this.Text = "Server";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmServer_FormClosing);
             tbSettings.ResumeLayout(false);
             this.pImage.ResumeLayout(false);
+            this.pImage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbMapImage)).EndInit();
             this.pSettings.ResumeLayout(false);
-            this.pSettings.PerformLayout();
             this.tbHeatMap.ResumeLayout(false);
             this.pHeatMap.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbHeatMap)).EndInit();
             this.pnlHeatMap.ResumeLayout(false);
-            this.pnlHeatMap.PerformLayout();
             this.tbWIFILocation.ResumeLayout(false);
             this.tbWIFI.ResumeLayout(false);
             this.tbWIFIMap.ResumeLayout(false);
@@ -1500,6 +1541,12 @@ namespace Server
             this.tbOnlineList.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.tcMain.ResumeLayout(false);
+            this.dbFrame.ResumeLayout(false);
+            this.dbFrame.PerformLayout();
+            this.gbSettings.ResumeLayout(false);
+            this.gbSettings.PerformLayout();
+            this.gbHeatMapDate.ResumeLayout(false);
+            this.gbHeatMapDate.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1626,5 +1673,8 @@ namespace Server
         private System.Windows.Forms.Label lTo;
         private System.Windows.Forms.Label lFrom;
         private System.Windows.Forms.Panel pnlHeatMap;
+        private System.Windows.Forms.GroupBox dbFrame;
+        private System.Windows.Forms.GroupBox gbSettings;
+        private System.Windows.Forms.GroupBox gbHeatMapDate;
     }
 }

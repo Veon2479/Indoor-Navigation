@@ -116,6 +116,9 @@ namespace Server
         //add Wi-Fi to config
         public static int AddWIFI(string WIFIID, string WIFIName, string MAC, string Power, string X, string Y, ref ListView list, PictureBox pb)
         {
+            if (Server.Run)
+                return -1;
+
             int addResult = Server.wifiSpotModel.AddWIFISpotRecord(WIFIID, WIFIName, X, Y, Power, MAC);
 
             if (addResult >= 0)
@@ -128,6 +131,9 @@ namespace Server
         //edit Wi-Fi in config
         public static int EditWIFI(string OldWIFIID, string WIFIID, string WIFIName, string MAC, string Power, string X, string Y, ref ListView list, PictureBox pb)
         {
+            if (Server.Run)
+                return -1;
+
             int editResult = Server.wifiSpotModel.ChangeWIFISpotRecord(OldWIFIID, WIFIID, WIFIName, X, Y, Power, MAC);
 
             if (editResult >= 0)
@@ -140,6 +146,9 @@ namespace Server
         //delete Wi-Fi from config
         public static int DeleteWIFI(string WIFIID, ref ListView list, PictureBox pb)
         {
+            if (Server.Run)
+                return -1;
+
             int delResult = Server.wifiSpotModel.DeleteWIFISpotRecord(WIFIID);
 
             if (delResult >= 0)

@@ -233,6 +233,12 @@ namespace Server
         //open QR config file
         private void btnOpenQRConf_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Open QR confid error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (dlgOpenFile.ShowDialog() == DialogResult.Cancel)
                 return;
             QRLocation.OpenQRConfig(dlgOpenFile.FileName, ref lvQRList, pbQRLocation);
@@ -241,6 +247,15 @@ namespace Server
         //create new QR config file
         private void btnCreateQRConf_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Open QR confid error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (Server.Run)
+                return;
+
             if (dlgSaveFile.ShowDialog() == DialogResult.Cancel)
                 return;
             QRLocation.OpenQRConfig(dlgSaveFile.FileName, ref lvQRList, pbQRLocation);
@@ -252,18 +267,31 @@ namespace Server
             int Result = QRLocation.AddQR(tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
 
             //processing Result
-
-            if (Result == 0)
+            switch ((QRModel.AddQRRecordErrorCode)Result)
             {
-                QRLocation.DrawQRPoint(pbQRLocation, Color.Green, double.Parse(tbQRx.Text), double.Parse(tbQRy.Text));
-                QRLocation.adding = false;
+                case QRModel.AddQRRecordErrorCode.INCORRECT_PARAMETER:
+                    MessageBox.Show("Invalid parameter(s)", "Add QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.AddQRRecordErrorCode.CORRUPTED_FILE:
+                    MessageBox.Show("*.xml file not exist or was corrupted", "Add QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.AddQRRecordErrorCode.QRID_INCORRECT:
+                    MessageBox.Show("QR ID is incorrect or busy", "Add QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.AddQRRecordErrorCode.NAME_OCCUPIED:
+                    MessageBox.Show("QR Name is incorrect or busy", "Add QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                default:
+                    QRLocation.DrawQRPoint(pbQRLocation, Color.Green, double.Parse(tbQRx.Text, System.Globalization.CultureInfo.InvariantCulture), double.Parse(tbQRy.Text, System.Globalization.CultureInfo.InvariantCulture));
+                    QRLocation.adding = false;
+                    break;
             }
         }
 
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
-            int Result = -1;
+            int Result = 0;
 
             //select in list view
             if (QRLocation.selectedItem != null && QRLocation.selectedItem.Count > 0)
@@ -275,13 +303,39 @@ namespace Server
             else if (QRLocation.selectedPoint.QRID != null)
                 Result = QRLocation.EditQR(QRLocation.selectedPoint.QRID, tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
             
+            //QR not selected
+            else
+            {
+                MessageBox.Show("QR point is not selected", "Edit QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             //processing Result
+            switch ((QRModel.ChangeQRRecordErrorCode)Result)
+            {
+                case QRModel.ChangeQRRecordErrorCode.INCORRECT_PARAMETR:
+                    MessageBox.Show("Invalid parameter(s)", "Edit QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.ChangeQRRecordErrorCode.CORRUPTED_FILE:
+                    MessageBox.Show("*.xml file not exist or was corrupted", "Edit QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.ChangeQRRecordErrorCode.QRID_INCORRECT:
+                    MessageBox.Show("QR ID is incorrect or not exist", "Edit QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.ChangeQRRecordErrorCode.NAME_IS_OCCUPIED:
+                    MessageBox.Show("QR Name is occupied", "Edit QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.ChangeQRRecordErrorCode.NAME_NOT_FOUND:
+                    MessageBox.Show("QR not found", "Edit QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                //>=0 good
+            }
         }
 
         //delete QR from a config file
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
-            int Result = -1; 
+            int Result = 0;
 
             //select in list view
             if (QRLocation.selectedItem != null)
@@ -293,7 +347,27 @@ namespace Server
             else if (QRLocation.selectedPoint.QRID != null)
                 Result = QRLocation.DeleteQR(QRLocation.selectedPoint.QRID, ref lvQRList, pbQRLocation);
 
+            //QR not selected
+            else
+            {
+                MessageBox.Show("QR point is not selected", "Delete QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             //processing Result
+            switch ((QRModel.DeleteQRRecordErrorCode)Result)
+            {
+                case QRModel.DeleteQRRecordErrorCode.CORRUPTED_FILE:
+                    MessageBox.Show("*.xml file not exist or was corrupted", "Delete QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.DeleteQRRecordErrorCode.QRID_INCORRECT:
+                    MessageBox.Show("QR ID not exist", "Delete QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case QRModel.DeleteQRRecordErrorCode.NAME_NOT_FOUND:
+                    MessageBox.Show("QR Name not exist", "Delete QR error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                    //>=0 good
+            }
         }
 
         //on select item in QR list
@@ -359,6 +433,7 @@ namespace Server
         private void pbQRLocation_MouseDown(object sender, MouseEventArgs e)
         {
             //check hitting
+
             QRLocation.selectedPoint = QRLocation.HitPoint(e.X, e.Y);
 
             //update text boxes
@@ -448,6 +523,12 @@ namespace Server
         //open Wi-Fi congig
         private void btnWIFIOpen_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Open Wi-Fi confid error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (dlgOpenFile.ShowDialog() == DialogResult.Cancel)
                 return;
             WIFILocation.OpenWIFIConfig(dlgOpenFile.FileName, ref lvWIFIList, pbWIFIMap);
@@ -456,6 +537,12 @@ namespace Server
         //create Wi-Fi config
         private void btnWIFICreate_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Open Wi-Fi confid error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (dlgSaveFile.ShowDialog() == DialogResult.Cancel)
                 return;
             WIFILocation.OpenWIFIConfig(dlgSaveFile.FileName, ref lvWIFIList, pbWIFIMap);
@@ -483,18 +570,34 @@ namespace Server
             int Result = WIFILocation.AddWIFI(tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, tbWIFIX.Text, tbWIFIY.Text, ref lvWIFIList, pbWIFIMap);
 
             //processing Result
-
-            if (Result >= 0)
+            switch ((WIFISpotModel.AddWIFISpotRecordErrorCode)Result)
             {
-                WIFILocation.DrawWIFIMap(pbWIFIMap);
-                WIFILocation.adding = false;
+                case WIFISpotModel.AddWIFISpotRecordErrorCode.INCORRECT_PARAMETER:
+                    MessageBox.Show("Invalid parameter(s)", "Add Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.AddWIFISpotRecordErrorCode.CORRUPTED_FILE:
+                    MessageBox.Show(".xml file not exist or was corrupted", "Add Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.AddWIFISpotRecordErrorCode.WIFISPOTID_INCORRECT:
+                    MessageBox.Show("Wi-Fi ID is incorrect or busy", "Add Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.AddWIFISpotRecordErrorCode.NAME_OCCUPIED:
+                    MessageBox.Show("Wi-Fi Name is busy", "Add Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.AddWIFISpotRecordErrorCode.MACADDRESS_OCCUPIED:
+                    MessageBox.Show("MAC-address is busy", "Add Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                default:
+                    WIFILocation.DrawWIFIMap(pbWIFIMap);
+                    WIFILocation.adding = false;
+                    break;
             }
         }
 
         //edit Wi-Fi spot in config
         private void btnWIFIEdit_Click(object sender, EventArgs e)
         {
-            int Result = -1;
+            int Result = 0;
 
             //select in list view
             if (WIFILocation.selectedItem != null && WIFILocation.selectedItem.Count > 0)
@@ -502,11 +605,37 @@ namespace Server
                 Result = WIFILocation.EditWIFI(WIFILocation.selectedItem[0].Text, tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, tbWIFIX.Text, tbWIFIY.Text, ref lvWIFIList, pbWIFIMap);
             }
 
-            //select in QR map
+            //select in Wi-Fi map
             else if (WIFILocation.selectedPoint.WIFISpotID != null)
                 Result = WIFILocation.EditWIFI(WIFILocation.selectedPoint.WIFISpotID, tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, tbWIFIX.Text, tbWIFIY.Text, ref lvWIFIList, pbWIFIMap);
+            
+            //Wi-Fi is not selected
+            else
+            {
+                MessageBox.Show("The Wi-Fi point is not selected", "Edit Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             //processing Result
+            switch ((WIFISpotModel.ChangeWIFISpotRecordErrorCode)Result)
+            {
+                case WIFISpotModel.ChangeWIFISpotRecordErrorCode.INCORRECT_PARAMETR:
+                    MessageBox.Show("Invalid parameter(s)", "Edit Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.ChangeWIFISpotRecordErrorCode.CORRUPTED_FILE:
+                    MessageBox.Show("*.xml file not exist or was corrupted", "Edit Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.ChangeWIFISpotRecordErrorCode.WIFISpotID_INCORRECT:
+                    MessageBox.Show("Wi-Fi ID not exist", "Edit Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.ChangeWIFISpotRecordErrorCode.NAME_IS_OCCUPIED:
+                    MessageBox.Show("Wi-Fi Name is busy", "Edit Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.ChangeWIFISpotRecordErrorCode.NAME_NOT_FOUND:
+                    MessageBox.Show("Wi-Fi Name not exist", "Edit Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                    //>=0 good
+            }
         }
 
         //delete Wi-Fi spot from config
@@ -524,7 +653,27 @@ namespace Server
             else if (WIFILocation.selectedPoint.WIFISpotID!= null)
                 Result = WIFILocation.DeleteWIFI(WIFILocation.selectedPoint.WIFISpotID, ref lvWIFIList, pbWIFIMap);
 
+            //Wi-Fi not selected
+            else
+            {
+                MessageBox.Show("Wi-Fi point is not selected", "Delete Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             //processing Result
+            switch ((WIFISpotModel.DeleteWIFISpotRecordErrorCode)Result)
+            {
+                case WIFISpotModel.DeleteWIFISpotRecordErrorCode.CORRUPTED_FILE:
+                    MessageBox.Show("*.xml file not exist or was corrupted", "Delete Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.DeleteWIFISpotRecordErrorCode.WIFISPPOT_ID_INCORRECT:
+                    MessageBox.Show("Wi-Fi ID is incorrect or busy", "Delete Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                case WIFISpotModel.DeleteWIFISpotRecordErrorCode.NAME_NOT_FOUND:
+                    MessageBox.Show("Wi-Fi Name not exist", "Delete Wi-Fi error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    break;
+                    //>=0 good
+            }
         }
 
         //adding Wi-Fi spot by mouse
@@ -608,6 +757,7 @@ namespace Server
         /*
          * Heat map tab
          */
+
         private void bGenerate_Click(object sender, EventArgs e)
         {
             string BeginDateTime;
