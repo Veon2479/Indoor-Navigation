@@ -235,7 +235,7 @@ namespace Server
         {
             if (Server.Run)
             {
-                MessageBox.Show("You cannot change files while the server is running", "Open QR confid error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("You cannot change files while the server is running", "Open QR config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -249,7 +249,7 @@ namespace Server
         {
             if (Server.Run)
             {
-                MessageBox.Show("You cannot change files while the server is running", "Open QR confid error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("You cannot change files while the server is running", "Open QR config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -264,6 +264,12 @@ namespace Server
         //add QR into a config file
         private void btnAddQR_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Add QR config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             int Result = QRLocation.AddQR(tbQRID.Text, tbQRName.Text, tbQRx.Text, tbQRy.Text, ref lvQRList, pbQRLocation);
 
             //processing Result
@@ -291,6 +297,11 @@ namespace Server
         //edit QR in a config file
         private void btnEditQR_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Edit QR config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             int Result = 0;
 
             //select in list view
@@ -335,6 +346,12 @@ namespace Server
         //delete QR from a config file
         private void btnDeleteQR_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Delete QR config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             int Result = 0;
 
             //select in list view
@@ -567,6 +584,11 @@ namespace Server
         //add Wi-Fi spot to config
         private void btnWIFIAdd_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Add Wi-Fi config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             int Result = WIFILocation.AddWIFI(tbWIFIID.Text, tbWIFIName.Text, tbMAC.Text, tbWIFIPower.Text, tbWIFIX.Text, tbWIFIY.Text, ref lvWIFIList, pbWIFIMap);
 
             //processing Result
@@ -597,6 +619,11 @@ namespace Server
         //edit Wi-Fi spot in config
         private void btnWIFIEdit_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Edit Wi-Fi config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             int Result = 0;
 
             //select in list view
@@ -641,6 +668,11 @@ namespace Server
         //delete Wi-Fi spot from config
         private void btnWIFIDelete_Click(object sender, EventArgs e)
         {
+            if (Server.Run)
+            {
+                MessageBox.Show("You cannot change files while the server is running", "Delete Wi-Fi config error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             int Result = -1;
 
             //select in list view

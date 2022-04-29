@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--QRData here-->
+<QRCodes>
+  <QRCode id="0" name="Zero">
+    <x>0.5</x>
+    <y>5.5</y>
+  </QRCode>
+  <QRCode id="1" name="Center">
+    <x>3</x>
+    <y>3</y>
+  </QRCode>
+</QRCodes>

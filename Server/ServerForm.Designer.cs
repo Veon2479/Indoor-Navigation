@@ -33,21 +33,23 @@ namespace Server
             this.pImage = new System.Windows.Forms.Panel();
             this.pbMapImage = new System.Windows.Forms.PictureBox();
             this.pSettings = new System.Windows.Forms.Panel();
-            this.tbAzimuth = new System.Windows.Forms.TextBox();
-            this.lAzimuth = new System.Windows.Forms.Label();
+            this.gbSettings = new System.Windows.Forms.GroupBox();
             this.tbRealWidth = new System.Windows.Forms.TextBox();
+            this.lblRealWidth = new System.Windows.Forms.Label();
+            this.tbAzimuth = new System.Windows.Forms.TextBox();
+            this.lblRealLength = new System.Windows.Forms.Label();
+            this.lAzimuth = new System.Windows.Forms.Label();
             this.tbRealLength = new System.Windows.Forms.TextBox();
+            this.dbFrame = new System.Windows.Forms.GroupBox();
             this.tbCoordinateY2 = new System.Windows.Forms.TextBox();
+            this.lblCoordinateX1 = new System.Windows.Forms.Label();
+            this.lblCoordinateY1 = new System.Windows.Forms.Label();
+            this.lblCoordinateX2 = new System.Windows.Forms.Label();
+            this.lblCoordinateY2 = new System.Windows.Forms.Label();
+            this.tbCoordinateX1 = new System.Windows.Forms.TextBox();
             this.tbCoordinateX2 = new System.Windows.Forms.TextBox();
             this.tbCoordinateY1 = new System.Windows.Forms.TextBox();
-            this.tbCoordinateX1 = new System.Windows.Forms.TextBox();
-            this.lblRealLength = new System.Windows.Forms.Label();
-            this.lblRealWidth = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
-            this.lblCoordinateY2 = new System.Windows.Forms.Label();
-            this.lblCoordinateX2 = new System.Windows.Forms.Label();
-            this.lblCoordinateY1 = new System.Windows.Forms.Label();
-            this.lblCoordinateX1 = new System.Windows.Forms.Label();
             this.btnDownloadImage = new System.Windows.Forms.Button();
             this.tmrListUpdate = new System.Windows.Forms.Timer(this.components);
             this.dlgOpenFile = new System.Windows.Forms.OpenFileDialog();
@@ -59,10 +61,11 @@ namespace Server
             this.pHeatMap = new System.Windows.Forms.Panel();
             this.pbHeatMap = new System.Windows.Forms.PictureBox();
             this.pnlHeatMap = new System.Windows.Forms.Panel();
-            this.mtbEnd = new System.Windows.Forms.MaskedTextBox();
-            this.lTo = new System.Windows.Forms.Label();
+            this.gbHeatMapDate = new System.Windows.Forms.GroupBox();
             this.mtbBegin = new System.Windows.Forms.MaskedTextBox();
+            this.mtbEnd = new System.Windows.Forms.MaskedTextBox();
             this.lFrom = new System.Windows.Forms.Label();
+            this.lTo = new System.Windows.Forms.Label();
             this.bGenerate = new System.Windows.Forms.Button();
             this.tbWIFILocation = new System.Windows.Forms.TabPage();
             this.tbWIFI = new System.Windows.Forms.TabControl();
@@ -151,18 +154,18 @@ namespace Server
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.tcMain = new System.Windows.Forms.TabControl();
-            this.dbFrame = new System.Windows.Forms.GroupBox();
-            this.gbSettings = new System.Windows.Forms.GroupBox();
-            this.gbHeatMapDate = new System.Windows.Forms.GroupBox();
             tbSettings = new System.Windows.Forms.TabPage();
             tbSettings.SuspendLayout();
             this.pImage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbMapImage)).BeginInit();
             this.pSettings.SuspendLayout();
+            this.gbSettings.SuspendLayout();
+            this.dbFrame.SuspendLayout();
             this.tbHeatMap.SuspendLayout();
             this.pHeatMap.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHeatMap)).BeginInit();
             this.pnlHeatMap.SuspendLayout();
+            this.gbHeatMapDate.SuspendLayout();
             this.tbWIFILocation.SuspendLayout();
             this.tbWIFI.SuspendLayout();
             this.tbWIFIMap.SuspendLayout();
@@ -189,9 +192,6 @@ namespace Server
             this.tbOnlineList.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tcMain.SuspendLayout();
-            this.dbFrame.SuspendLayout();
-            this.gbSettings.SuspendLayout();
-            this.gbHeatMapDate.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbSettings
@@ -247,24 +247,20 @@ namespace Server
             this.pSettings.Size = new System.Drawing.Size(300, 832);
             this.pSettings.TabIndex = 0;
             // 
-            // tbAzimuth
+            // gbSettings
             // 
-            this.tbAzimuth.Location = new System.Drawing.Point(6, 171);
-            this.tbAzimuth.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.tbAzimuth.Name = "tbAzimuth";
-            this.tbAzimuth.Size = new System.Drawing.Size(244, 22);
-            this.tbAzimuth.TabIndex = 7;
-            this.tbAzimuth.TextChanged += new System.EventHandler(this.tbAzimuth_TextChanged);
-            this.tbAzimuth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
-            // 
-            // lAzimuth
-            // 
-            this.lAzimuth.AutoSize = true;
-            this.lAzimuth.Location = new System.Drawing.Point(7, 153);
-            this.lAzimuth.Name = "lAzimuth";
-            this.lAzimuth.Size = new System.Drawing.Size(88, 16);
-            this.lAzimuth.TabIndex = 24;
-            this.lAzimuth.Text = "Azimuth (deg)";
+            this.gbSettings.Controls.Add(this.tbRealWidth);
+            this.gbSettings.Controls.Add(this.lblRealWidth);
+            this.gbSettings.Controls.Add(this.tbAzimuth);
+            this.gbSettings.Controls.Add(this.lblRealLength);
+            this.gbSettings.Controls.Add(this.lAzimuth);
+            this.gbSettings.Controls.Add(this.tbRealLength);
+            this.gbSettings.Location = new System.Drawing.Point(15, 109);
+            this.gbSettings.Name = "gbSettings";
+            this.gbSettings.Size = new System.Drawing.Size(265, 214);
+            this.gbSettings.TabIndex = 27;
+            this.gbSettings.TabStop = false;
+            this.gbSettings.Text = "Settings";
             // 
             // tbRealWidth
             // 
@@ -276,6 +272,45 @@ namespace Server
             this.tbRealWidth.TabIndex = 6;
             this.tbRealWidth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
             // 
+            // lblRealWidth
+            // 
+            this.lblRealWidth.AutoSize = true;
+            this.lblRealWidth.Location = new System.Drawing.Point(5, 93);
+            this.lblRealWidth.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblRealWidth.Name = "lblRealWidth";
+            this.lblRealWidth.Size = new System.Drawing.Size(183, 16);
+            this.lblRealWidth.TabIndex = 14;
+            this.lblRealWidth.Text = "Height of the marked area (m)";
+            // 
+            // tbAzimuth
+            // 
+            this.tbAzimuth.Location = new System.Drawing.Point(6, 171);
+            this.tbAzimuth.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.tbAzimuth.Name = "tbAzimuth";
+            this.tbAzimuth.Size = new System.Drawing.Size(244, 22);
+            this.tbAzimuth.TabIndex = 7;
+            this.tbAzimuth.TextChanged += new System.EventHandler(this.tbAzimuth_TextChanged);
+            this.tbAzimuth.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
+            // 
+            // lblRealLength
+            // 
+            this.lblRealLength.AutoSize = true;
+            this.lblRealLength.Location = new System.Drawing.Point(7, 34);
+            this.lblRealLength.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblRealLength.Name = "lblRealLength";
+            this.lblRealLength.Size = new System.Drawing.Size(182, 16);
+            this.lblRealLength.TabIndex = 16;
+            this.lblRealLength.Text = "Width of the marked area (m)";
+            // 
+            // lAzimuth
+            // 
+            this.lAzimuth.AutoSize = true;
+            this.lAzimuth.Location = new System.Drawing.Point(7, 153);
+            this.lAzimuth.Name = "lAzimuth";
+            this.lAzimuth.Size = new System.Drawing.Size(88, 16);
+            this.lAzimuth.TabIndex = 24;
+            this.lAzimuth.Text = "Azimuth (deg)";
+            // 
             // tbRealLength
             // 
             this.tbRealLength.Location = new System.Drawing.Point(8, 54);
@@ -286,6 +321,23 @@ namespace Server
             this.tbRealLength.TextChanged += new System.EventHandler(this.tbRealLength_TextChanged);
             this.tbRealLength.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbDoubleValue_KeyPress);
             // 
+            // dbFrame
+            // 
+            this.dbFrame.Controls.Add(this.tbCoordinateY2);
+            this.dbFrame.Controls.Add(this.lblCoordinateX1);
+            this.dbFrame.Controls.Add(this.lblCoordinateY1);
+            this.dbFrame.Controls.Add(this.lblCoordinateX2);
+            this.dbFrame.Controls.Add(this.lblCoordinateY2);
+            this.dbFrame.Controls.Add(this.tbCoordinateX1);
+            this.dbFrame.Controls.Add(this.tbCoordinateX2);
+            this.dbFrame.Controls.Add(this.tbCoordinateY1);
+            this.dbFrame.Location = new System.Drawing.Point(15, 3);
+            this.dbFrame.Name = "dbFrame";
+            this.dbFrame.Size = new System.Drawing.Size(266, 100);
+            this.dbFrame.TabIndex = 26;
+            this.dbFrame.TabStop = false;
+            this.dbFrame.Text = "Frame ponts";
+            // 
             // tbCoordinateY2
             // 
             this.tbCoordinateY2.Location = new System.Drawing.Point(182, 60);
@@ -295,6 +347,56 @@ namespace Server
             this.tbCoordinateY2.TabIndex = 4;
             this.tbCoordinateY2.TextChanged += new System.EventHandler(this.tbCoordinateY2_TextChanged);
             this.tbCoordinateY2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
+            // 
+            // lblCoordinateX1
+            // 
+            this.lblCoordinateX1.AutoSize = true;
+            this.lblCoordinateX1.Location = new System.Drawing.Point(10, 31);
+            this.lblCoordinateX1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCoordinateX1.Name = "lblCoordinateX1";
+            this.lblCoordinateX1.Size = new System.Drawing.Size(25, 16);
+            this.lblCoordinateX1.TabIndex = 5;
+            this.lblCoordinateX1.Text = "X1:";
+            // 
+            // lblCoordinateY1
+            // 
+            this.lblCoordinateY1.AutoSize = true;
+            this.lblCoordinateY1.Location = new System.Drawing.Point(10, 63);
+            this.lblCoordinateY1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCoordinateY1.Name = "lblCoordinateY1";
+            this.lblCoordinateY1.Size = new System.Drawing.Size(26, 16);
+            this.lblCoordinateY1.TabIndex = 7;
+            this.lblCoordinateY1.Text = "Y1:";
+            // 
+            // lblCoordinateX2
+            // 
+            this.lblCoordinateX2.AutoSize = true;
+            this.lblCoordinateX2.Location = new System.Drawing.Point(143, 31);
+            this.lblCoordinateX2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCoordinateX2.Name = "lblCoordinateX2";
+            this.lblCoordinateX2.Size = new System.Drawing.Size(25, 16);
+            this.lblCoordinateX2.TabIndex = 9;
+            this.lblCoordinateX2.Text = "X2:";
+            // 
+            // lblCoordinateY2
+            // 
+            this.lblCoordinateY2.AutoSize = true;
+            this.lblCoordinateY2.Location = new System.Drawing.Point(143, 63);
+            this.lblCoordinateY2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblCoordinateY2.Name = "lblCoordinateY2";
+            this.lblCoordinateY2.Size = new System.Drawing.Size(26, 16);
+            this.lblCoordinateY2.TabIndex = 11;
+            this.lblCoordinateY2.Text = "Y2:";
+            // 
+            // tbCoordinateX1
+            // 
+            this.tbCoordinateX1.Location = new System.Drawing.Point(48, 28);
+            this.tbCoordinateX1.Margin = new System.Windows.Forms.Padding(4);
+            this.tbCoordinateX1.Name = "tbCoordinateX1";
+            this.tbCoordinateX1.Size = new System.Drawing.Size(68, 22);
+            this.tbCoordinateX1.TabIndex = 1;
+            this.tbCoordinateX1.TextChanged += new System.EventHandler(this.tbCoordinateX1_TextChanged);
+            this.tbCoordinateX1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
             // tbCoordinateX2
             // 
@@ -316,36 +418,6 @@ namespace Server
             this.tbCoordinateY1.TextChanged += new System.EventHandler(this.tbCoordinateY1_TextChanged);
             this.tbCoordinateY1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
             // 
-            // tbCoordinateX1
-            // 
-            this.tbCoordinateX1.Location = new System.Drawing.Point(48, 28);
-            this.tbCoordinateX1.Margin = new System.Windows.Forms.Padding(4);
-            this.tbCoordinateX1.Name = "tbCoordinateX1";
-            this.tbCoordinateX1.Size = new System.Drawing.Size(68, 22);
-            this.tbCoordinateX1.TabIndex = 1;
-            this.tbCoordinateX1.TextChanged += new System.EventHandler(this.tbCoordinateX1_TextChanged);
-            this.tbCoordinateX1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbIntValue_KeyPress);
-            // 
-            // lblRealLength
-            // 
-            this.lblRealLength.AutoSize = true;
-            this.lblRealLength.Location = new System.Drawing.Point(7, 34);
-            this.lblRealLength.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblRealLength.Name = "lblRealLength";
-            this.lblRealLength.Size = new System.Drawing.Size(182, 16);
-            this.lblRealLength.TabIndex = 16;
-            this.lblRealLength.Text = "Width of the marked area (m)";
-            // 
-            // lblRealWidth
-            // 
-            this.lblRealWidth.AutoSize = true;
-            this.lblRealWidth.Location = new System.Drawing.Point(5, 93);
-            this.lblRealWidth.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblRealWidth.Name = "lblRealWidth";
-            this.lblRealWidth.Size = new System.Drawing.Size(183, 16);
-            this.lblRealWidth.TabIndex = 14;
-            this.lblRealWidth.Text = "Height of the marked area (m)";
-            // 
             // btnSave
             // 
             this.btnSave.Location = new System.Drawing.Point(14, 369);
@@ -356,46 +428,6 @@ namespace Server
             this.btnSave.Text = "Save settings";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
-            // 
-            // lblCoordinateY2
-            // 
-            this.lblCoordinateY2.AutoSize = true;
-            this.lblCoordinateY2.Location = new System.Drawing.Point(143, 63);
-            this.lblCoordinateY2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCoordinateY2.Name = "lblCoordinateY2";
-            this.lblCoordinateY2.Size = new System.Drawing.Size(26, 16);
-            this.lblCoordinateY2.TabIndex = 11;
-            this.lblCoordinateY2.Text = "Y2:";
-            // 
-            // lblCoordinateX2
-            // 
-            this.lblCoordinateX2.AutoSize = true;
-            this.lblCoordinateX2.Location = new System.Drawing.Point(143, 31);
-            this.lblCoordinateX2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCoordinateX2.Name = "lblCoordinateX2";
-            this.lblCoordinateX2.Size = new System.Drawing.Size(25, 16);
-            this.lblCoordinateX2.TabIndex = 9;
-            this.lblCoordinateX2.Text = "X2:";
-            // 
-            // lblCoordinateY1
-            // 
-            this.lblCoordinateY1.AutoSize = true;
-            this.lblCoordinateY1.Location = new System.Drawing.Point(10, 63);
-            this.lblCoordinateY1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCoordinateY1.Name = "lblCoordinateY1";
-            this.lblCoordinateY1.Size = new System.Drawing.Size(26, 16);
-            this.lblCoordinateY1.TabIndex = 7;
-            this.lblCoordinateY1.Text = "Y1:";
-            // 
-            // lblCoordinateX1
-            // 
-            this.lblCoordinateX1.AutoSize = true;
-            this.lblCoordinateX1.Location = new System.Drawing.Point(10, 31);
-            this.lblCoordinateX1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCoordinateX1.Name = "lblCoordinateX1";
-            this.lblCoordinateX1.Size = new System.Drawing.Size(25, 16);
-            this.lblCoordinateX1.TabIndex = 5;
-            this.lblCoordinateX1.Text = "X1:";
             // 
             // btnDownloadImage
             // 
@@ -477,26 +509,18 @@ namespace Server
             this.pnlHeatMap.Size = new System.Drawing.Size(300, 840);
             this.pnlHeatMap.TabIndex = 7;
             // 
-            // mtbEnd
+            // gbHeatMapDate
             // 
-            this.mtbEnd.Location = new System.Drawing.Point(7, 109);
-            this.mtbEnd.Margin = new System.Windows.Forms.Padding(4);
-            this.mtbEnd.Mask = "00/00/0000 90:00:00";
-            this.mtbEnd.Name = "mtbEnd";
-            this.mtbEnd.Size = new System.Drawing.Size(262, 22);
-            this.mtbEnd.TabIndex = 1;
-            this.mtbEnd.Text = "30042022000000";
-            this.mtbEnd.ValidatingType = typeof(System.DateTime);
-            // 
-            // lTo
-            // 
-            this.lTo.AutoSize = true;
-            this.lTo.Location = new System.Drawing.Point(4, 89);
-            this.lTo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lTo.Name = "lTo";
-            this.lTo.Size = new System.Drawing.Size(52, 16);
-            this.lTo.TabIndex = 6;
-            this.lTo.Text = "Time to";
+            this.gbHeatMapDate.Controls.Add(this.mtbBegin);
+            this.gbHeatMapDate.Controls.Add(this.mtbEnd);
+            this.gbHeatMapDate.Controls.Add(this.lFrom);
+            this.gbHeatMapDate.Controls.Add(this.lTo);
+            this.gbHeatMapDate.Location = new System.Drawing.Point(8, 4);
+            this.gbHeatMapDate.Name = "gbHeatMapDate";
+            this.gbHeatMapDate.Size = new System.Drawing.Size(276, 152);
+            this.gbHeatMapDate.TabIndex = 7;
+            this.gbHeatMapDate.TabStop = false;
+            this.gbHeatMapDate.Text = "Time interval";
             // 
             // mtbBegin
             // 
@@ -509,6 +533,17 @@ namespace Server
             this.mtbBegin.Text = "26042022000000";
             this.mtbBegin.ValidatingType = typeof(System.DateTime);
             // 
+            // mtbEnd
+            // 
+            this.mtbEnd.Location = new System.Drawing.Point(7, 109);
+            this.mtbEnd.Margin = new System.Windows.Forms.Padding(4);
+            this.mtbEnd.Mask = "00/00/0000 90:00:00";
+            this.mtbEnd.Name = "mtbEnd";
+            this.mtbEnd.Size = new System.Drawing.Size(262, 22);
+            this.mtbEnd.TabIndex = 1;
+            this.mtbEnd.Text = "30042022000000";
+            this.mtbEnd.ValidatingType = typeof(System.DateTime);
+            // 
             // lFrom
             // 
             this.lFrom.AutoSize = true;
@@ -518,6 +553,16 @@ namespace Server
             this.lFrom.Size = new System.Drawing.Size(67, 16);
             this.lFrom.TabIndex = 5;
             this.lFrom.Text = "Time from";
+            // 
+            // lTo
+            // 
+            this.lTo.AutoSize = true;
+            this.lTo.Location = new System.Drawing.Point(4, 89);
+            this.lTo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lTo.Name = "lTo";
+            this.lTo.Size = new System.Drawing.Size(52, 16);
+            this.lTo.TabIndex = 6;
+            this.lTo.Text = "Time to";
             // 
             // bGenerate
             // 
@@ -704,9 +749,9 @@ namespace Server
             this.lblWIFIPower.AutoSize = true;
             this.lblWIFIPower.Location = new System.Drawing.Point(149, 181);
             this.lblWIFIPower.Name = "lblWIFIPower";
-            this.lblWIFIPower.Size = new System.Drawing.Size(45, 16);
+            this.lblWIFIPower.Size = new System.Drawing.Size(84, 16);
             this.lblWIFIPower.TabIndex = 17;
-            this.lblWIFIPower.Text = "Power";
+            this.lblWIFIPower.Text = "Power (dBm)";
             // 
             // lblWIFIMAC
             // 
@@ -1444,51 +1489,6 @@ namespace Server
             this.tcMain.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tcMain_Selecting);
             this.tcMain.Selected += new System.Windows.Forms.TabControlEventHandler(this.tcMain_Selected);
             // 
-            // dbFrame
-            // 
-            this.dbFrame.Controls.Add(this.tbCoordinateY2);
-            this.dbFrame.Controls.Add(this.lblCoordinateX1);
-            this.dbFrame.Controls.Add(this.lblCoordinateY1);
-            this.dbFrame.Controls.Add(this.lblCoordinateX2);
-            this.dbFrame.Controls.Add(this.lblCoordinateY2);
-            this.dbFrame.Controls.Add(this.tbCoordinateX1);
-            this.dbFrame.Controls.Add(this.tbCoordinateX2);
-            this.dbFrame.Controls.Add(this.tbCoordinateY1);
-            this.dbFrame.Location = new System.Drawing.Point(15, 3);
-            this.dbFrame.Name = "dbFrame";
-            this.dbFrame.Size = new System.Drawing.Size(266, 100);
-            this.dbFrame.TabIndex = 26;
-            this.dbFrame.TabStop = false;
-            this.dbFrame.Text = "Frame ponts";
-            // 
-            // gbSettings
-            // 
-            this.gbSettings.Controls.Add(this.tbRealWidth);
-            this.gbSettings.Controls.Add(this.lblRealWidth);
-            this.gbSettings.Controls.Add(this.tbAzimuth);
-            this.gbSettings.Controls.Add(this.lblRealLength);
-            this.gbSettings.Controls.Add(this.lAzimuth);
-            this.gbSettings.Controls.Add(this.tbRealLength);
-            this.gbSettings.Location = new System.Drawing.Point(15, 109);
-            this.gbSettings.Name = "gbSettings";
-            this.gbSettings.Size = new System.Drawing.Size(265, 214);
-            this.gbSettings.TabIndex = 27;
-            this.gbSettings.TabStop = false;
-            this.gbSettings.Text = "Settings";
-            // 
-            // gbHeatMapDate
-            // 
-            this.gbHeatMapDate.Controls.Add(this.mtbBegin);
-            this.gbHeatMapDate.Controls.Add(this.mtbEnd);
-            this.gbHeatMapDate.Controls.Add(this.lFrom);
-            this.gbHeatMapDate.Controls.Add(this.lTo);
-            this.gbHeatMapDate.Location = new System.Drawing.Point(8, 4);
-            this.gbHeatMapDate.Name = "gbHeatMapDate";
-            this.gbHeatMapDate.Size = new System.Drawing.Size(276, 152);
-            this.gbHeatMapDate.TabIndex = 7;
-            this.gbHeatMapDate.TabStop = false;
-            this.gbHeatMapDate.Text = "Time interval";
-            // 
             // frmServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -1498,6 +1498,7 @@ namespace Server
             this.Controls.Add(this.tcMain);
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "frmServer";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Server";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmServer_FormClosing);
             tbSettings.ResumeLayout(false);
@@ -1505,10 +1506,16 @@ namespace Server
             this.pImage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbMapImage)).EndInit();
             this.pSettings.ResumeLayout(false);
+            this.gbSettings.ResumeLayout(false);
+            this.gbSettings.PerformLayout();
+            this.dbFrame.ResumeLayout(false);
+            this.dbFrame.PerformLayout();
             this.tbHeatMap.ResumeLayout(false);
             this.pHeatMap.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbHeatMap)).EndInit();
             this.pnlHeatMap.ResumeLayout(false);
+            this.gbHeatMapDate.ResumeLayout(false);
+            this.gbHeatMapDate.PerformLayout();
             this.tbWIFILocation.ResumeLayout(false);
             this.tbWIFI.ResumeLayout(false);
             this.tbWIFIMap.ResumeLayout(false);
@@ -1541,12 +1548,6 @@ namespace Server
             this.tbOnlineList.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.tcMain.ResumeLayout(false);
-            this.dbFrame.ResumeLayout(false);
-            this.dbFrame.PerformLayout();
-            this.gbSettings.ResumeLayout(false);
-            this.gbSettings.PerformLayout();
-            this.gbHeatMapDate.ResumeLayout(false);
-            this.gbHeatMapDate.PerformLayout();
             this.ResumeLayout(false);
 
         }

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--WIFISpot data here-->
+<WIFISpots>
+  <WIFISpot id="3" name="hotspot-3">
+    <x>0.5</x>
+    <y>0.5</y>
+    <power>20</power>
+    <mac>00-11-22-33-44-55</mac>
+  </WIFISpot>
+  <WIFISpot id="2" name="hotspot-2">
+    <x>4.5</x>
+    <y>0.5</y>
+    <power>20</power>
+    <mac>33-44-55-66-FF-FF</mac>
+  </WIFISpot>
+  <WIFISpot id="1" name="hotspot-1">
+    <x>4.5</x>
+    <y>5.5</y>
+    <power>20</power>
+    <mac>11-22-33-44-44-44</mac>
+  </WIFISpot>
+</WIFISpots>
